@@ -19,13 +19,13 @@
 
 // Set a Site-Wide Salt between 60 and 68 characters
 // NOTE: Only change this value ONCE after installing a new copy. It will affect all passwords created in the meantime.
-define("SITE_SALT", "+GzvJ@~Nn0@*zj84Tb.XqOXGtldp1uCs6L@meI!s@nUF;epz3ClIv4KKXZzT@,n");
+define("SITE_SALT", "==k!+NG~=~=asg0py6u97m3g.s~uXEQ3pg.s~ugT:OqY-EFxhDm3gNk~Ay6,cYg0p7");
 //					|    5   10   15   20   25   30   35   40   45   50   55   60   65   |
 
 // Set a unique 10 to 22 character keycode (alphanumeric) to prevent code overlap on databases & shared servers
 // For example, you don't want sessions to transfer between multiple sites on a server (e.g. $_SESSION['user'])
 // This key will allow each value to be unique (e.g. $_SESSION['siteCode_user'] vs. $_SESSION['otherSite_user'])
-define("SITE_HANDLE", "forum_architects");
+define("SITE_HANDLE", "forum_staff");
 
 // Set the Application Path (in most cases, this is the same as CONF_PATH)
 define("APP_PATH", dirname(CONF_PATH) . "/forum");
@@ -35,8 +35,8 @@ define("APP_PATH", dirname(CONF_PATH) . "/forum");
 Theme::set("default");
 
 // Site-Wide Configurations
-$config['site-name'] = "Architect Community";
-$config['database']['name'] = "forum_architects";
+$config['site-name'] = "Staff Community";
+$config['database']['name'] = "forum_staff";
 
 
 define("AVI_TYPE", "profile");		// "avatar", "profile"
@@ -48,11 +48,11 @@ define("AVI_TYPE", "profile");		// "avatar", "profile"
 if(ENVIRONMENT == "production") {
 
 	// Set Important URLs
-	define("SITE_URL", "http://architects.unifaction.community");
+	define("SITE_URL", "http://staff.unifaction.community");
 	define("CDN", "http://cdn.unifaction.com");
 	
 	// Important Configurations
-	$config['site-domain'] = "architects.unifaction.community";		#production
+	$config['site-domain'] = "staff.unifaction.community";		#production
 	$config['admin-email'] = "info@unifaction.com";
 }
 
@@ -62,11 +62,11 @@ if(ENVIRONMENT == "production") {
 else if(ENVIRONMENT == "development") {
 	
 	// Set Important URLs
-	define("SITE_URL", "http://architects.unifaction.community.phptesla.com");
+	define("SITE_URL", "http://staff.unifaction.community.phptesla.com");
 	define("CDN", "http://cdn.phptesla.com");
 	
 	// Important Configurations
-	$config['site-domain'] = "architects.unifaction.community.phptesla.com";		#development
+	$config['site-domain'] = "staff.unifaction.community.phptesla.com";		#development
 	$config['admin-email'] = "info@phptesla.com";
 }
 
@@ -76,11 +76,11 @@ else if(ENVIRONMENT == "development") {
 else if(ENVIRONMENT == "local") {
 	
 	// Set Important URLs
-	define("SITE_URL", "http://architects.unifaction.community.test");
+	define("SITE_URL", "http://staff.unifaction.community.test");
 	define("CDN", "http://cdn.test");
 	
 	// Important Configurations
-	$config['site-domain'] = "architects.unifaction.community.test";
+	$config['site-domain'] = "staff.unifaction.community.test";
 	$config['admin-email'] = "info@unifaction.test";
 
 }

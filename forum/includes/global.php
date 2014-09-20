@@ -10,14 +10,11 @@ if(Me::$loggedIn)
 }
 
 // Main Navigation
-// $urlActive = (isset($url[0]) && $url[0] != "" ? $url[0] : "home");
-// <a class="panel-link' . ($urlActive == "home" ? " panel-active" : "") . '" href="/"><span class="icon-image panel-icon"></span><span class="panel-title">Home</span></a>
-
-// Main Navigation
 WidgetLoader::add("SidePanel", 50, '
 <div class="panel-box">
 	<ul class="panel-slots">
-		<li class="nav-slot"><a href="/user-panel/subscriptions">Subscriptions<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot' . ($url[0] == "" ? " nav-active" : "") . '"><a href="/">Main Forum<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot' . ($url[0] == "subscriptions" ? " nav-active" : "") . '"><a href="/subscriptions">Subscriptions<span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');
 

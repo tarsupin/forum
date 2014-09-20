@@ -8,7 +8,7 @@ abstract class Install extends Installation {
 	public static $addonPlugins = array(		// <str:bool>
 		"Avatar"			=> true
 	,	"UserActivity"		=> true
-	,	"Friends"			=> true
+	//,	"Friends"			=> true
 	,	"Notifications"		=> true
 	);
 	

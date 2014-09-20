@@ -25,6 +25,8 @@ $forum['perm_post'] = (int) $forum['perm_post'];
 // Make sure you have permission to post
 if(Me::$clearance < $forum['perm_post'])
 {
+	Alert::saveError("Invalid Permissions", "You must have higher permissions to post threads on this forum.");
+	
 	header("Location: /forum?id=" . $forum['id']); exit;
 }
 
