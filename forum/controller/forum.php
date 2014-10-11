@@ -38,6 +38,8 @@ if($_GET['page'] > 1)
 	$pageList = '<a href="/forum?id=' . $forum['id'] . '&page=' . ($_GET['page'] - 1) . '">Previous Page</a>';
 }
 
+$socialURL = URL::social_unifaction_com();
+
 // Get Stickied Thread
 $sThreads = array();
 $stickied = AppForum::getStickied($forum['id'], $_GET['page']);
@@ -134,7 +136,7 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 			</div>
 			<div class="inner-posts">' . $stick['posts'] . '</div>
 			<div class="inner-views">' . $stick['views'] . '</div>
-			<div class="inner-details"><a href="/' . $stick['handle'] . '">' . $stick['display_name'] . '</a><br />' . Time::fuzzy($stick['date_last_post']) . '</div>
+			<div class="inner-details"><a href="' . $socialURL . '/' . $stick['handle'] . '">' . $stick['display_name'] . '</a><br />' . Time::fuzzy((int) $stick['date_last_post']) . '</div>
 		</div>';
 	}
 }
@@ -158,7 +160,7 @@ foreach($threads as $thread)
 		foreach($paginate->pages as $page)
 		{
 			$drawDesc .= '
-				<a href="/thread?forum=' . $stick['forum_id'] . '&id=' . $stick['id'] . '&page=' . $page . '"><span>' . $page . '</span></a>';
+				<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&page=' . $page . '"><span>' . $page . '</span></a>';
 		}
 	}
 	
@@ -171,7 +173,7 @@ foreach($threads as $thread)
 		</div>
 		<div class="inner-posts">' . $thread['posts'] . '</div>
 		<div class="inner-views">' . $thread['views'] . '</div>
-		<div class="inner-details"><a href="/' . $thread['handle'] . '">' . $thread['display_name'] . '</a><br />' . Time::fuzzy($thread['date_last_post']) . '</div>
+		<div class="inner-details"><a href="' . $socialURL . '/' . $thread['handle'] . '">' . $thread['display_name'] . '</a><br />' . Time::fuzzy((int) $thread['date_last_post']) . '</div>
 	</div>';
 }
 

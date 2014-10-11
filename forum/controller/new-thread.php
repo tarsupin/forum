@@ -1,15 +1,15 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Must log in
-if(!Me::$loggedIn)
-{
-	Me::redirectLogin("/new-thread");
-}
-
 // Make sure you have a valid ID for this forum
 if(!isset($_GET['forum']))
 {
 	header("Location: /"); exit;
+}
+
+// Must log in
+if(!Me::$loggedIn)
+{
+	Me::redirectLogin("/new-thread?forum=" . ($_GET['forum'] + 0));
 }
 
 // Get the current forum

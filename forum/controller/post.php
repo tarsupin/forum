@@ -1,15 +1,15 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Require Login
-if(!Me::$loggedIn)
-{
-	header("Location: /"); exit;
-}
-
 // Make sure you have a valid ID for this forum and thread
 if(!isset($_GET['forum']) or !isset($_GET['id']))
 {
 	header("Location: /"); exit;
+}
+
+// Require Login
+if(!Me::$loggedIn)
+{
+	Me::redirectLogin("/post?forum=" . ($_GET['forum'] + 0) . "&id=" . ($_GET['id'] + 0));
 }
 
 // If the avi type is "avatar", we need to make sure the user can post
@@ -34,7 +34,9 @@ $postClearanceLevel = (int) Database::selectValue("SELECT perm_post FROM forums 
 // Make sure you have permission to post
 if(Me::$clearance < $postClearanceLevel)
 {
-	header("Location: /forum?id=" . $thread['forum_id']); exit;
+	Alert::saveError("Low Permissions", "You must have higher permissions to post here.");
+	
+	header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id']); exit;
 }
 
 // Check Edit Mode & Post if applicable

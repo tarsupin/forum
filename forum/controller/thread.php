@@ -32,7 +32,7 @@ $postsPerPage = 10;
 $highestPage = ceil($thread['posts'] / $postsPerPage);
 $isMod = (Me::$clearance >= 6 ? true : false);
 
-$_GET['page'] = (isset($_GET['page']) ? ($_GET['page'] == 'last' ? $highestPage : (int) $_GET['page']) : 1);
+$_GET['page'] = (isset($_GET['page']) ? ($_GET['page'] == 'last' ? (int) $highestPage : (int) $_GET['page']) : 1);
 $pageLine = '';
 $subData = array();
 
@@ -151,7 +151,7 @@ $userList = array();
 
 foreach($posts as $post)
 {
-	$nextID = $post['uni_id'];
+	$nextID = (int) $post['uni_id'];
 	
 	if(!isset($userList[$nextID]))
 	{
@@ -303,7 +303,7 @@ $fastchat = URL::fastchat_social();
 
 foreach($posts as $post)
 {
-	$uniID = $post['uni_id'];
+	$uniID = (int) $post['uni_id'];
 	
 	echo '
 	<div class="thread-post">';
@@ -317,7 +317,7 @@ foreach($posts as $post)
 					<div class="plr-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
 					<div class="plr-bottom">
 						<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
-						<div>' . Time::fuzzy($post['date_post']) . '</div>
+						<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
 					</div>
 				</div>
 			</div>';
@@ -331,7 +331,7 @@ foreach($posts as $post)
 					<div class="plr-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
 					<div class="plr-bottom">
 						<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
-						<div>' . Time::fuzzy($post['date_post']) . '</div>
+						<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
 					</div>
 				</div>
 			</div>';

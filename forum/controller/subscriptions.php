@@ -44,7 +44,7 @@ foreach($subscriptions as $sub)
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>
 		<div class="inner-views">' . $sub['views'] . '</div>
-		<div class="inner-details"><strong>Last Post:</strong><br />' . Time::fuzzy($sub['date_last_post']) . '</div>
+		<div class="inner-details"><strong>Last Post:</strong><br />' . Time::fuzzy((int) $sub['date_last_post']) . '</div>
 	</div>
 	</a>';
 }

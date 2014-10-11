@@ -74,7 +74,7 @@ abstract class AppThread {
 		$timestamp = time();
 		
 		// Create the thread
-		if(Database::query("INSERT INTO `threads` (id, forum_id, posts, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forumID, 1, $title, $uniID, $uniID, $timestamp, $timestamp)))
+		if(Database::query("INSERT INTO `threads` (id, forum_id, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?)", array($threadID, $forumID, $title, $uniID, $uniID, $timestamp, $timestamp)))
 		{
 			// Add the sticky functionality (if applicable)
 			if($sticky > 0)
@@ -83,7 +83,7 @@ abstract class AppThread {
 			}
 			
 			// Create the actual thread's post
-			if(Database::query("UPDATE forums SET posts=posts+1, last_thread_id=?, last_poster=?, date_lastPost=? WHERE id=? LIMIT 1", array($threadID, $uniID, $timestamp, $forumID)))
+			if(Database::query("UPDATE forums SET last_thread_id=?, last_poster=?, date_lastPost=? WHERE id=? LIMIT 1", array($threadID, $uniID, $timestamp, $forumID)))
 			{
 				Database::endTransaction();
 				return $threadID;

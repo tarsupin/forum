@@ -1,5 +1,9 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
+// Create a notification and sync it
+// Notifications::create($uniID, $noteType, $message, [$url], [$senderID], [$sync]);
+Notifications::create(1, "Friend Request", "This is a notification about a thing.", "http://unifaction.test", 13, true);
+
 // Run Global Script
 require(APP_PATH . "/includes/global.php");
 
@@ -38,6 +42,8 @@ foreach($categories as $cat)
 	
 	foreach($forums as $forum)
 	{
+		$forum['date_lastPost'] = (int) $forum['date_lastPost'];
+		
 		// Prepare the details (if available)
 		$desc = "";
 		
