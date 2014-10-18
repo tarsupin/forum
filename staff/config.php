@@ -30,10 +30,6 @@ define("SITE_HANDLE", "forum_staff");
 // Set the Application Path (in most cases, this is the same as CONF_PATH)
 define("APP_PATH", dirname(CONF_PATH) . "/forum");
 
-
-// Prepare Default Theme
-Theme::set("default");
-
 // Site-Wide Configurations
 $config['site-name'] = "Staff Community";
 $config['database']['name'] = "forum_staff";
