@@ -1,12 +1,9 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 // Initialize and Test Active User's Behavior
-Me::$getColumns = "uni_id, role, clearance, handle, display_name, has_avatar, has_instructions, has_notifications";
+Me::$getColumns = "uni_id, role, clearance, handle, display_name, has_avatar";
 
-if(Me::initialize())
-{
-	Me::runBehavior($url);
-}
+Me::initialize();
 
 // Prepare CSS
 Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/forum.css">');

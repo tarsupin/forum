@@ -1,16 +1,21 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
+<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+
+--------------------------------------------
+------ About the AppForumAvatar Class ------
+--------------------------------------------
+
+This plugin allows you to handle avatars on a forum.
+
+
+-------------------------------
+------ Methods Available ------
+-------------------------------
+
+AppForumAvatar::confirmAvi($uniID);
+
+*/
 
 abstract class AppForumAvatar {
-
-/****** AppForumAvatar Class ******
-* This class allows you to handle avatars on a forum.
-* 
-****** Examples of using this class ******
-
-
-****** Methods Available ******
-* AppForumAvatar::confirmAvi($uniID);
-*/
 	
 	
 /****** Confirm that a user has an avatar ******/

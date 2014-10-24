@@ -126,7 +126,7 @@ abstract class AppSubscriptions {
 			
 			if(Database::query("UPDATE thread_subs_by_user SET new_posts=1 WHERE uni_id=? AND forum_id=? AND thread_id=? AND new_posts=? LIMIT 1", array($sub['uni_id'], $forumID, $threadID, 0)))
 			{
-				Notifications::create($sub['uni_id'], "Subscriptions", 'The thread "' . $threadName . '" has received new posts!', "/thread?forum=" . $forumID . '&id=' . $threadID . '&page=last');
+				Notifications::create($sub['uni_id'], SITE_URL . "/thread?forum=" . $forumID . "&id=" . $threadID . "&page=last", 'The thread "' . $threadName . '" has been updated!');
 			}
 		}
 		

@@ -3,12 +3,6 @@
 // Update User Activity
 UserActivity::update();
 
-// Prepare Notifications (if available)
-if(Me::$loggedIn)
-{
-	WidgetLoader::add("SidePanel", 1, Notifications::sideWidget());
-}
-
 // Main Navigation
 WidgetLoader::add("SidePanel", 50, '
 <div class="panel-box">
