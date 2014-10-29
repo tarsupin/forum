@@ -1,4 +1,4 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+<?hh if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
 
 ----------------------------------------------
 ------ About the AppSubscriptions Class ------
@@ -29,8 +29,8 @@ abstract class AppSubscriptions {
 /****** Retrieve a list of your subscriptions ******/
 	public static function get
 	(
-		$uniID			// <int> The UniID that you're checking the subscriptions of.
-	)					// RETURNS <int:[str:mixed]> list of subscriptions, or FALSE on failure.
+		int $uniID			// <int> The UniID that you're checking the subscriptions of.
+	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> list of subscriptions, or FALSE on failure.
 	
 	// $subscriptions = AppSubscriptions::get($uniID);
 	{
@@ -41,10 +41,10 @@ abstract class AppSubscriptions {
 /****** Subscribe to a Thread ******/
 	public static function subscribe
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
-	,	$threadID		// <int> The ID of the thread to subscribe to.
-	,	$uniID			// <int> The UniID that is subscribing to the thread.
-	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+		int $forumID		// <int> The ID of the forum that the thread is in.
+	,	int $threadID		// <int> The ID of the thread to subscribe to.
+	,	int $uniID			// <int> The UniID that is subscribing to the thread.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppSubscriptions::subscribe($forumID, $threadID, $uniID);
 	{
@@ -71,10 +71,10 @@ abstract class AppSubscriptions {
 /****** Unsubscribe from a Thread ******/
 	public static function unsubscribe
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
-	,	$threadID		// <int> The ID of the thread to unsubscribe from.
-	,	$uniID			// <int> The UniID that is unsubscribing.
-	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+		int $forumID		// <int> The ID of the forum that the thread is in.
+	,	int $threadID		// <int> The ID of the thread to unsubscribe from.
+	,	int $uniID			// <int> The UniID that is unsubscribing.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppSubscriptions::unsubscribe($forumID, $threadID, $uniID);
 	{
@@ -101,11 +101,11 @@ abstract class AppSubscriptions {
 /****** Update a thread's subscriptions ******/
 	public static function update
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
-	,	$threadID		// <int> The ID of the thread to update the subscriptions of.
-	,	$posterID		// <int> The UniID of the poster.
-	,	$threadName		// <str> The name of the thread.
-	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+		int $forumID		// <int> The ID of the forum that the thread is in.
+	,	int $threadID		// <int> The ID of the thread to update the subscriptions of.
+	,	int $posterID		// <int> The UniID of the poster.
+	,	string $threadName		// <str> The name of the thread.
+	): bool					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppSubscriptions::update($forumID, $threadID, $posterID, $threadName);
 	{
@@ -140,10 +140,10 @@ abstract class AppSubscriptions {
 /****** Return subscription data for a thread, if available ******/
 	public static function getData
 	(
-		$uniID			// <int> The UniID that you're checking the subscriptions of.
-	,	$forumID		// <int> The ID of the forum that the thread is in.
-	,	$threadID		// <int> The ID of the thread you're checking the subscription of.
-	)					// RETURNS <str:mixed> subscription data, or empty array if nothing.
+		int $uniID			// <int> The UniID that you're checking the subscriptions of.
+	,	int $forumID		// <int> The ID of the forum that the thread is in.
+	,	int $threadID		// <int> The ID of the thread you're checking the subscription of.
+	): array <str, mixed>					// RETURNS <str:mixed> subscription data, or empty array if nothing.
 	
 	// $getData = AppSubscriptions::getData($uniID, $forumID, $threadID);
 	{
@@ -154,10 +154,10 @@ abstract class AppSubscriptions {
 /****** Clear a subscription (return new posts to 0) ******/
 	public static function clear
 	(
-		$uniID			// <int> The UniID that you're checking the subscriptions of.
-	,	$forumID		// <int> The ID of the forum that the thread is in.
-	,	$threadID		// <int> The ID of the thread you're checking the subscription of.
-	)					// RETURNS <bool> TRUE on success, FALSE on failure.
+		int $uniID			// <int> The UniID that you're checking the subscriptions of.
+	,	int $forumID		// <int> The ID of the forum that the thread is in.
+	,	int $threadID		// <int> The ID of the thread you're checking the subscription of.
+	): bool					// RETURNS <bool> TRUE on success, FALSE on failure.
 	
 	// AppSubscriptions::clear($uniID, $forumID, $threadID);
 	{

@@ -3,6 +3,12 @@
 // Update User Activity
 UserActivity::update();
 
+// UniFaction Dropdown Menu
+WidgetLoader::add("UniFactionMenu", 10, '
+<div class="menu-wrap">
+	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li></ul>
+</div>');
+
 // Main Navigation
 WidgetLoader::add("SidePanel", 50, '
 <div class="panel-box">

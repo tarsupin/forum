@@ -5,9 +5,6 @@ Me::$getColumns = "uni_id, role, clearance, handle, display_name, has_avatar";
 
 Me::initialize();
 
-// Prepare CSS
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/forum.css">');
-
 // Determine which page you should point to, then load it
 require(SYS_PATH . "/routes.php");
 

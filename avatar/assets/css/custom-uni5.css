@@ -1,0 +1,14 @@
+
+/**************************************
+****** Custom Uni5 Modifications ******
+**************************************/
+
+#core-nav { background-color:#77b5db; }
+#core-nav a, #core-nav span { color:#2c7099 !important; }
+
+#container { background-color:#d9e8f7; }
+
+.overwrap-box { background-color:#d5e4ed; }
+.inner-box { background-color:#e8eef1; }
+
+#content a { color: #686868 !important; }
