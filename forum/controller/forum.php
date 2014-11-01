@@ -7,7 +7,7 @@ if(!isset($_GET['id']))
 }
 
 // Get the current forum
-if(!$forum = Database::selectOne("SELECT id, title, perm_read FROM forums WHERE id=? LIMIT 1", array((int) $_GET['id'])))
+if(!$forum = Database::selectOne("SELECT id, active_hashtag, title, perm_read FROM forums WHERE id=? LIMIT 1", array((int) $_GET['id'])))
 {
 	header("Location: /"); exit;
 }
@@ -62,8 +62,11 @@ if(count($threads) > $threadsToShow)
 $breadcrumbs = AppForum::getBreadcrumbs($forum['id']);
 array_pop($breadcrumbs); // remove the final breadcrumb (this forum)
 
+// Prepare Active Hashtag
+$config['active-hashtag'] = $forum['active_hashtag'];
+
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

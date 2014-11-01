@@ -4,7 +4,7 @@
 $subscriptions = AppSubscriptions::get(Me::$id);
 
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

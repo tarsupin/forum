@@ -13,7 +13,7 @@ $thread['posts'] = (int) $thread['posts'];
 $thread['perm_post'] = (int) $thread['perm_post'];
 
 // Get the parent forum
-if(!$forum = Database::selectOne("SELECT perm_read FROM forums WHERE id=? LIMIT 1", array($thread['forum_id'])))
+if(!$forum = Database::selectOne("SELECT active_hashtag, perm_read FROM forums WHERE id=? LIMIT 1", array($thread['forum_id'])))
 {
 	header("Location: /"); exit;
 }
@@ -180,8 +180,11 @@ if($paginate->highestPage > 1)
 	</div>';
 }
 
+// Prepare the active hashtag
+$config['active-hashtag'] = $forum['active_hashtag'];
+
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

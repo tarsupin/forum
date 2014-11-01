@@ -29,10 +29,10 @@ $thread['id'] = (int) $thread['id'];
 $thread['forum_id'] = (int) $thread['forum_id'];
 
 // Get Forum Details
-$postClearanceLevel = (int) Database::selectValue("SELECT perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
+$forum = Database::selectOne("SELECT active_hashtag, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
 
 // Make sure you have permission to post
-if(Me::$clearance < $postClearanceLevel)
+if(Me::$clearance < (int) $forum['perm_post'])
 {
 	Alert::saveError("Low Permissions", "You must have higher permissions to post here.");
 	
@@ -108,8 +108,11 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 // Get Forum Breadcrumbs
 $breadcrumbs = AppForum::getBreadcrumbs($thread['forum_id']);
 
+// Prepare the active hashtag
+$config['active-hashtag'] = $forum['active_hashtag'];
+
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

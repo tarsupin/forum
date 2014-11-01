@@ -5,6 +5,9 @@
 
 #core-nav { background-color:#77b5db; }
 #core-nav a, #core-nav span { color:#2c7099 !important; }
+#core-nav a:hover { background-color:#97d5fb; }
+
+.core-link { border-bottom:solid 1px #2C7099; }
 
 #container { background-color:#d9e8f7; }
 
@@ -12,3 +15,7 @@
 .inner-box { background-color:#e8eef1; }
 
 #content a { color: #686868 !important; }
+
+.thread-tline { background-color:#77b5db; }
+
+#content .thread-tline a {color:white !important;}

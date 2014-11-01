@@ -43,6 +43,7 @@ class AppForum_config {
 			`category_id`			int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`forum_order`			tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
 			
+			`active_hashtag`		varchar(22)					NOT NULL	DEFAULT '',
 			`title`					varchar(42)					NOT NULL	DEFAULT '',
 			`description`			varchar(128)				NOT NULL	DEFAULT '',
 			

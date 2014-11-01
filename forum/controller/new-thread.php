@@ -13,7 +13,7 @@ if(!Me::$loggedIn)
 }
 
 // Get the current forum
-if(!$forum = Database::selectOne("SELECT id, title, perm_post FROM forums WHERE id=? LIMIT 1", array($_GET['forum'])))
+if(!$forum = Database::selectOne("SELECT id, active_hashtag, title, perm_post FROM forums WHERE id=? LIMIT 1", array($_GET['forum'])))
 {
 	header("Location: /"); exit;
 }
@@ -71,8 +71,11 @@ else
 // Get Forum Breadcrumbs
 $breadcrumbs = AppForum::getBreadcrumbs($forum['id']);
 
+// Prepare the active hashtag
+$config['active-hashtag'] = $forum['active_hashtag'];
+
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

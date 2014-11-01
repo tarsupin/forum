@@ -37,6 +37,9 @@ $config['database']['name'] = "forum_avatar";
 
 define("AVI_TYPE", "avatar");		// "avatar", "profile"
 
+// Set a default active hashtag for this site
+$config['active-hashtag'] = "Avatar";
+
 
 /***********************************
 ****** Production Environment ******

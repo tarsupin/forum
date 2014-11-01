@@ -1,7 +1,7 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 // Run Global Script
-require(APP_PATH . "/includes/global.php");
+require(CONF_PATH . "/includes/global.php");
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");
@@ -69,10 +69,8 @@ foreach($categories as $cat)
 }
 
 // Activity Module
-/*
 echo '
-<div style="clear:both; width:100%;">' . AppActivity::getActivityModule(600, 5) . '</div>';
-*/
+<div style="clear:both; width:100%;">' . AppActivity::getActivityModule(600, 30) . '</div>';
 
 echo '
 </div>';

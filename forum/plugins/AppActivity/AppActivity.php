@@ -1,47 +1,55 @@
-<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
+<?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); } /*
+
+------------------------------------------
+------ About the AppActivity Plugin ------
+------------------------------------------
+
+This plugin allows you to load the user activity bar.
+
+-------------------------------
+------ Methods Available ------
+-------------------------------
+
+*/
 
 abstract class AppActivity {
-
-/****** AppActivity Class ******
-* This class allows you to manage the user activity bar.
-* 
-****** Examples of using this class ******
-
-
-
-****** Methods Available ******
-* AppActivity::deleteThread($forumID, $threadID);
-* AppActivity::deletePost($threadID, $postID);
-*/
 	
 	
 /****** Get User Activity Module ******/
 	public static function getActivityModule
 	(
 		$duration = 600	// <int> The duration across which to monitor the module's activity.
-	,	$refresh = 120	// <int> The amount of time before refreshing the module.
+	,	$refresh = 45	// <int> The amount of time (in seconds) before refreshing the module.
 	)					// RETURNS <void>
 	
 	// echo AppActivity::getActivityModule($duration, $refresh);
 	{
-		if(!CacheFile::load("activityModule", $refresh))
+		if(!$cache = CacheFile::load("onlineUserActivity", $refresh))
 		{
 			// Recover activity within the duration provided
-			$activeUsers = Analytics::getUserActivity($duration);
+			$activeUsers = UserActivity::getUsersOnline($duration);
+			$userCount = UserActivity::getUsersOnlineCount($duration);
+			$guestCount = UserActivity::getGuestsOnlineCount($duration);
 			
 			$socialURL = URL::unifaction_social();
 			$html = "";
 			
-			foreach($activeUsers['users'] as $user)
+			foreach($activeUsers as $user)
 			{
-				$html .= ($html == "" ? "" : ", ") . '<a' . ($user['role'] != "" ? ' class="user-role-' . $user['role'] . '"' : '') . ' href="' . $socialURL . '/' . $user['handle'] . '">' . $user['display_name'] . '</a>';
+				$html .= ($html == "" ? "" : ", ") . '<a' . ($user['role'] != "" ? ' class="user-role-' . $user['role'] . '"' : '') . ' href="' . $socialURL . '/' . $user['handle'] . '">' . $user['handle'] . '</a>';
 			}
 			
 			// Prepend the Guest Count
-			$html = "Guests: " . ($activeUsers['guests'] + 0) . '. ' . $html;
+			$html = ($guestCount + 0) . " Guests, " . ($userCount + 0) . " Users: " . $html;
 			
-			CacheFile::save("activityModule", $html);
-			CacheFile::load("activityModule");
+			CacheFile::save("onlineUserActivity", $html);
+			$cache = CacheFile::load("onlineUserActivity");
+		}
+		
+		// Display the module, if loaded
+		if($cache)
+		{
+			echo '<div class="overwrap-box"><div style="font-weight:bold;">Users Online</div><div class="inner-box"><div style="padding:6px;">' . $cache . '</div></div></div>';
 		}
 	}
 }
