@@ -1,7 +1,12 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Get the current thread
-if(!$thread = Database::selectOne("SELECT id, title, forum_id, posts, perm_post FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($_GET['forum'], $_GET['id'])))
+/*
+	$forum		// `id, active_hashtag, title, perm_read`
+	$thread		// `id, forum_id, posts, perm_post)
+*/
+
+// Make sure that the appropriate information was sent
+if(!isset($forum) or !isset($thread))
 {
 	header("Location: /"); exit;
 }
@@ -12,15 +17,11 @@ $thread['forum_id'] = (int) $thread['forum_id'];
 $thread['posts'] = (int) $thread['posts'];
 $thread['perm_post'] = (int) $thread['perm_post'];
 
-// Get the parent forum
-if(!$forum = Database::selectOne("SELECT active_hashtag, perm_read FROM forums WHERE id=? LIMIT 1", array($thread['forum_id'])))
-{
-	header("Location: /"); exit;
-}
-
 // Ensure if you have proper permissions to access this forum
 if((int) $forum['perm_read'] > Me::$clearance)
 {
+	Alert::saveError("Read Permissions", "You don't have the necessary permissions to read this forum.");
+	
 	header("Location: /"); exit;
 }
 
@@ -160,7 +161,7 @@ foreach($posts as $post)
 }
 
 // Get Forum Breadcrumbs
-$breadcrumbs = AppForum::getBreadcrumbs($thread['forum_id']);
+$breadcrumbs = AppForum::getBreadcrumbs($forum);
 
 // Get Pagination Values
 $paginate = new Pagination($thread['posts'], $postsPerPage, $_GET['page'], "division");
@@ -173,7 +174,7 @@ if($paginate->highestPage > 1)
 	foreach($pages as $page)
 	{
 		$pageLine .= '
-		<a class="thread-page' . ($page == $_GET['page'] ? ' thread-page-active' : '') . '" href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&page=' . $page . '">' . $page . '</a>';
+		<a class="thread-page' . ($page == $_GET['page'] ? ' thread-page-active' : '') . '" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . $page . '">' . $page . '</a>';
 	}
 	
 	$pageLine .= '
@@ -182,6 +183,15 @@ if($paginate->highestPage > 1)
 
 // Prepare the active hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
+
+/****** Page Configuration ******/
+$config['canonical'] = "/" . $thread['id'] . '-' . $thread['url_slug'];
+$config['pageTitle'] = $thread['title'];		// Up to 70 characters. Use keywords.
+Metadata::$index = true;
+Metadata::$follow = true;
+
+// Update User Activity
+UserActivity::update();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -226,12 +236,12 @@ if(Me::$loggedIn)
 	if($subData)
 	{
 		echo '
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=unsubscribe">Unsubscribe</a>';
+		<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
 	}
 	else
 	{
 		echo '
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=subscribe">Subscribe</a>';
+		<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
 	}
 	
 	// Display Moderator Options
@@ -306,43 +316,34 @@ $fastchat = URL::fastchat_social();
 
 foreach($posts as $post)
 {
+	// Prepare Values
 	$uniID = (int) $post['uni_id'];
 	
+	// Prepare the differences between AVATAR and PROFILE sites
+	if(AVI_TYPE == "avatar" and Avatar::hasAvatar())
+	{
+		$img = Avatar::image($uniID);
+	}
+	else
+	{
+		$img = ProfilePic::image($uniID, "large");
+	}
+	
+	// Display the Post
 	echo '
-	<div class="thread-post">';
-		
-		if(AVI_TYPE == "avatar" and Avatar::hasAvatar())
-		{
-			echo '
-			<div class="post-avatar">
-				<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img src="' . Avatar::image($uniID) . '" /></a></div>
-				<div class="post-avatar-bottom">
-					<div class="plr-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
-					<div class="plr-bottom">
-						<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
-						<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
-					</div>
+	<div class="thread-post">
+		<div class="post-left">
+			<div class="' . (AVI_TYPE == "avatar" ? "post-avatar-wrap" : "post-img-wrap") . '"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img src="' . $img . '" /></a></div>
+			<div class="post-status">
+				<div class="post-status-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
+				<div class="post-status-bottom">
+					<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
+					<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
 				</div>
-			</div>';
-		}
-		else
-		{
-			echo '
-			<div class="post-left">
-				<div class="pl-left"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="circimg" src="' . ProfilePic::image($uniID, "medium") . '" /></a></div>
-				<div class="pl-right">
-					<div class="plr-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
-					<div class="plr-bottom">
-						<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
-						<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
-					</div>
-				</div>
-			</div>';
-		}
-		
-		echo '
+			</div>
+		</div>
 		<div class="post-right">
-			<div class="post-options">';
+			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
 			
 			// Delete Option
 			if($isMod)

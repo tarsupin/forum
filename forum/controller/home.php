@@ -1,5 +1,8 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
+// Update User Activity
+UserActivity::update();
+
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
 
@@ -54,7 +57,7 @@ foreach($categories as $cat)
 		echo '
 		<div class="inner-line">
 			<div class="inner-name">
-				<a href="/forum?id=' . $forum['id'] . '">' . $forum['title'] . '</a>
+				<a href="/' . $forum['url_slug'] . '">' . $forum['title'] . '</a>
 				<div class="inner-desc">' . $forum['description'] . '</div>
 			</div>
 			<div class="inner-posts">' . $forum['posts'] . '</div>

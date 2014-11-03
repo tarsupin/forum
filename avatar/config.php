@@ -83,6 +83,3 @@ else if(ENVIRONMENT == "local") {
 	$config['admin-email'] = "info@unifaction.test";
 
 }
-
-// Base style sheet for this site
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-2col.css" /><link rel="stylesheet" href="' . CDN . '/css/forum.css"><link rel="stylesheet" href="/assets/css/custom-uni5.css">');

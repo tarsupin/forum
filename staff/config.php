@@ -37,6 +37,9 @@ $config['database']['name'] = "forum_staff";
 
 define("AVI_TYPE", "profile");		// "avatar", "profile"
 
+// Set a default active hashtag for this site
+$config['active-hashtag'] = "";
+
 
 /***********************************
 ****** Production Environment ******
@@ -80,6 +83,3 @@ else if(ENVIRONMENT == "local") {
 	$config['admin-email'] = "info@unifaction.test";
 
 }
-
-// Base style sheet for this site
-Metadata::addHeader('<link rel="stylesheet" href="' . CDN . '/css/unifaction-2col.css" /><link rel="stylesheet" href="' . CDN . '/css/forum.css">');

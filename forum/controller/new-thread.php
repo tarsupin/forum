@@ -1,7 +1,7 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 // Make sure you have a valid ID for this forum
-if(!isset($_GET['forum']))
+if(!isset($_GET['forum']) or !$forum = AppForum::get((int) $_GET['forum']))
 {
 	header("Location: /"); exit;
 }
@@ -10,12 +10,6 @@ if(!isset($_GET['forum']))
 if(!Me::$loggedIn)
 {
 	Me::redirectLogin("/new-thread?forum=" . ($_GET['forum'] + 0));
-}
-
-// Get the current forum
-if(!$forum = Database::selectOne("SELECT id, active_hashtag, title, perm_post FROM forums WHERE id=? LIMIT 1", array($_GET['forum'])))
-{
-	header("Location: /"); exit;
 }
 
 // Recognize Integers
@@ -27,7 +21,7 @@ if(Me::$clearance < $forum['perm_post'])
 {
 	Alert::saveError("Invalid Permissions", "You must have higher permissions to post threads on this forum.");
 	
-	header("Location: /forum?id=" . $forum['id']); exit;
+	header("Location: /" . $forum['url_slug']); exit;
 }
 
 // Prepare Variables
@@ -55,7 +49,7 @@ if(Form::submitted(SITE_HANDLE . '-forum-thrd'))
 				Database::endTransaction();
 				
 				// Go to the thread
-				header("Location: /thread?forum=" . $forum['id'] . '&id=' . $threadID); exit;
+				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug']); exit;
 			}
 		}
 		
@@ -69,10 +63,13 @@ else
 }
 
 // Get Forum Breadcrumbs
-$breadcrumbs = AppForum::getBreadcrumbs($forum['id']);
+$breadcrumbs = AppForum::getBreadcrumbs($forum);
 
 // Prepare the active hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
+
+// Update User Activity
+UserActivity::update();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");

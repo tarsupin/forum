@@ -3,7 +3,7 @@
 // UniFaction Dropdown Menu
 WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap">
-	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li></ul>
+	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::books_unifaction_community() . Me::$slg . '">Book Club</a></li><li class="menu-slot"><a href="' . URL::writers_unifaction_community() . Me::$slg . '">Writer\'s Community</a></li><li class="menu-slot"><a href="' . URL::pets_unifaction_community() . Me::$slg . '">Pet Community</a></li></ul>
 </div>');
 
 // Main Navigation
@@ -12,5 +12,8 @@ WidgetLoader::add("SidePanel", 50, '
 	<ul class="panel-slots">
 		<li class="nav-slot' . ($url[0] == "" ? " nav-active" : "") . '"><a href="/">Main Forum<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot' . ($url[0] == "subscriptions" ? " nav-active" : "") . '"><a href="/subscriptions">Subscriptions<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="' . URL::books_unifaction_community() . Me::$slg . '">Book Club<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="' . URL::writers_unifaction_community() . Me::$slg . '">Writer\'s Community<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="' . URL::pets_unifaction_community() . Me::$slg . '">Pet Community<span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');

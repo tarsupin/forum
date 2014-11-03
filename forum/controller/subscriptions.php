@@ -3,6 +3,9 @@
 // Gather list of subscriptions
 $subscriptions = AppSubscriptions::get(Me::$id);
 
+// Update User Activity
+UserActivity::update();
+
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
 

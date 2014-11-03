@@ -29,6 +29,18 @@ AppForum::view($forumID);
 abstract class AppForum {
 	
 	
+/****** Retrieve a Forum ******/
+	public static function get
+	(
+		$forumID	// <int> The ID of the forum you're retrieving.
+	)				// RETURNS <str:mixed> an array of the data for the forum.
+	
+	// $forum = AppForum::get($forumID);
+	{
+		return Database::selectOne("SELECT * FROM forums WHERE id=? LIMIT 1", array($forumID));
+	}
+	
+	
 /****** Get a list of Forum Categories (within the forum specified) ******/
 	public static function getCategories
 	(
@@ -51,7 +63,7 @@ abstract class AppForum {
 	{
 		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
 		
-		$results = Database::selectMultiple("SELECT f.id, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? ORDER BY f.forum_order ASC", array($categoryID));
+		$results = Database::selectMultiple("SELECT f.id, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? ORDER BY f.forum_order ASC", array($categoryID));
 		
 		// Cycle through the list of forums, and remove any that you don't have permission to read
 		foreach($results as $key => $val)
@@ -79,7 +91,7 @@ abstract class AppForum {
 	{
 		$startLimit = max(0, ($page - 1) * $show);
 		
-		return Database::selectMultiple("SELECT t.id, t.forum_id, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.author_id WHERE t.forum_id=? ORDER BY t.id DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
+		return Database::selectMultiple("SELECT t.id, t.forum_id, t.url_slug, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.author_id WHERE t.forum_id=? ORDER BY t.id DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
 	}
 	
 	
@@ -99,21 +111,19 @@ abstract class AppForum {
 /****** Return a breadcrumb trail of forums ******/
 	public static function getBreadcrumbs
 	(
-		$forumID			// <int> The ID of the forum.
+		$forum				// <str:mixed> The data of the forum.
 	,	$returnLast = true	// <bool> TRUE returns the last forum, FALSE does not.
 	)						// RETURNS <int:[int:str]> a breadcrumb trail from original to last.
 	
-	// $breadcrumbs = AppForum::getBreadcrumbs($forumID, [$returnLast]);
+	// $breadcrumbs = AppForum::getBreadcrumbs($forum, [$returnLast]);
 	{
 		$breadcrumbs = array();
-		$nextForumID = $forumID;
+		$nextForumID = (int) $forum['id'];
 		
 		// Get the current forum title
 		if($returnLast == true)
 		{
-			$forumTitle = Database::selectValue("SELECT title FROM forums WHERE id=? LIMIT 1", array($forumID));
-			
-			$breadcrumbs[] = array('/forum?id=' . $forumID, $forumTitle);
+			$breadcrumbs[] = array('/' . $forum['url_slug'], $forum['title']);
 		}
 		
 		// Cycle through the previous forums & categories
@@ -121,13 +131,13 @@ abstract class AppForum {
 		{
 			if(!$parentCat['id']) { break; }
 			
-			if(!$nextForum = Database::selectOne("SELECT id, title FROM forums WHERE category_id=? LIMIT 1", array($parentCat['id'])))
+			if(!$nextForum = Database::selectOne("SELECT id, url_slug, title FROM forums WHERE category_id=? LIMIT 1", array($parentCat['id'])))
 			{
 				break;
 			}
 			
 			$nextForumID = (int) $nextForum['id'];
-			$breadcrums[] = array('/forum?id=' . $nextForumID, $nextForum['title']);
+			$breadcrums[] = array('/' . $nextForum['url_slug'], $nextForum['title']);
 		}
 		
 		$breadcrumbs[] = array('/', "Home");

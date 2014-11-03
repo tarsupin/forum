@@ -19,7 +19,7 @@ if(AVI_TYPE == "avatar")
 }
 
 // Get the current thread
-if(!$thread = Database::selectOne("SELECT id, forum_id, title FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($_GET['forum'], $_GET['id'])))
+if(!$thread = AppThread::get((int) $_GET['forum'], (int) $_GET['id']))
 {
 	header("Location: /"); exit;
 }
@@ -69,7 +69,7 @@ if($editMode = (isset($_GET['edit']) ? true : false))
 // Sanitize the message
 $_POST['body'] = isset($_POST['body']) ? Security::purify($_POST['body']) : '';
 
-if(!$_POST['body'] and $post['body'])
+if(!$_POST['body'] and isset($post['body']))
 {
 	$_POST['body'] = $post['body'];
 }
@@ -110,6 +110,9 @@ $breadcrumbs = AppForum::getBreadcrumbs($thread['forum_id']);
 
 // Prepare the active hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
+
+// Update User Activity
+UserActivity::update();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");

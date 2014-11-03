@@ -30,6 +30,8 @@ class AppThread_config {
 			
 			`posts`					mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
 			`views`					mediumint(8)	unsigned	NOT NULL	DEFAULT '0',
+			
+			`url_slug`				varchar(48)					NOT NULL	DEFAULT '',
 			`title`					varchar(48)					NOT NULL	DEFAULT '',
 			
 			`author_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',

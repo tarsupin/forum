@@ -60,25 +60,31 @@ abstract class AppForumAdmin {
 /****** Create a new Forum ******/
 	public static function createForum
 	(
-		$categoryID		// <int> The ID of the category you're creating a forum in.
-	,	$title			// <str> The title of the forum.
-	,	$description	// <str> The caption (description) of the forum.
-	,	$readPerm		// <int> The clearance level required to read the forum.
-	,	$postPerm		// <int> The clearance level required to post to the forum.
-	)					// RETURNS <int> ID of the forum that was created, or 0 on failure.
+		$categoryID			// <int> The ID of the category you're creating a forum in.
+	,	$title				// <str> The title of the forum.
+	,	$description		// <str> The caption (description) of the forum.
+	,	$readPerm			// <int> The clearance level required to read the forum.
+	,	$postPerm			// <int> The clearance level required to post to the forum.
+	,	$activeHashtag = ""	// <str> The active hashtag associated with the forum, if applicable.
+	)						// RETURNS <int> ID of the forum that was created, or 0 on failure.
 	
-	// $forumID = AppForumAdmin::createForum($categoryID, "Forum Title", "The forum caption / description", $readPerm, $postPerm);
+	// $forumID = AppForumAdmin::createForum($categoryID, "Forum Title", "The forum caption / description", $readPerm, $postPerm, [$activeHashtag]);
 	{
-		// Get the slot to add to the forum
+		// Prepare Values
+		$activeHashtag = Sanitize::variable($activeHashtag);
 		$slotOrder = 1;
 		
+		// Create the URL Slug for this post
+		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
+		
+		// Get the Slot Order
 		if($checkOther = Database::selectOne("SELECT forum_order FROM forums WHERE category_id=? ORDER BY forum_order DESC LIMIT 1", array($categoryID)))
 		{
 			$slotOrder = (int) $checkOther['forum_order'] + 1;
 		}
 		
 		// Run the query
-		if(!Database::query("INSERT INTO `forums` (category_id, forum_order, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?)", array($categoryID, $slotOrder, $title, $description, $readPerm, $postPerm)))
+		if(!Database::query("INSERT INTO `forums` (category_id, forum_order, active_hashtag, url_slug, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($categoryID, $slotOrder, $activeHashtag, $urlSlug, $title, $description, $readPerm, $postPerm)))
 		{
 			return 0;
 		}

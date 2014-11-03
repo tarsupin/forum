@@ -28,6 +28,19 @@ $threadID = AppThread::create($forumID, $uniID, $title, $sticky);
 abstract class AppThread {
 	
 	
+/****** Retrieve a Thread ******/
+	public static function get
+	(
+		$forumID		// <int> The ID of the forum the thread is in.
+	,	$threadID		// <int> The ID of the thread you're retrieving.
+	)					// RETURNS <str:mixed> an array of the thread data.
+	
+	// $thread = AppThread::get($forumID, $threadID);
+	{
+		return Database::selectOne("SELECT * FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID));
+	}
+	
+	
 /****** Get a list of Posts (within the thread specified) ******/
 	public static function getPosts
 	(
@@ -70,11 +83,15 @@ abstract class AppThread {
 	{
 		Database::startTransaction();
 		
+		// Prepare Values
 		$threadID = UniqueID::get("post");
 		$timestamp = time();
 		
+		// Create the URL Slug for this post
+		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
+		
 		// Create the thread
-		if(Database::query("INSERT INTO `threads` (id, forum_id, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?)", array($threadID, $forumID, $title, $uniID, $uniID, $timestamp, $timestamp)))
+		if(Database::query("INSERT INTO `threads` (id, forum_id, url_slug, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forumID, $urlSlug, $title, $uniID, $uniID, $timestamp, $timestamp)))
 		{
 			// Add the sticky functionality (if applicable)
 			if($sticky > 0)

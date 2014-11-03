@@ -1,13 +1,11 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
-// Make sure you have a valid ID for this forum
-if(!isset($_GET['id']))
-{
-	header("Location: /"); exit;
-}
+/*
+	$forum		// `id, active_hashtag, title, perm_read`
+*/
 
-// Get the current forum
-if(!$forum = Database::selectOne("SELECT id, active_hashtag, title, perm_read FROM forums WHERE id=? LIMIT 1", array((int) $_GET['id'])))
+// Leave this page if it wasn't accessed properly
+if(!isset($forum))
 {
 	header("Location: /"); exit;
 }
@@ -64,6 +62,9 @@ array_pop($breadcrumbs); // remove the final breadcrumb (this forum)
 
 // Prepare Active Hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
+
+// Update User Activity
+UserActivity::update();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -134,7 +135,7 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 		echo '
 		<div class="inner-line sticky-thread">
 			<div class="inner-name">
-				<a href="/thread?forum=' . $stick['forum_id'] . '&id=' . $stick['id'] . '">' . $stick['title'] . '</a>
+				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . $stick['title'] . '</a>
 				<div class="inner-paginate">' . $drawDesc . '</div>
 			</div>
 			<div class="inner-posts">' . $stick['posts'] . '</div>
@@ -171,7 +172,7 @@ foreach($threads as $thread)
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">' . $thread['title'] . '</a>
+			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . $thread['title'] . '</a>
 			<div class="inner-paginate">' . $drawDesc . '</div>
 		</div>
 		<div class="inner-posts">' . $thread['posts'] . '</div>

@@ -43,9 +43,11 @@ class AppForum_config {
 			`category_id`			int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`forum_order`			tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
 			
-			`active_hashtag`		varchar(22)					NOT NULL	DEFAULT '',
+			`url_slug`				varchar(45)					NOT NULL	DEFAULT '',
 			`title`					varchar(42)					NOT NULL	DEFAULT '',
 			`description`			varchar(128)				NOT NULL	DEFAULT '',
+			
+			`active_hashtag`		varchar(22)					NOT NULL	DEFAULT '',
 			
 			`posts`					int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`views`					int(10)			unsigned	NOT NULL	DEFAULT '0',
@@ -59,8 +61,9 @@ class AppForum_config {
 			`perm_post`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
 			PRIMARY KEY (`id`),
-			INDEX (`category_id`, `forum_order`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+			INDEX (`category_id`, `forum_order`),
+			UNIQUE (`url_slug`)
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 		");
 		
 		return $this->isInstalled();
