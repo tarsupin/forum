@@ -17,11 +17,11 @@ For example, deleting a post requires $threadID and $postID, not just $postID. T
 
 $posts = AppThread::getPosts($threadID, $page, $show = 10);	// Returns the posts in a thread
 
-AppThread::view($forumID, $threadID);
+AppThread::view($forum, $threadID);
 
 AppThread::edit($forumID, $threadID, $title, $sticky);
 
-$threadID = AppThread::create($forumID, $uniID, $title, $sticky);
+$threadID = AppThread::create($forum, $uniID, $title, $sticky);
 
 */
 
@@ -53,33 +53,54 @@ abstract class AppThread {
 	{
 		$startLimit = max(0, ($page - 1) * $show);
 		
-		return Database::selectMultiple("SELECT id, uni_id, body, date_post FROM posts WHERE thread_id=? ORDER BY id ASC LIMIT " . ($startLimit + 0) . ', ' . max(1, $show), array($threadID));
+		return Database::selectMultiple("SELECT p.id, p.uni_id, p.body, p.date_post, s.signature FROM posts p LEFT JOIN forum_signatures s ON p.uni_id=s.uni_id WHERE p.thread_id=? ORDER BY p.id ASC LIMIT " . ($startLimit + 0) . ', ' . max(1, $show), array($threadID));
 	}
 	
 	
 /****** View a Thread ******/
 	public static function view
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
+		$forum			// <str:mixed> The data of the forum.
 	,	$threadID		// <int> The ID of the thread you're posting in.
-	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+	)					// RETURNS <void>
 	
-	// AppThread::view($forumID, $threadID);
+	// AppThread::view($forum, $threadID);
 	{
-		return Database::query("UPDATE threads SET views=views+1 WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID));
+		Database::startTransaction();
+		
+		Database::query("UPDATE threads SET views=views+1 WHERE forum_id=? AND id=? LIMIT 1", array($forum['id'], $threadID));
+		
+		// Update the forums above
+		Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forum['id']));
+		
+		$parentID = (int) $forum['parent_id'];
+		
+		while($parentID)
+		{
+			if(!$nextForum = Database::selectOne("SELECT id, parent_id FROM forums WHERE id=? LIMIT 1", array($forum['parent_id'])))
+			{
+				break;
+			}
+			
+			Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($nextForum['id']));
+			
+			$parentID = (int) $nextForum['parent_id'];
+		}
+		
+		Database::endTransaction();
 	}
 	
 	
 /****** Create a new Thread ******/
 	public static function create
 	(
-		$forumID		// <int> The ID of the forum you're creating a thread in.
+		$forum			// <str:mixed> The forum data.
 	,	$uniID	 		// <int> The uni_id of the user creating the thread.
 	,	$title			// <str> The title of the thread.
 	,	$sticky = 0		// <int> The level of sticky importance (0 to 9).
 	)					// RETURNS <int> ID of the thread that was created, or FALSE on failure.
 	
-	// $threadID = AppThread::create($forumID, $uniID, "My awesome title", [$sticky]);
+	// $threadID = AppThread::create($forum, $uniID, "My awesome title", [$sticky]);
 	{
 		Database::startTransaction();
 		
@@ -91,23 +112,24 @@ abstract class AppThread {
 		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
 		
 		// Create the thread
-		if(Database::query("INSERT INTO `threads` (id, forum_id, url_slug, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forumID, $urlSlug, $title, $uniID, $uniID, $timestamp, $timestamp)))
+		if(Database::query("INSERT INTO `threads` (id, forum_id, url_slug, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forum['id'], $urlSlug, $title, $uniID, $uniID, $timestamp, $timestamp)))
 		{
 			// Add the sticky functionality (if applicable)
 			if($sticky > 0)
 			{
-				Database::query("INSERT INTO threads_stickied (forum_id, thread_id, sticky_level) VALUES (?, ?, ?)", array($forumID, $threadID, $sticky));
+				Database::query("INSERT INTO threads_stickied (forum_id, thread_id, sticky_level) VALUES (?, ?, ?)", array($forum['id'], $threadID, $sticky));
 			}
 			
 			// Create the actual thread's post
-			if(Database::query("UPDATE forums SET last_thread_id=?, last_poster=?, date_lastPost=? WHERE id=? LIMIT 1", array($threadID, $uniID, $timestamp, $forumID)))
+			if(Database::query("UPDATE forums SET last_thread_id=?, last_poster=?, date_lastPost=? WHERE id=? LIMIT 1", array($threadID, $uniID, $timestamp, $forum['id'])))
 			{
 				Database::endTransaction();
 				return $threadID;
 			}
 		}
 		
-		return Database::endTransaction(false);
+		Database::endTransaction(false);
+		return 0;
 	}
 	
 	

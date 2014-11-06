@@ -16,6 +16,42 @@ abstract class AppActivity {
 	
 	
 /****** Get User Activity Module ******/
+	public static function updateUser (
+	)				// RETURNS <void>
+	
+	// AppActivity::updateUser();
+	{
+		// Update User Activity
+		UserActivity::update();
+		
+		// Prepare essential sessions
+		if(!isset($_SESSION[SITE_HANDLE]['forums-new']))
+		{
+			$_SESSION[SITE_HANDLE]['forums-new'] = array();
+		}
+		
+		if(!isset($_SESSION[SITE_HANDLE]['posts-new']))
+		{
+			$_SESSION[SITE_HANDLE]['posts-new'] = array();
+		}
+		
+		// Prepare "New Post" Data
+		if(!isset($_SESSION[SITE_HANDLE]['new-tracker']))
+		{
+			$_SESSION[SITE_HANDLE]['new-tracker'] = (Me::$loggedIn and Me::$vals['date_lastVisit']) ? (int) Me::$vals['date_lastVisit'] : time();
+		}
+		
+		// Update the last visit occasionally
+		if(Me::$loggedIn and Me::$vals['date_lastVisit'] < time() - 25)
+		{
+			Me::$vals['date_lastVisit'] = time();
+			
+			Database::query("UPDATE users SET date_lastVisit=? WHERE uni_id=? LIMIT 1", array(Me::$vals['date_lastVisit'], Me::$id));
+		}
+	}
+	
+	
+/****** Get User Activity Module ******/
 	public static function getActivityModule
 	(
 		$duration = 600	// <int> The duration across which to monitor the module's activity.

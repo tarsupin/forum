@@ -7,6 +7,7 @@ abstract class Install extends Installation {
 /****** Plugin Variables ******/
 	public static $addonPlugins = array(		// <str:bool>
 		"Avatar"			=> true
+	,	"FeaturedWidget"	=> true
 	,	"UserActivity"		=> true
 	,	"Notifications"		=> true
 	);

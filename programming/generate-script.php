@@ -18,41 +18,42 @@ if(!defined("GENERATE_FORUM_DATA"))
 Database::initRoot();
 
 // Programming Workshop
-$catID = AppForumAdmin::createCategory(0, "Programming Workshop");
+$catID = AppForumAdmin::createCategory("Programming Workshop");
 
-$forumID = AppForumAdmin::createForum($catID, "Beginner's Lounge", "New to programming? Get familiarized with the basics here.", 0, 2, "DevBeginner");
-$forumID = AppForumAdmin::createForum($catID, "Engines and Libraries", "Learn about good engines and libraries to use for development.", 0, 2, "DevLibraries");
-$forumID = AppForumAdmin::createForum($catID, "Tools and Resources", "Discuss your favorite resources, the advantages of certain tools, etc.", 0, 2, "DevResources");
-$forumID = AppForumAdmin::createForum($catID, "Windows Development", "Discuss development for windows.", 0, 2, "WindowsDev");
-$forumID = AppForumAdmin::createForum($catID, "Mac Development", "Discuss development for macs.", 0, 2, "MacDev");
-$forumID = AppForumAdmin::createForum($catID, "Linux Development", "Discuss linux development.", 0, 2, "LinuxDev");
-$forumID = AppForumAdmin::createForum($catID, "Console Development", "Discuss console development.", 0, 2, "ConsoleDev");
-$forumID = AppForumAdmin::createForum($catID, "Mobile Development", "Discuss mobile development.", 0, 2, "MobileDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Programming News", "The latest news and updates for the programming community.", 0, 2, "DevNews");
+$forumID = AppForumAdmin::createForum($catID, 0, "Beginner's Lounge", "New to programming? Get familiarized with the basics here.", 0, 2, "DevBeginner");
+$forumID = AppForumAdmin::createForum($catID, 0, "Engines and Libraries", "Learn about good engines and libraries to use for development.", 0, 2, "DevLibraries");
+$forumID = AppForumAdmin::createForum($catID, 0, "Tools and Resources", "Discuss your favorite resources, the advantages of certain tools, etc.", 0, 2, "DevResources");
+$forumID = AppForumAdmin::createForum($catID, 0, "Windows Development", "Discuss development for windows.", 0, 2, "WindowsDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Mac Development", "Discuss development for macs.", 0, 2, "MacDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Linux Development", "Discuss linux development.", 0, 2, "LinuxDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Console Development", "Discuss console development.", 0, 2, "ConsoleDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Mobile Development", "Discuss mobile development.", 0, 2, "MobileDev");
 
 // Advanced Concepts
-$catID = AppForumAdmin::createCategory(0, "Advanced Concepts");
+$catID = AppForumAdmin::createCategory("Advanced Concepts");
 
-$forumID = AppForumAdmin::createForum($catID, "APIs", "Discuss useful APIs such as payment processing, geo-location, etc.", 0, 2, "APIDev");
-$forumID = AppForumAdmin::createForum($catID, "Graphics", "Discuss graphics programming, tutorials, and relevant news.", 0, 2, "GraphicsDev");
-$forumID = AppForumAdmin::createForum($catID, "Networking", "Learn the techniques for proper networking.", 0, 2, "NetworkingDev");
-$forumID = AppForumAdmin::createForum($catID, "Security and Encryption", "Discuss important security tips, updates, and news.", 0, 2, "SecurityDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "APIs", "Discuss useful APIs such as payment processing, geo-location, etc.", 0, 2, "APIDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Graphics", "Discuss graphics programming, tutorials, and relevant news.", 0, 2, "GraphicsDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Networking", "Learn the techniques for proper networking.", 0, 2, "NetworkingDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Security and Encryption", "Discuss important security tips, updates, and news.", 0, 2, "SecurityDev");
 
 // Programming Languages
-$catID = AppForumAdmin::createCategory(0, "Programming Languages");
+$catID = AppForumAdmin::createCategory("Programming Languages");
 
-$forumID = AppForumAdmin::createForum($catID, "Java", "News, concepts, tutorials, and techniques with the Java language.", 0, 2, "JavaLang");
-$forumID = AppForumAdmin::createForum($catID, "C and C++", "Everything about the C and C++ languages.", 0, 2, "CLang");
-$forumID = AppForumAdmin::createForum($catID, "C#", "Find your news, answers, and various topics with the C# language.", 0, 2, "CSharpLang");
-$forumID = AppForumAdmin::createForum($catID, "Python", "Discuss the Python language.", 0, 2, "PythonLang");
-$forumID = AppForumAdmin::createForum($catID, "Ruby", "Discuss the ruby language, news, tutorials, etc.", 0, 2, "RubyLang");
-$forumID = AppForumAdmin::createForum($catID, "SQL", "Discuss the SQL language, learn new techniques, ask questions, etc.", 0, 2, "SQLLang");
-$forumID = AppForumAdmin::createForum($catID, "Other Languages", "Perl, Lua, VB, Go, D, and all the other languages.", 0, 2, "DevLanguages");
+$forumID = AppForumAdmin::createForum($catID, 0, "Java", "News, concepts, tutorials, and techniques with the Java language.", 0, 2, "JavaLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "C and C++", "Everything about the C and C++ languages.", 0, 2, "CLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "C#", "Find your news, answers, and various topics with the C# language.", 0, 2, "CSharpLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "Python", "Discuss the Python language.", 0, 2, "PythonLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "Ruby", "Discuss the ruby language, news, tutorials, etc.", 0, 2, "RubyLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "SQL", "Discuss the SQL language, learn new techniques, ask questions, etc.", 0, 2, "SQLLang");
+$forumID = AppForumAdmin::createForum($catID, 0, "Other Languages", "Perl, Lua, VB, Go, D, and all the other languages.", 0, 2, "DevLanguages");
 
 // The Lounge
-$catID = AppForumAdmin::createCategory(0, "The Lounge");
+$catID = AppForumAdmin::createCategory("The Lounge");
 
-$forumID = AppForumAdmin::createForum($catID, "Programming News", "The latest news and updates for the programming community.", 0, 2, "DevNews");
-$forumID = AppForumAdmin::createForum($catID, "Introductions", "Introduce yourself to the programming community.", 0, 2, "DevIntro");
-$forumID = AppForumAdmin::createForum($catID, "General Discussion", "Discuss off-topic things here.", 0, 2, "DevLounge");
-$forumID = AppForumAdmin::createForum($catID, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
+$forumID = AppForumAdmin::createForum($catID, 0, "General Discussion", "Discuss off-topic things here.", 0, 2, "DevLounge");
+$forumID = AppForumAdmin::createForum($catID, 0, "Introductions", "Introduce yourself to the programming community.", 0, 2, "DevIntro");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Questions and comments about programming or the forums.", 0, 2, "DevInquiry");
+$forumID = AppForumAdmin::createForum($catID, 0, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
 

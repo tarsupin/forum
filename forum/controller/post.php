@@ -29,14 +29,14 @@ $thread['id'] = (int) $thread['id'];
 $thread['forum_id'] = (int) $thread['forum_id'];
 
 // Get Forum Details
-$forum = Database::selectOne("SELECT active_hashtag, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
+$forum = Database::selectOne("SELECT id, parent_id, url_slug, title, active_hashtag, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
 
 // Make sure you have permission to post
 if(Me::$clearance < (int) $forum['perm_post'])
 {
 	Alert::saveError("Low Permissions", "You must have higher permissions to post here.");
 	
-	header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id']); exit;
+	header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 }
 
 // Check Edit Mode & Post if applicable
@@ -46,7 +46,7 @@ if($editMode = (isset($_GET['edit']) ? true : false))
 {
 	if(!$post = Database::selectOne("SELECT p.id, p.uni_id, p.body, p.date_post, u.handle, u.display_name FROM posts p INNER JOIN users u ON u.uni_id=p.uni_id WHERE p.thread_id=? AND p.id=? LIMIT 1", array($thread['id'], $_GET['edit'])))
 	{
-		header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id']); exit;
+		header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 	}
 	
 	// Recognize Integers
@@ -62,7 +62,7 @@ if($editMode = (isset($_GET['edit']) ? true : false))
 	{
 		Alert::saveError("No Permissions", "You do not have permission to edit this post.");
 		
-		header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id']); exit;
+		header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 	}
 }
 
@@ -88,25 +88,25 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 			{
 				Alert::saveSuccess("Post Edited", 'The post has been successfully modified.');
 				
-				header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id'] . '&page=last'); exit;
+				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 			}
 		}
 		
 		// Standard Post Mode
-		else if($postID = AppPost::create($thread['forum_id'], $thread['id'], Me::$id, $_POST['body']))
+		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body']))
 		{
 			// Update subscriptions for this thread
 			AppSubscriptions::update($thread['forum_id'], $thread['id'], Me::$id, $thread['title']);
 			
 			Alert::saveSuccess("Post Successful", 'You have successfully posted to the thread.');
 			
-			header("Location: /thread?forum=" . $thread['forum_id'] . '&id=' . $thread['id'] . '&page=last'); exit;
+			header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 		}
 	}
 }
 
 // Get Forum Breadcrumbs
-$breadcrumbs = AppForum::getBreadcrumbs($thread['forum_id']);
+$breadcrumbs = AppForum::getBreadcrumbs($forum);
 
 // Prepare the active hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
@@ -142,7 +142,7 @@ foreach($breadcrumbs as $crumb)
 	$comma = ' &gt; ';
 }
 
-echo ' &gt; <a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">' . $thread['title'] . '</a> &gt; Reply
+echo ' &gt; <a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . $thread['title'] . '</a> &gt; Reply
 </div>';
 
 echo '
@@ -151,7 +151,7 @@ echo '
 		<div class="overwrap-name">' . ($editMode ? 'Edit Post by ' . $post['display_name'] . ' (@' . $post['handle'] . ')' : 'Reply To Thread') . '</div>
 	</div>
 	' . UniMarkup::buttonLine() . '
-	<div class="inner-box" style="padding:7px;">
+	<div style="padding:6px;">
 		<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . ($editMode ? "&edit=" . $_GET['edit'] : "") . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
 			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;">' . $_POST['body'] . '</textarea>
 			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>

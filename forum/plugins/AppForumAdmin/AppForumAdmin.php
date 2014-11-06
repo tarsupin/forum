@@ -14,7 +14,7 @@ This plugin provides the ability to administer the forum, forum categories, thre
 $catID		= AppForumAdmin::createCategory($forumID, $title);
 $forumID	= AppForumAdmin::createForum($categoryID, $title, $desc, $readPerm, $postPerm);
 
-AppForumAdmin::editForum($forumID, $categoryID, $title, $desc, $readPerm, $postPerm);
+AppForumAdmin::editForum($forumID, $categoryID, $parentID, $title, $desc, $readPerm, $postPerm);
 AppForumAdmin::moveForum($forumID, $moveVal = 0, $categoryID = 0);
 AppForumAdmin::moveThread($curForumID, $threadID, $newforumID);
 
@@ -33,22 +33,21 @@ abstract class AppForumAdmin {
 /****** Create a new Forum Category ******/
 	public static function createCategory
 	(
-		$forumID		// <int> The ID of the forum you're creating a category in. (0 is main forum)
-	,	$title			// <str> The title of the forum.
+		$title			// <str> The title of the forum.
 	)					// RETURNS <int> ID of the category that was created, or 0 on failure.
 	
-	// $catID = AppForumAdmin::createCategory($forumID, $title);
+	// $catID = AppForumAdmin::createCategory($title);
 	{
 		// Get the slot to add to the forum
 		$slotOrder = 1;
 		
-		if($checkOther = Database::selectOne("SELECT cat_order FROM forum_categories WHERE parent_forum=? ORDER BY cat_order DESC LIMIT 1", array($forumID)))
+		if($checkOther = Database::selectOne("SELECT cat_order FROM forum_categories ORDER BY cat_order DESC LIMIT 1", array()))
 		{
 			$slotOrder = (int) $checkOther['cat_order'] + 1;
 		}
 		
 		// Run the query
-		if(!Database::query("INSERT INTO `forum_categories` (parent_forum, cat_order, title) VALUES (?, ?, ?)", array($forumID, $slotOrder, $title)))
+		if(!Database::query("INSERT INTO `forum_categories` (cat_order, title) VALUES (?, ?)", array($slotOrder, $title)))
 		{
 			return 0;
 		}
@@ -61,6 +60,7 @@ abstract class AppForumAdmin {
 	public static function createForum
 	(
 		$categoryID			// <int> The ID of the category you're creating a forum in.
+	,	$parentID			// <int> The ID of the forum that this forum is a sub-forum of.
 	,	$title				// <str> The title of the forum.
 	,	$description		// <str> The caption (description) of the forum.
 	,	$readPerm			// <int> The clearance level required to read the forum.
@@ -68,12 +68,12 @@ abstract class AppForumAdmin {
 	,	$activeHashtag = ""	// <str> The active hashtag associated with the forum, if applicable.
 	)						// RETURNS <int> ID of the forum that was created, or 0 on failure.
 	
-	// $forumID = AppForumAdmin::createForum($categoryID, "Forum Title", "The forum caption / description", $readPerm, $postPerm, [$activeHashtag]);
+	// $forumID = AppForumAdmin::createForum($categoryID, $parentID, "Forum Title", "The forum caption / description", $readPerm, $postPerm, [$activeHashtag]);
 	{
 		// Prepare Values
 		$activeHashtag = Sanitize::variable($activeHashtag);
 		$slotOrder = 1;
-		
+				
 		// Create the URL Slug for this post
 		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
 		
@@ -84,12 +84,17 @@ abstract class AppForumAdmin {
 		}
 		
 		// Run the query
-		if(!Database::query("INSERT INTO `forums` (category_id, forum_order, active_hashtag, url_slug, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($categoryID, $slotOrder, $activeHashtag, $urlSlug, $title, $description, $readPerm, $postPerm)))
+		if(!Database::query("INSERT INTO `forums` (category_id, parent_id, forum_order, active_hashtag, url_slug, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array($categoryID, $parentID, $slotOrder, $activeHashtag, $urlSlug, $title, $description, $readPerm, $postPerm)))
 		{
 			return 0;
 		}
 		
-		return Database::$lastID;
+		$lastID = (int) Database::$lastID;
+		
+		// Parent has children
+		Database::query("UPDATE forums SET has_children=? WHERE id=? LIMIT 1", array(1, $parentID));
+		
+		return $lastID;
 	}
 	
 	
@@ -98,19 +103,20 @@ abstract class AppForumAdmin {
 	(
 		$forumID		// <int> The ID of the forum you're editing.
 	,	$categoryID		// <int> The category ID to assign to the forum.
+	,	$parentID		// <int> The parent forum ID that the forum is to be assigned to.
 	,	$title			// <str> The title of the forum.
 	,	$description	// <str> The caption (description) of the forum.
 	,	$readPerm		// <int> The clearance level required to read the forum.
 	,	$postPerm		// <int> The clearance level required to post to the forum.
 	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
-	// AppForumAdmin::editForum($forumID, $categoryID, "Forum Title", "The forum caption / description", $readPerm, $postPerm);
+	// AppForumAdmin::editForum($forumID, $categoryID, $parentID, "Forum Title", "The forum caption / description", $readPerm, $postPerm);
 	{
 		// Move to a new category if applicable
 		AppForumAdmin::moveForum($forumID, $categoryID, 0);
 		
 		// Update the forum
-		return Database::query("UPDATE forums SET category_id=?, title=?, description=?, perm_read=?, perm_post=? WHERE id=? LIMIT 1", array($categoryID, $title, $description, $readPerm, $postPerm, $forumID));
+		return Database::query("UPDATE forums SET category_id=?, parent_id=?, title=?, description=?, perm_read=?, perm_post=? WHERE id=? LIMIT 1", array($categoryID, $parentID, $title, $description, $readPerm, $postPerm, $forumID));
 	}
 	
 	

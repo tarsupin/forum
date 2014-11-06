@@ -7,7 +7,7 @@
 */
 
 // Gather the forum being edited
-if(!$forum = Database::selectOne("SELECT id, category_id, posts, views, title, description, perm_read, perm_post FROM forums WHERE id=?", array($_POST['forum'])))
+if(!$forum = Database::selectOne("SELECT id, category_id, parent_id, posts, views, title, description, perm_read, perm_post FROM forums WHERE id=?", array($_POST['forum'])))
 {
 	header("Location: /admin/forums"); exit;
 }
@@ -15,6 +15,7 @@ if(!$forum = Database::selectOne("SELECT id, category_id, posts, views, title, d
 // Recognize Integers
 $forum['id'] = (int) $forum['id'];
 $forum['category_id'] = (int) $forum['category_id'];
+$forum['parent_id'] = (int) $forum['parent_id'];
 $forum['posts'] = (int) $forum['posts'];
 $forum['views'] = (int) $forum['views'];
 $forum['perm_read'] = (int) $forum['perm_read'];
@@ -24,6 +25,7 @@ $forum['perm_post'] = (int) $forum['perm_post'];
 if(Form::submitted())
 {
 	FormValidate::number("Category ID", $_POST['category_id'], 1);
+	FormValidate::number("Category ID", $_POST['parent_id'], 1);
 	
 	FormValidate::text("Title", $_POST['title'], 1, 42);
 	FormValidate::text("Description", $_POST['description'], 0, 128);
@@ -40,15 +42,22 @@ if(Form::submitted())
 		Alert::error("Category", "That category doesn't exist.");
 	}
 	
+	// Confirm that the parent ID exists
+	if(!Database::selectValue("SELECT id FROM forums WHERE id=? LIMIT 1", array($_POST['parent_id'])))
+	{
+		Alert::error("Parent Forum", "That parent forum doesn't exist.");
+	}
+	
 	if(FormValidate::pass())
 	{
 		$forum['category_id'] = $_POST['category_id'];
+		$forum['parent_id'] = $_POST['parent_id'];
 		$forum['title'] = $_POST['title'];
 		$forum['description'] = $_POST['description'];
 		$forum['perm_read'] = $_POST['perm_read'];
 		$forum['perm_post'] = $_POST['perm_post'];
 		
-		$forumID = AppForumAdmin::editForum($forum['id'], $forum['category_id'], $forum['title'], $forum['description'], $forum['perm_read'], $forum['perm_post']);
+		$forumID = AppForumAdmin::editForum($forum['id'], $forum['category_id'], $forum['parent_id'], $forum['title'], $forum['description'], $forum['perm_read'], $forum['perm_post']);
 		
 		Alert::success("Forum Created", "You have successfully edited the forum \"" . $_POST['title'] . "\"!");
 	}
@@ -80,6 +89,8 @@ echo '
 	echo '
 	</select>
 	</p>
+	
+	<p>Parent ID: <input type="text" name="parent_id" value="' . $forum['parent_id'] . '" maxlength="4" /></p>
 	
 	<p>Title: <input type="text" name="title" value="' . $forum['title'] . '" /></p>
 	<p>Description: <input type="text" name="description" value="' . $forum['description'] . '" style="min-width:400px;" /></p>

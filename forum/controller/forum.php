@@ -23,7 +23,7 @@ if($forum['perm_read'] > $clearance)
 }
 
 // View the Forum (increase view count)
-AppForum::view($forum['id']);
+AppForum::view($forum);
 
 // Prepare Values
 $_GET['page'] = (isset($_GET['page']) ? (int) $_GET['page'] : 1);
@@ -57,14 +57,17 @@ if(count($threads) > $threadsToShow)
 }
 
 // Get Forum Breadcrumbs
-$breadcrumbs = AppForum::getBreadcrumbs($forum['id']);
+$breadcrumbs = AppForum::getBreadcrumbs($forum);
 array_pop($breadcrumbs); // remove the final breadcrumb (this forum)
 
 // Prepare Active Hashtag
 $config['active-hashtag'] = $forum['active_hashtag'];
 
-// Update User Activity
-UserActivity::update();
+// Update Activity
+AppActivity::updateUser();
+
+// Update the last time viewing this forum
+$_SESSION[SITE_HANDLE]['forums-new'][$forum['id']] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -95,6 +98,51 @@ foreach($breadcrumbs as $crumb)
 
 echo ' &gt; ' . $forum['title'] . '
 </div>';
+
+// Display Sub-Forums, if applicable
+if($forum['has_children'])
+{
+	// Gather all sub-forums
+	$subforums = AppForum::getSubforums($forum['id']);
+	
+	// Skip this category if there are no forums you can view
+	if(count($subforums) < 1) { continue; }
+	
+	// Display the category
+	echo '
+	<div class="overwrap-box">
+		<div class="overwrap-line">
+			<div class="overwrap-name">' . $forum['title'] . '</div>
+			<div class="overwrap-posts">Posts</div>
+			<div class="overwrap-views">Views</div>
+			<div class="overwrap-details">Details</div>
+		</div>
+		<div class="inner-box">';
+	
+	foreach($subforums as $sub)
+	{
+		$sub['id'] = (int) $sub['id'];
+		
+		// Check for the New Icon
+		if($newIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+		{
+			if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
+			{
+				if($newIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+				{
+					unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+				}
+			}
+		}
+		
+		// Display the sub-forum Line
+		AppForum::displayLine($sub, $newIcon);
+	}
+	
+	echo '
+		</div>
+	</div>';
+}
 
 echo '
 <div class="thread-tline">
@@ -131,11 +179,26 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 			}
 		}
 		
+		// Prepare New Icons
+		$stick['id'] = (int) $stick['id'];
+		
+		// Check for the New Icon
+		if($newIcon = ($stick['date_last_post'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+		{
+			if(isset($_SESSION[SITE_HANDLE]['posts-new'][$stick['id']]))
+			{
+				if($newIcon = ($stick['date_last_post'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['posts-new'][$stick['id']])) ? true : false)
+				{
+					unset($_SESSION[SITE_HANDLE]['posts-new'][$stick['id']]);
+				}
+			}
+		}
+		
 		// Display each thread
 		echo '
 		<div class="inner-line sticky-thread">
 			<div class="inner-name">
-				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . $stick['title'] . '</a>
+				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $stick['title'] . '</a>
 				<div class="inner-paginate">' . $drawDesc . '</div>
 			</div>
 			<div class="inner-posts">' . $stick['posts'] . '</div>
@@ -164,7 +227,22 @@ foreach($threads as $thread)
 		foreach($paginate->pages as $page)
 		{
 			$drawDesc .= '
-				<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&page=' . $page . '"><span>' . $page . '</span></a>';
+				<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . $page . '"><span>' . $page . '</span></a>';
+		}
+	}
+	
+	// Prepare New Icons
+	$thread['id'] = (int) $thread['id'];
+	
+	// Check for the New Icon
+	if($newIcon = ($thread['date_last_post'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+	{
+		if(isset($_SESSION[SITE_HANDLE]['posts-new'][$thread['id']]))
+		{
+			if($newIcon = ($thread['date_last_post'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['posts-new'][$thread['id']])) ? true : false)
+			{
+				unset($_SESSION[SITE_HANDLE]['posts-new'][$thread['id']]);
+			}
 		}
 	}
 	
@@ -172,7 +250,7 @@ foreach($threads as $thread)
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . $thread['title'] . '</a>
+			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $thread['title'] . '</a>
 			<div class="inner-paginate">' . $drawDesc . '</div>
 		</div>
 		<div class="inner-posts">' . $thread['posts'] . '</div>

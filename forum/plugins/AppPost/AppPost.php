@@ -15,7 +15,7 @@ For example, deleting a post requires $threadID and $postID, not just $postID. T
 ------ Methods Available ------
 -------------------------------
 
-$postID = AppPost::create($forumID, $threadID, $uniID, $body);
+$postID = AppPost::create($forum, $threadID, $uniID, $body);
 
 AppPost::edit($threadID, $postID, $uniID, $newMessage);
 
@@ -27,13 +27,13 @@ abstract class AppPost {
 /****** Create a new Post ******/
 	public static function create
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
+		$forum			// <str:mixed> The forum data.
 	,	$threadID		// <int> The ID of the thread you're posting in.
 	,	$uniID	 		// <int> The uniID of the user creating the post.
 	,	$body			// <str> The post message.
 	)					// RETURNS <int> ID of the post that was created, or 0 on failure.
 	
-	// $postID = AppPost::create($forumID, $threadID, $uniID, "Here is the message that I'd like to post.");
+	// $postID = AppPost::create($forum, $threadID, $uniID, "Here is the message that I'd like to post.");
 	{
 		Database::startTransaction();
 		
@@ -44,15 +44,29 @@ abstract class AppPost {
 		if(Database::query("INSERT INTO `posts` (id, thread_id, uni_id, body, date_post) VALUES (?, ?, ?, ?, ?)", array($postID, $threadID, $uniID, $body, $timestamp)))
 		{
 			// Update the Thread Details
-			if(Database::query("UPDATE threads SET posts=posts+1, last_poster_id=?, date_last_post=? WHERE forum_id=? AND id=? LIMIT 1", array($uniID, $timestamp, $forumID, $threadID)))
+			if(Database::query("UPDATE threads SET posts=posts+1, last_poster_id=?, date_last_post=? WHERE forum_id=? AND id=? LIMIT 1", array($uniID, $timestamp, $forum['id'], $threadID)))
 			{
 				// Update the Forum Details
-				if(Database::query("UPDATE forums SET posts=posts+1, last_poster=?, last_thread_id=?, date_lastPost=? WHERE id=? LIMIT 1", array($uniID, $threadID, $timestamp, $forumID)))
+				if(Database::query("UPDATE forums SET posts=posts+1, last_poster=?, last_thread_id=?, date_lastPost=? WHERE id=? LIMIT 1", array($uniID, $threadID, $timestamp, $forum['id'])))
 				{
+					$parentID = (int) $forum['parent_id'];
+					
+					while($parentID)
+					{
+						if(!$nextForum = Database::selectOne("SELECT id, parent_id FROM forums WHERE id=? LIMIT 1", array($parentID)))
+						{
+							break;
+						}
+						
+						Database::query("UPDATE forums SET posts=posts+1, last_poster=?, last_thread_id=?, date_lastPost=? WHERE id=? LIMIT 1", array($uniID, $threadID, $timestamp, $nextForum['id']));
+						
+						$parentID = (int) $nextForum['parent_id'];
+					}
+					
 					Database::endTransaction();
 					
-					// Process the Comment
-					Comment::process($uniID, $body, SITE_URL . "/thread?forum=" . $forumID . "&id=" . $threadID . "&pID=" . $postID);
+					// Process the Comment (for hashtags, etc)
+					//Comment::process($uniID, $body, SITE_URL . "/thread?forum=" . $forum['id'] . "&id=" . $threadID . "&pID=" . $postID);
 					
 					return $postID;
 				}

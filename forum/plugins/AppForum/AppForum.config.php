@@ -25,26 +25,27 @@ class AppForum_config {
 		Database::exec("
 		CREATE TABLE IF NOT EXISTS `forum_categories`
 		(
-			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
-			`parent_forum`			int(10)			unsigned	NOT NULL	DEFAULT '0',
-			`cat_order`				tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
+			`id`					tinyint(2)		unsigned	NOT NULL	AUTO_INCREMENT,
 			
+			`cat_order`				tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
 			`title`					varchar(32)					NOT NULL	DEFAULT '',
 			
 			PRIMARY KEY (`id`),
-			INDEX (`parent_forum`, `cat_order`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
+			UNIQUE (`cat_order`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 		
 		Database::exec("
 		CREATE TABLE IF NOT EXISTS `forums`
 		(
-			`id`					int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
-			`category_id`			int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`id`					mediumint(4)	unsigned	NOT NULL	AUTO_INCREMENT,
+			`category_id`			tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
+			`parent_id`				mediumint(4)	unsigned	NOT NULL	DEFAULT '0',
 			`forum_order`			tinyint(2)		unsigned	NOT NULL	DEFAULT '0',
+			`has_children`			tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
-			`url_slug`				varchar(45)					NOT NULL	DEFAULT '',
-			`title`					varchar(42)					NOT NULL	DEFAULT '',
+			`url_slug`				varchar(32)					NOT NULL	DEFAULT '',
+			`title`					varchar(32)					NOT NULL	DEFAULT '',
 			`description`			varchar(128)				NOT NULL	DEFAULT '',
 			
 			`active_hashtag`		varchar(22)					NOT NULL	DEFAULT '',
@@ -61,9 +62,20 @@ class AppForum_config {
 			`perm_post`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
 			PRIMARY KEY (`id`),
-			INDEX (`category_id`, `forum_order`),
+			INDEX (`category_id`, `parent_id`, `forum_order`),
 			UNIQUE (`url_slug`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+		
+		Database::exec("
+		CREATE TABLE IF NOT EXISTS `forum_signatures`
+		(
+			`uni_id`				int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
+			`signature`				text						NOT NULL	DEFAULT '',
+			`signature_orig`		text						NOT NULL	DEFAULT '',
+			
+			UNIQUE (`uni_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY (`uni_id`) PARTITIONS 13;
 		");
 		
 		return $this->isInstalled();
@@ -79,8 +91,9 @@ class AppForum_config {
 		// Make sure the newly installed tables exist
 		$pass1 = DatabaseAdmin::columnsExist("forum_categories", array("id", "title"));
 		$pass2 = DatabaseAdmin::columnsExist("forums", array("id", "title"));
+		$pass3 = DatabaseAdmin::columnsExist("forum_signatures", array("uni_id", "signature"));
 		
-		return ($pass1 and $pass2);
+		return ($pass1 and $pass2 and $pass3);
 	}
 	
 }

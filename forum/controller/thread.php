@@ -26,7 +26,7 @@ if((int) $forum['perm_read'] > Me::$clearance)
 }
 
 // View the Thread (increase view count)
-AppThread::view($thread['forum_id'], $thread['id']);
+AppThread::view($forum, $thread['id']);
 
 // Prepare Values
 $postsPerPage = 10;
@@ -191,7 +191,10 @@ Metadata::$index = true;
 Metadata::$follow = true;
 
 // Update User Activity
-UserActivity::update();
+AppActivity::updateUser();
+
+// Update the last time viewing this forum
+$_SESSION[SITE_HANDLE]['posts-new'][$thread['id']] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -284,26 +287,11 @@ if(Me::$loggedIn)
 					
 					if(modList.indexOf(modDrop.value) > -1)
 					{
-						window.location="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=" + modDrop.value;
+						window.location="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=" + modDrop.value;
 					}
 				}
 			}
 		</script>';
-		
-		/*
-		// Sticky Thread
-		echo '
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=sticky">Sticky</a>
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=unsticky">Unsticky</a>';
-		
-		// Lock vs. Unlock
-		echo '
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=' . ($thread['perm_post'] <= 2 ? 'lock' : 'unlock') . '">' . ($thread['perm_post'] <= 2 ? 'Lock' : 'Unlock') . ' Thread</a>';
-		
-		// Delete Thread
-		echo '
-		<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=deleteThread">Delete Thread</a>';
-		*/
 	}
 }
 
@@ -349,7 +337,7 @@ foreach($posts as $post)
 			if($isMod)
 			{
 				echo '
-				<a href="/thread?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&action=deletePost&post=' . $post['id'] . '">Delete</a>';
+				<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '">Delete</a>';
 			}
 			
 			// Edit Option
@@ -361,7 +349,14 @@ foreach($posts as $post)
 			
 			echo '
 			</div>
-			' . nl2br(UniMarkup::parse($post['body'])) . '
+			' . nl2br(UniMarkup::parse($post['body']));
+			
+			if($post['signature'])
+			{
+				echo '<div class="thread-signature">' . nl2br($post['signature']) . '</div>';
+			}
+			
+		echo '
 		</div>
 	</div>';
 }

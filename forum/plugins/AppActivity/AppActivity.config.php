@@ -15,4 +15,27 @@ class AppActivity_config {
 	
 	public $data = array();
 	
+	
+/****** Install this plugin ******/
+	public function install (
+	)			// <bool> RETURNS TRUE on success, FALSE on failure.
+	
+	// $plugin->install();
+	{
+		DatabaseAdmin::addColumn("users", "date_lastVisit", "int(10) unsigned not null", 0);
+		
+		return $this->isInstalled();
+	}
+	
+	
+/****** Check if the plugin was successfully installed ******/
+	public static function isInstalled (
+	)			// <bool> TRUE if successfully installed, FALSE if not.
+	
+	// $plugin->isInstalled();
+	{
+		// Make sure the newly installed tables exist
+		return DatabaseAdmin::columnsExist("users", array("date_lastVisit"));
+	}
+	
 }

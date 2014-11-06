@@ -22,7 +22,7 @@ $threads = AppForum::getThreads($forumID, $page, $show = 20);	// Returns the thr
 $stickied = AppForum::getStickied($forumID);					// Returns stickied threads in a forum.
 
 $crumbs = AppForum::getBreadcrumbs($forumID, [$returnLast]);
-AppForum::view($forumID);
+AppForum::view($forum);
 
 */
 
@@ -42,18 +42,16 @@ abstract class AppForum {
 	
 	
 /****** Get a list of Forum Categories (within the forum specified) ******/
-	public static function getCategories
-	(
-		$forumID = 0	// <int> The ID of the forum you're retrieve categories from.
-	)					// RETURNS <int:[str:mixed]> an array of forums.
+	public static function getCategories (
+	)					// RETURNS <int:[str:mixed]> an array of categories.
 	
-	// $categories = AppForum::getCategories($forumID);
+	// $categories = AppForum::getCategories();
 	{
-		return Database::selectMultiple("SELECT id, title FROM forum_categories WHERE parent_forum=? ORDER BY cat_order ASC", array($forumID));
+		return Database::selectMultiple("SELECT id, title FROM forum_categories ORDER BY cat_order ASC", array());
 	}
 	
 	
-/****** Get a list of Forum Categories (within the forum specified) ******/
+/****** Get a list of forums within a particular category ******/
 	public static function getForums
 	(
 		$categoryID		// <int> The ID of the category you're retrieving forums from.
@@ -63,7 +61,32 @@ abstract class AppForum {
 	{
 		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
 		
-		$results = Database::selectMultiple("SELECT f.id, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? ORDER BY f.forum_order ASC", array($categoryID));
+		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array($categoryID, 0));
+		
+		// Cycle through the list of forums, and remove any that you don't have permission to read
+		foreach($results as $key => $val)
+		{
+			if((int) $val['perm_read'] > $clearance)
+			{
+				unset($results[$key]);
+			}
+		}
+		
+		return $results;
+	}
+	
+	
+/****** Get a list of subforums within a particular forum ******/
+	public static function getSubforums
+	(
+		$parentID		// <int> The ID of the forum you're retrieving subforums from.
+	)					// RETURNS <int:[str:mixed]> an array of forums.
+	
+	// $subforums = AppForum::getSubforums($parentID);
+	{
+		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
+		
+		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array(0, $parentID));
 		
 		// Cycle through the list of forums, and remove any that you don't have permission to read
 		foreach($results as $key => $val)
@@ -118,7 +141,7 @@ abstract class AppForum {
 	// $breadcrumbs = AppForum::getBreadcrumbs($forum, [$returnLast]);
 	{
 		$breadcrumbs = array();
-		$nextForumID = (int) $forum['id'];
+		$nextForumID = (int) $forum['parent_id'];
 		
 		// Get the current forum title
 		if($returnLast == true)
@@ -126,18 +149,14 @@ abstract class AppForum {
 			$breadcrumbs[] = array('/' . $forum['url_slug'], $forum['title']);
 		}
 		
-		// Cycle through the previous forums & categories
-		while($parentCat = Database::selectOne("SELECT id, title FROM forum_categories WHERE parent_forum=? LIMIT 1", array($nextForumID)))
+		// Cycle through the previous forums
+		while($nextForum = Database::selectOne("SELECT id, parent_id, url_slug, title FROM forums WHERE id=? LIMIT 1", array($nextForumID)))
 		{
-			if(!$parentCat['id']) { break; }
+			$breadcrumbs[] = array('/' . $nextForum['url_slug'], $nextForum['title']);
 			
-			if(!$nextForum = Database::selectOne("SELECT id, url_slug, title FROM forums WHERE category_id=? LIMIT 1", array($parentCat['id'])))
-			{
-				break;
-			}
+			if(!$nextForum['parent_id']) { break; }
 			
-			$nextForumID = (int) $nextForum['id'];
-			$breadcrums[] = array('/' . $nextForum['url_slug'], $nextForum['title']);
+			$nextForumID = (int) $nextForum['parent_id'];
 		}
 		
 		$breadcrumbs[] = array('/', "Home");
@@ -146,15 +165,153 @@ abstract class AppForum {
 	}
 	
 	
+/****** Get a user's signature ******/
+	public static function getSignature
+	(
+		$uniID			// <int> The UniID of the user to retrieve the signature of.
+	,	$orig = false	// <bool> TRUE if you're retrieving the original (no markup).
+	)					// RETURNS <str> The signature of the user.
+	
+	// $signature = AppForum::getSignature($uniID, [$orig]);
+	{
+		return Database::selectValue("SELECT signature" . ($orig ? "_orig" : "") . " FROM forum_signatures WHERE uni_id=? LIMIT 1", array($uniID));
+	}
+	
+	
+/****** Update a user's signature ******/
+	public static function updateSignature
+	(
+		$uniID		// <int> The UniID of the user to retrieve the signature of.
+	,	$signature	// <str> The signature to set for the user.
+	)				// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppForum::updateSignature($uniID, $signature);
+	{
+		return Database::query("REPLACE INTO forum_signatures (uni_id, signature, signature_orig) VALUES (?, ?, ?)", array($uniID, UniMarkup::parse($signature), $signature));
+	}
+	
+	
 /****** View a Forum ******/
 	public static function view
 	(
-		$forumID		// <int> The ID of the forum that the thread is in.
-	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+		$forum			// <str:mixed> The data of the forum.
+	)					// RETURNS <void>
 	
-	// AppForum::view($forumID);
+	// AppForum::view($forum);
 	{
-		return Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forumID));
+		Database::startTransaction();
+		
+		Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forum['id']));
+		
+		// Update the forums above
+		Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forum['id']));
+		
+		$parentID = (int) $forum['parent_id'];
+		
+		while($parentID)
+		{
+			if(!$nextForum = Database::selectOne("SELECT id, parent_id FROM forums WHERE id=? LIMIT 1", array($forum['parent_id'])))
+			{
+				break;
+			}
+			
+			Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($nextForum['id']));
+			
+			$parentID = (int) $nextForum['parent_id'];
+		}
+		
+		Database::endTransaction();
+	}
+	
+	
+/****** Run the new post handler ******/
+	public static function newPostHandler
+	(
+		$forum			// <str:mixed> The data of the forum.
+	)					// RETURNS <void>
+	
+	// AppForum::newPostHandler($forum);
+	{
+		if(Me::$loggedIn)
+		{
+			// Prepare "New Post" Data
+			if(!isset($_SESSION[SITE_HANDLE]['forums-new']))
+			{
+				if($lastActivity = UserActivity::getUsersLastVisit(Me::$id))
+				{
+					$_SESSION[SITE_HANDLE]['last-visit'] = $lastActivity;
+				}
+				else
+				{
+					$_SESSION[SITE_HANDLE]['last-visit'] = time();
+				}
+				
+				$_SESSION[SITE_HANDLE]['forums-new'] = array();
+				
+			}
+		}
+		else
+		{
+			return time();
+		}
+	}
+	
+	
+/****** Display a Forum Line by the ID ******/
+	public static function displayLine
+	(
+		$forum				// <str:mixed> The data of the forum to display.
+	,	$newPost = false	// <bool> TRUE will show a "new" icon, FALSE does not.
+	)						// RETURNS <void> Outputs the line.
+	
+	// AppForum::displayLine($forum, [$newPost]);
+	{
+		// Prepare Values
+		$desc = $forum['description'];
+		
+		// If the forum has children, run an additional test
+		if($forum['has_children'])
+		{
+			if(!$subForums = AppForum::getSubforums($forum['id']))
+			{
+				continue;
+			}
+			
+			$desc .= '<div class="sub-forum-list">';
+			
+			foreach($subForums as $sub)
+			{
+				$sub['id'] = (int) $sub['id'];
+				
+				// Check for the New Icon
+				if($subIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+				{
+					if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
+					{
+						if($subIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+						{
+							unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+						}
+					}
+				}
+				
+				// Display the Forum Line
+				$desc .= '<a href="/' . $sub['url_slug'] . '"><span class="icon-folder ' . ($subIcon ? 'new-sub' :  '') . '"></span> ' . $sub['title'] . "</a> ";
+			}
+			
+			$desc .= '</div>';
+		}
+		
+		echo '
+		<div class="inner-line">
+			<div class="inner-name">
+				<a href="/' . $forum['url_slug'] . '">' . ($newPost ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $forum['title'] . '</a>
+				<div class="inner-desc">' . $desc . '</div>
+			</div>
+			<div class="inner-posts">' . $forum['posts'] . '</div>
+			<div class="inner-views">' . $forum['views'] . '</div>
+			<div class="inner-details">' . ($forum['handle'] ? '<a href="' . URL::unifaction_social() . '/' . $forum['handle'] . '">' . $forum['display_name'] . '</a><br />' . Time::fuzzy((int) $forum['date_lastPost']) : "") . '</div>
+		</div>';
 	}
 	
 }

@@ -17,32 +17,33 @@ if(!defined("GENERATE_FORUM_DATA"))
 // Initialize the root user
 Database::initRoot();
 
-// Fashion Products
-$catID = AppForumAdmin::createCategory(0, "Fashion Products");
-
-$forumID = AppForumAdmin::createForum($catID, "Footwear", "Heels, flats, platforms, sandals, and more.", 0, 2, "Footwear");
-$forumID = AppForumAdmin::createForum($catID, "Handbags", "Purses, clutches, totes, satchels, etc.", 0, 2, "Handbags");
-$forumID = AppForumAdmin::createForum($catID, "Clothing", "Dresses, skirts, swimwear, hosiery, etc.", 0, 2, "Clothing");
-$forumID = AppForumAdmin::createForum($catID, "Vintage", "Anything related to vintage fashion.", 0, 2, "VintageFashion");
-$forumID = AppForumAdmin::createForum($catID, "Other Accessories", "Belts, bracelets, necklaces, jewellery, etc.", 0, 2, "Accessories");
-$forumID = AppForumAdmin::createForum($catID, "Male Fashion", "Products for male fashion.", 0, 2, "MaleFashion");
-
 // Fashion Community
-$catID = AppForumAdmin::createCategory(0, "Fashion Community");
+$catID = AppForumAdmin::createCategory("Fashion Community");
 
-$forumID = AppForumAdmin::createForum($catID, "Beginner's Lounge", "New to the fashion community? Find help here.", 0, 2, "FashionBeginner");
-$forumID = AppForumAdmin::createForum($catID, "Fashion Advice", "Questions and discussion on fashion advice for you and others.", 0, 2, "FashionAdvice");
-$forumID = AppForumAdmin::createForum($catID, "Designers", "The top fashion designers and brands.", 0, 2, "FashionDesigners");
-$forumID = AppForumAdmin::createForum($catID, "Collections", "Discuss top fashion collections.", 0, 2, "FashionCollections");
-$forumID = AppForumAdmin::createForum($catID, "Trends", "Anything related to current or passing fashion trends.", 0, 2, "FashionTrends");
-$forumID = AppForumAdmin::createForum($catID, "Fashion Events", "Anything related to fashion events.", 0, 2, "FashionEvents");
-$forumID = AppForumAdmin::createForum($catID, "The Catwalk", "High fashion, models, styles, etc.", 0, 2, "HighFashion");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fashion News", "The latest news and updates for the fashion community.", 0, 2, "FashionNews");
+$forumID = AppForumAdmin::createForum($catID, 0, "Beginner's Lounge", "New to the fashion community? Find help here.", 0, 2, "FashionBeginner");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fashion Advice", "Questions and discussion on fashion advice for you and others.", 0, 2, "FashionAdvice");
+$forumID = AppForumAdmin::createForum($catID, 0, "Designers", "The top fashion designers and brands.", 0, 2, "FashionDesigners");
+$forumID = AppForumAdmin::createForum($catID, 0, "Collections", "Discuss top fashion collections.", 0, 2, "FashionCollections");
+$forumID = AppForumAdmin::createForum($catID, 0, "Trends", "Anything related to current or passing fashion trends.", 0, 2, "FashionTrends");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fashion Events", "Anything related to fashion events.", 0, 2, "FashionEvents");
+$forumID = AppForumAdmin::createForum($catID, 0, "The Catwalk", "High fashion, models, styles, etc.", 0, 2, "HighFashion");
+
+// Fashion Products
+$catID = AppForumAdmin::createCategory("Fashion Products");
+
+$forumID = AppForumAdmin::createForum($catID, 0, "Footwear", "Heels, flats, platforms, sandals, and more.", 0, 2, "Footwear");
+$forumID = AppForumAdmin::createForum($catID, 0, "Handbags", "Purses, clutches, totes, satchels, etc.", 0, 2, "Handbags");
+$forumID = AppForumAdmin::createForum($catID, 0, "Clothing", "Dresses, skirts, swimwear, hosiery, etc.", 0, 2, "Clothing");
+$forumID = AppForumAdmin::createForum($catID, 0, "Vintage", "Anything related to vintage fashion.", 0, 2, "VintageFashion");
+$forumID = AppForumAdmin::createForum($catID, 0, "Other Accessories", "Belts, bracelets, necklaces, jewellery, etc.", 0, 2, "Accessories");
+$forumID = AppForumAdmin::createForum($catID, 0, "Male Fashion", "Products for male fashion.", 0, 2, "MaleFashion");
 
 // The Lounge
-$catID = AppForumAdmin::createCategory(0, "The Lounge");
+$catID = AppForumAdmin::createCategory("The Lounge");
 
-$forumID = AppForumAdmin::createForum($catID, "Fashion News", "The latest news and updates for the fashion community.", 0, 2, "FashionNews");
-$forumID = AppForumAdmin::createForum($catID, "Introductions", "Introduce yourself to the fashion community.", 0, 2, "FashionIntro");
-$forumID = AppForumAdmin::createForum($catID, "General Discussion", "Discuss off-topic things here.", 0, 2, "FashionLounge");
-$forumID = AppForumAdmin::createForum($catID, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
+$forumID = AppForumAdmin::createForum($catID, 0, "General Discussion", "Discuss off-topic things here.", 0, 2, "FashionLounge");
+$forumID = AppForumAdmin::createForum($catID, 0, "Introductions", "Introduce yourself to the fashion community.", 0, 2, "FashionIntro");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Questions and comments about fashion or the forums.", 0, 2, "FashionInquiry");
+$forumID = AppForumAdmin::createForum($catID, 0, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
 

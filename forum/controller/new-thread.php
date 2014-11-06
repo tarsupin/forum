@@ -42,11 +42,14 @@ if(Form::submitted(SITE_HANDLE . '-forum-thrd'))
 		// Create the Thread
 		Database:: startTransaction();
 		
-		if($threadID = AppThread::create($forum['id'], Me::$id, $_POST['title']))
+		if($threadID = AppThread::create($forum, Me::$id, $_POST['title']))
 		{
-			if($postID = AppPost::create($forum['id'], $threadID, Me::$id, $_POST['body']))
+			if($postID = AppPost::create($forum, $threadID, Me::$id, $_POST['body']))
 			{
 				Database::endTransaction();
+				
+				// Get the Thread Data
+				$thread = AppThread::get($forum['id'], $threadID);
 				
 				// Go to the thread
 				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug']); exit;
@@ -106,10 +109,11 @@ echo '
 	<div class="overwrap-line">
 		<div class="overwrap-name">Post New Thread</div>
 	</div>
-	<div class="inner-box" style="padding:7px;">
+	<div style="padding:6px;">
 		<form class="uniform" action="/new-thread?forum=' . $forum['id'] . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . '-forum-thrd') . '
 			<input type="text" name="title" value="' . $_POST['title'] . '" placeholder="Title . . ." style="width:100%;margin-bottom:10px;" autocomplete="off" />
-			<textarea name="body" placeholder="Enter your message here . . ." style="resize:vertical;width:100%;height:300px;">' . $_POST['body'] . '</textarea>
+			' . UniMarkup::buttonLine() . '
+			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical;width:100%;height:300px;">' . $_POST['body'] . '</textarea>
 			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post New Thread" /></div>
 		</form>
 	</div>

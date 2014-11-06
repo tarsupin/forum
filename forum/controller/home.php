@@ -1,7 +1,7 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 // Update User Activity
-UserActivity::update();
+AppActivity::updateUser();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -41,29 +41,22 @@ foreach($categories as $cat)
 	
 	foreach($forums as $forum)
 	{
-		$forum['date_lastPost'] = (int) $forum['date_lastPost'];
+		$forum['id'] = (int) $forum['id'];
 		
-		// Prepare the details (if available)
-		$desc = "";
-		
-		if($forum['handle'])
+		// Check for the New Icon
+		if($newIcon = ($forum['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
 		{
-			$desc = '
-				<a href="/' . $forum['handle'] . '">' . $forum['display_name'] . '</a>
-				<br />' . Time::fuzzy($forum['date_lastPost']);
+			if(isset($_SESSION[SITE_HANDLE]['forums-new'][$forum['id']]))
+			{
+				if($newIcon = ($forum['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$forum['id']])) ? true : false)
+				{
+					unset($_SESSION[SITE_HANDLE]['forums-new'][$forum['id']]);
+				}
+			}
 		}
 		
-		// Display the forum
-		echo '
-		<div class="inner-line">
-			<div class="inner-name">
-				<a href="/' . $forum['url_slug'] . '">' . $forum['title'] . '</a>
-				<div class="inner-desc">' . $forum['description'] . '</div>
-			</div>
-			<div class="inner-posts">' . $forum['posts'] . '</div>
-			<div class="inner-views">' . $forum['views'] . '</div>
-			<div class="inner-details">' . $desc . '</div>
-		</div>';
+		// Display the Forum Line
+		AppForum::displayLine($forum, $newIcon);
 	}
 	
 	echo '

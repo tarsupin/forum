@@ -18,41 +18,42 @@ if(!defined("GENERATE_FORUM_DATA"))
 Database::initRoot();
 
 // Show Central
-$catID = AppForumAdmin::createCategory(0, "Show Central");
+$catID = AppForumAdmin::createCategory("Show Central");
 
-$forumID = AppForumAdmin::createForum($catID, "Show Discussion", "Discuss anything related to shows here.", 0, 2, "Shows");
-$forumID = AppForumAdmin::createForum($catID, "Show Reviews", "Post and read reviews and critique on shows.", 0, 2, "ShowReviews");
-$forumID = AppForumAdmin::createForum($catID, "Top 10+ Lists", "Post your top ten favorite shows of all time.", 0, 2, "ShowLists");
-$forumID = AppForumAdmin::createForum($catID, "Just Watched", "Tell us what you just watched and what you thought.", 0, 2, "ShowReviews");
+$forumID = AppForumAdmin::createForum($catID, 0, "Show News", "The latest news and updates on TV shows and web shows.", 0, 2, "ShowNews");
+$forumID = AppForumAdmin::createForum($catID, 0, "Show Discussion", "Discuss anything related to shows here.", 0, 2, "Shows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Show Reviews", "Post and read reviews and critique on shows.", 0, 2, "ShowReviews");
+$forumID = AppForumAdmin::createForum($catID, 0, "Top 10+ Lists", "Post your top ten favorite shows of all time.", 0, 2, "ShowLists");
+$forumID = AppForumAdmin::createForum($catID, 0, "Just Watched", "Tell us what you just watched and what you thought.", 0, 2, "ShowReviews");
 
 // Show Categories
-$catID = AppForumAdmin::createCategory(0, "Show Categories");
+$catID = AppForumAdmin::createCategory("Show Categories");
 
-$forumID = AppForumAdmin::createForum($catID, "Action and Adventure", "Action-oriented and adventuring shows.", 0, 2, "ActionShows");
-$forumID = AppForumAdmin::createForum($catID, "Animated", "Animated shows, cartoons, anime, etc.", 0, 2, "AnimatedShows");
-$forumID = AppForumAdmin::createForum($catID, "Comedy", "Sitcoms, romantic comedies, animated adult shows, etc.", 0, 2, "ComedyShows");
-$forumID = AppForumAdmin::createForum($catID, "Drama", "Romance, soap operas, troubling conflicts, etc.", 0, 2, "DramaShows");
-$forumID = AppForumAdmin::createForum($catID, "Educational", "Food shows, tech shows, science shows, etc.", 0, 2, "EducationalShows");
-$forumID = AppForumAdmin::createForum($catID, "Fantasy and Sci-Fi", "High fantasy, magic, science fiction, etc.", 0, 2, "FantasyShows");
-$forumID = AppForumAdmin::createForum($catID, "Game and Talent Shows", "Game shows, talent shows, contests, etc.", 0, 2, "GameShows");
-$forumID = AppForumAdmin::createForum($catID, "Reality TV", "Shows that thrive on unrealistic scenarios.", 0, 2, "RealityTV");
-$forumID = AppForumAdmin::createForum($catID, "Thrillers and Suspense", "Psychological thrillers, horror, crime shows, etc.", 0, 2, "SuspenseShows");
-$forumID = AppForumAdmin::createForum($catID, "Web Series", "Series that are predominantly (or exclusively) available online.", 0, 2, "WebShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Action and Adventure", "Action-oriented and adventuring shows.", 0, 2, "ActionShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Animated", "Animated shows, cartoons, anime, etc.", 0, 2, "AnimatedShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comedy", "Sitcoms, romantic comedies, animated adult shows, etc.", 0, 2, "ComedyShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Drama", "Romance, soap operas, troubling conflicts, etc.", 0, 2, "DramaShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Educational", "Food shows, tech shows, science shows, etc.", 0, 2, "EducationalShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fantasy and Sci-Fi", "High fantasy, magic, science fiction, etc.", 0, 2, "FantasyShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Game and Talent Shows", "Game shows, talent shows, contests, etc.", 0, 2, "GameShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Reality TV", "Shows that thrive on unrealistic scenarios.", 0, 2, "RealityTV");
+$forumID = AppForumAdmin::createForum($catID, 0, "Thrillers and Suspense", "Psychological thrillers, horror, crime shows, etc.", 0, 2, "SuspenseShows");
+$forumID = AppForumAdmin::createForum($catID, 0, "Web Series", "Series that are predominantly (or exclusively) available online.", 0, 2, "WebShows");
 
 // Behind the Scenes
-$catID = AppForumAdmin::createCategory(0, "Behind the Scenes");
+$catID = AppForumAdmin::createCategory("Behind the Scenes");
 
-$forumID = AppForumAdmin::createForum($catID, "Shows Trivia", "Post challenges or compete in show trivia.", 0, 2, "ShowTrivia");
-$forumID = AppForumAdmin::createForum($catID, "Shows Games", "Create or participate in show-related forum games.", 0, 2, "ShowGames");
-$forumID = AppForumAdmin::createForum($catID, "Actors and Directors", "Topics relating to actors and directors.", 0, 2, "ShowActors");
-$forumID = AppForumAdmin::createForum($catID, "Film Events", "Discuss events related to TV and web shows.", 0, 2, "ShowEvents");
-$forumID = AppForumAdmin::createForum($catID, "Fan Theories", "Speculate on the hidden stories told by shows.", 0, 2, "ShowTheories");
+$forumID = AppForumAdmin::createForum($catID, 0, "Shows Trivia", "Post challenges or compete in show trivia.", 0, 2, "ShowTrivia");
+$forumID = AppForumAdmin::createForum($catID, 0, "Shows Games", "Create or participate in show-related forum games.", 0, 2, "ShowGames");
+$forumID = AppForumAdmin::createForum($catID, 0, "Actors and Directors", "Topics relating to actors and directors.", 0, 2, "ShowActors");
+$forumID = AppForumAdmin::createForum($catID, 0, "Film Events", "Discuss events related to TV and web shows.", 0, 2, "ShowEvents");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fan Theories", "Speculate on the hidden stories told by shows.", 0, 2, "ShowTheories");
 
 // The Lounge
-$catID = AppForumAdmin::createCategory(0, "The Lounge");
+$catID = AppForumAdmin::createCategory("The Lounge");
 
-$forumID = AppForumAdmin::createForum($catID, "Music News", "The latest news and updates for the music community.", 0, 2, "ShowNews");
-$forumID = AppForumAdmin::createForum($catID, "Introductions", "Introduce yourself to the music community.", 0, 2, "ShowIntro");
-$forumID = AppForumAdmin::createForum($catID, "General Discussion", "Discuss off-topic things here.", 0, 2, "ShowLounge");
-$forumID = AppForumAdmin::createForum($catID, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
+$forumID = AppForumAdmin::createForum($catID, 0, "General Discussion", "Discuss off-topic things here.", 0, 2, "ShowLounge");
+$forumID = AppForumAdmin::createForum($catID, 0, "Introductions", "Introduce yourself to the community.", 0, 2, "ShowIntro");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Questions and comments about shows or the forums.", 0, 2, "ShowsInquiry");
+$forumID = AppForumAdmin::createForum($catID, 0, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
 
