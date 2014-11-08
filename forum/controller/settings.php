@@ -19,8 +19,44 @@ if(Form::submitted(SITE_HANDLE . "setting-form"))
 	}
 }
 
+// If you chose an avatar
+if(isset($_GET['def']))
+{
+	// Check if that avatar is valid
+	$packet = array(
+		"uni_id"	=> Me::$id
+	,	"avi_id"	=> (int) $_GET['def']		// The ID of the avatar to test for
+	);
+	
+	if($avatarExists = Connect::to("avatar", "AvatarExists", $packet))
+	{
+		// If the avatar is valid, update your default avatar
+		Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array((int) $_GET['def'], Me::$id));
+		
+		Alert::success("Avatar Updated", "You have chosen your default avatar.");
+	}
+}
+
 // Get the user's signature
-$signature = AppForum::getSignature(Me::$id, true);
+$settings = AppForum::getSettings(Me::$id, true);
+
+// Prepare Values
+$avatarList = json_decode($settings['avatar_list'], true);
+
+// If you're loading your avatars
+if($value = Link::clicked() and $value == "load-avatars")
+{
+	// Prepare a list of plugins and their current versions
+	$packet = array(
+		"uni_id"			=> Me::$id			// The UniID to check avatars for
+	);
+	
+	if($avatarList = Connect::to("avatar", "MyAvatarsAPI", $packet))
+	{
+		// Update your avatar list
+		Database::query("UPDATE forum_settings SET avatar_list=? WHERE uni_id=? LIMIT 1", array(json_encode($avatarList), Me::$id));
+	}
+}
 
 // Update Activity
 UserActivity::update();
@@ -39,6 +75,7 @@ echo '
 <div id="panel-right"></div>
 <div id="content">' . Alert::display();
 
+// Display your signature options
 echo '
 <div class="overwrap-box">
 	<div class="overwrap-line" style="margin-bottom:10px;">
@@ -47,9 +84,32 @@ echo '
 	' . UniMarkup::buttonLine() . '
 	<div style="padding:6px;">
 		<form class="uniform" action="/settings" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'setting-form') . '
-			<textarea id="core_text_box" name="signature" placeholder="Enter your signature here . . ." style="resize:vertical; width:100%; height:280px;" maxlength="20000">' . $signature . '</textarea>
+			<textarea id="core_text_box" name="signature" placeholder="Enter your signature here . . ." style="resize:vertical; width:100%; height:280px;" maxlength="20000">' . $settings['signature'] . '</textarea>
 			<div style="margin-top:10px;"><input type="submit" name="submit" value="Update My Signature" /></div>
 		</form>
+	</div>
+</div>';
+
+
+// Display your list of avatars available
+echo '
+<div class="overwrap-box">
+	<div class="overwrap-line" style="margin-bottom:10px;">
+		<div class="overwrap-name">My Avatars</div>
+	</div>
+	<div class="inner-box">';
+	
+if($avatarList)
+{
+	foreach($avatarList as $aviID => $aviName)
+	{
+		echo '
+		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . str_replace(".com", ".cool", Avatar::image(Me::$id, (int) $aviID)) . '" /><br /><a class="button" href="/settings?def=' . $aviID . '">Set as Default</a></div>';
+	}
+}
+
+echo '
+	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_com() . '">Create an Avatar</a></div>
 	</div>
 </div>';
 

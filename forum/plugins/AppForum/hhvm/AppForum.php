@@ -166,15 +166,15 @@ abstract class AppForum {
 	
 	
 /****** Get a user's signature ******/
-	public static function getSignature
+	public static function getSettings
 	(
 		int $uniID			// <int> The UniID of the user to retrieve the signature of.
 	,	bool $orig = false	// <bool> TRUE if you're retrieving the original (no markup).
-	): string					// RETURNS <str> The signature of the user.
+	): array <str, str>					// RETURNS <str:str> The settings for the user.
 	
-	// $signature = AppForum::getSignature($uniID, [$orig]);
+	// $signature = AppForum::getSettings($uniID, [$orig]);
 	{
-		return (string) Database::selectValue("SELECT signature" . ($orig ? "_orig" : "") . " FROM forum_signatures WHERE uni_id=? LIMIT 1", array($uniID));
+		return Database::selectOne("SELECT signature" . ($orig ? "_orig" : "") . " as signature, avatar_list FROM forum_settings WHERE uni_id=? LIMIT 1", array($uniID));
 	}
 	
 	
@@ -187,7 +187,7 @@ abstract class AppForum {
 	
 	// AppForum::updateSignature($uniID, $signature);
 	{
-		return Database::query("REPLACE INTO forum_signatures (uni_id, signature, signature_orig) VALUES (?, ?, ?)", array($uniID, UniMarkup::parse($signature), $signature));
+		return Database::query("REPLACE INTO forum_settings (uni_id, signature, signature_orig) VALUES (?, ?, ?)", array($uniID, UniMarkup::parse($signature), $signature));
 	}
 	
 	

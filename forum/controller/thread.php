@@ -310,7 +310,7 @@ foreach($posts as $post)
 	// Prepare the differences between AVATAR and PROFILE sites
 	if(AVI_TYPE == "avatar" and Avatar::hasAvatar())
 	{
-		$img = Avatar::image($uniID);
+		$img = str_replace(".com", ".cool", Avatar::image($uniID, (int) $post['avi_id']));
 	}
 	else
 	{

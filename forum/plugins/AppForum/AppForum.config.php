@@ -68,11 +68,12 @@ class AppForum_config {
 		");
 		
 		Database::exec("
-		CREATE TABLE IF NOT EXISTS `forum_signatures`
+		CREATE TABLE IF NOT EXISTS `forum_settings`
 		(
 			`uni_id`				int(10)			unsigned	NOT NULL	AUTO_INCREMENT,
 			`signature`				text						NOT NULL	DEFAULT '',
 			`signature_orig`		text						NOT NULL	DEFAULT '',
+			`avatar_list`			varchar(255)				NOT NULL	DEFAULT '',
 			
 			UNIQUE (`uni_id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY (`uni_id`) PARTITIONS 13;
@@ -91,7 +92,7 @@ class AppForum_config {
 		// Make sure the newly installed tables exist
 		$pass1 = DatabaseAdmin::columnsExist("forum_categories", array("id", "title"));
 		$pass2 = DatabaseAdmin::columnsExist("forums", array("id", "title"));
-		$pass3 = DatabaseAdmin::columnsExist("forum_signatures", array("uni_id", "signature"));
+		$pass3 = DatabaseAdmin::columnsExist("forum_settings", array("uni_id", "signature"));
 		
 		return ($pass1 and $pass2 and $pass3);
 	}

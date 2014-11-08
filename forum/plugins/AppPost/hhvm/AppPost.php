@@ -31,9 +31,10 @@ abstract class AppPost {
 	,	int $threadID		// <int> The ID of the thread you're posting in.
 	,	int $uniID	 		// <int> The uniID of the user creating the post.
 	,	string $body			// <str> The post message.
+	,	int $aviID = 0		// <int> The avatar ID being used in this post.
 	): int					// RETURNS <int> ID of the post that was created, or 0 on failure.
 	
-	// $postID = AppPost::create($forum, $threadID, $uniID, "Here is the message that I'd like to post.");
+	// $postID = AppPost::create($forum, $threadID, $uniID, $body, [$aviID]);
 	{
 		Database::startTransaction();
 		
@@ -41,7 +42,7 @@ abstract class AppPost {
 		$timestamp = time();
 		
 		// Insert the Post
-		if(Database::query("INSERT INTO `posts` (id, thread_id, uni_id, body, date_post) VALUES (?, ?, ?, ?, ?)", array($postID, $threadID, $uniID, $body, $timestamp)))
+		if(Database::query("INSERT INTO `posts` (id, thread_id, uni_id, avi_id, body, date_post) VALUES (?, ?, ?, ?, ?, ?)", array($postID, $threadID, $uniID, $aviID, $body, $timestamp)))
 		{
 			// Update the Thread Details
 			if(Database::query("UPDATE threads SET posts=posts+1, last_poster_id=?, date_last_post=? WHERE forum_id=? AND id=? LIMIT 1", array($uniID, $timestamp, $forum['id'], $threadID)))

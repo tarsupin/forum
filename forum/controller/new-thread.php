@@ -12,6 +12,12 @@ if(!Me::$loggedIn)
 	Me::redirectLogin("/new-thread?forum=" . ($_GET['forum'] + 0));
 }
 
+// If the avi type is "avatar", we need to make sure the user can post
+if(AVI_TYPE == "avatar")
+{
+	AppForumAvatar::confirmAvi(Me::$id);
+}
+
 // Recognize Integers
 $forum['id'] = (int) $forum['id'];
 $forum['perm_post'] = (int) $forum['perm_post'];
@@ -44,7 +50,7 @@ if(Form::submitted(SITE_HANDLE . '-forum-thrd'))
 		
 		if($threadID = AppThread::create($forum, Me::$id, $_POST['title']))
 		{
-			if($postID = AppPost::create($forum, $threadID, Me::$id, $_POST['body']))
+			if($postID = AppPost::create($forum, $threadID, Me::$id, $_POST['body'], (int) Me::$vals['avatar_opt']))
 			{
 				Database::endTransaction();
 				

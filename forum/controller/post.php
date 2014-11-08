@@ -44,7 +44,7 @@ $post = array();
 
 if($editMode = (isset($_GET['edit']) ? true : false))
 {
-	if(!$post = Database::selectOne("SELECT p.id, p.uni_id, p.body, p.date_post, u.handle, u.display_name FROM posts p INNER JOIN users u ON u.uni_id=p.uni_id WHERE p.thread_id=? AND p.id=? LIMIT 1", array($thread['id'], $_GET['edit'])))
+	if(!$post = Database::selectOne("SELECT p.id, p.uni_id, p.avi_id, p.body, p.date_post, u.handle, u.display_name FROM posts p INNER JOIN users u ON u.uni_id=p.uni_id WHERE p.thread_id=? AND p.id=? LIMIT 1", array($thread['id'], $_GET['edit'])))
 	{
 		header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
 	}
@@ -52,6 +52,7 @@ if($editMode = (isset($_GET['edit']) ? true : false))
 	// Recognize Integers
 	$post['id'] = (int) $post['id'];
 	$post['uni_id'] = (int) $post['uni_id'];
+	$post['avi_id'] = (int) $post['avi_id'];
 	$post['date_post'] = (int) $post['date_post'];
 	
 	// Prepare Values
@@ -93,7 +94,7 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 		}
 		
 		// Standard Post Mode
-		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body']))
+		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body'], (int) Me::$vals['avatar_opt']))
 		{
 			// Update subscriptions for this thread
 			AppSubscriptions::update($thread['forum_id'], $thread['id'], Me::$id, $thread['title']);

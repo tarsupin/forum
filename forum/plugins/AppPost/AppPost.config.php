@@ -29,6 +29,7 @@ class AppPost_config {
 			`id`					int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`avi_id`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
 			`body`					text						NOT NULL	DEFAULT '',
 			
