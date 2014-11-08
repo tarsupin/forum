@@ -174,7 +174,7 @@ abstract class AppForum {
 	
 	// $signature = AppForum::getSignature($uniID, [$orig]);
 	{
-		return Database::selectValue("SELECT signature" . ($orig ? "_orig" : "") . " FROM forum_signatures WHERE uni_id=? LIMIT 1", array($uniID));
+		return (string) Database::selectValue("SELECT signature" . ($orig ? "_orig" : "") . " FROM forum_signatures WHERE uni_id=? LIMIT 1", array($uniID));
 	}
 	
 	

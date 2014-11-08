@@ -23,7 +23,7 @@ $categories = AppForum::getCategories();
 foreach($categories as $cat)
 {
 	// Gather all forums
-	$forums = AppForum::getForums($cat['id']);
+	$forums = AppForum::getForums((int) $cat['id']);
 	
 	// Skip this category if there are no forums you can view
 	if(count($forums) < 1) { continue; }
