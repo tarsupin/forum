@@ -26,13 +26,14 @@ abstract class AppForumAvatar {
 	
 	// AppForumAvatar::confirmAvi($uniID);
 	{
-		if(Me::$vals['has_avatar'] == 1) { return true; }
+		// If the user has an avatar set already, return true
+		if(Me::$vals['avatar_opt'] > 0) { return true; }
 		
 		// Check the Avatar API
 		if($response = Connect::to("avatar", "AvatarExists", array("uni_id" => Me::$id)))
 		{
 			// Update user to list avatar as active
-			Database::query("UPDATE users SET has_avatar=? WHERE uni_id=? LIMIT 1", array(1, $uniID));
+			Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array(1, $uniID));
 			return true;
 		}
 		

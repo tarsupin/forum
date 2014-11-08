@@ -131,18 +131,6 @@ abstract class AppForum {
 	}
 	
 	
-/****** Get a user's signature ******/
-	public static function getSignature
-	(
-		int $uniID		// <int> The UniID of the user to retrieve the signature of.
-	): string				// RETURNS <str> The signature of the user.
-	
-	// $forum = AppForum::get($forumID);
-	{
-		return Database::selectOne("SELECT * FROM forums WHERE id=? LIMIT 1", array($forumID));
-	}
-	
-	
 /****** Return a breadcrumb trail of forums ******/
 	public static function getBreadcrumbs
 	(
@@ -174,6 +162,32 @@ abstract class AppForum {
 		$breadcrumbs[] = array('/', "Home");
 		
 		return array_reverse($breadcrumbs);
+	}
+	
+	
+/****** Get a user's signature ******/
+	public static function getSignature
+	(
+		int $uniID			// <int> The UniID of the user to retrieve the signature of.
+	,	bool $orig = false	// <bool> TRUE if you're retrieving the original (no markup).
+	): string					// RETURNS <str> The signature of the user.
+	
+	// $signature = AppForum::getSignature($uniID, [$orig]);
+	{
+		return Database::selectValue("SELECT signature" . ($orig ? "_orig" : "") . " FROM forum_signatures WHERE uni_id=? LIMIT 1", array($uniID));
+	}
+	
+	
+/****** Update a user's signature ******/
+	public static function updateSignature
+	(
+		int $uniID		// <int> The UniID of the user to retrieve the signature of.
+	,	string $signature	// <str> The signature to set for the user.
+	): bool				// RETURNS <bool> TRUE on success, FALSE on failure.
+	
+	// AppForum::updateSignature($uniID, $signature);
+	{
+		return Database::query("REPLACE INTO forum_signatures (uni_id, signature, signature_orig) VALUES (?, ?, ?)", array($uniID, UniMarkup::parse($signature), $signature));
 	}
 	
 	

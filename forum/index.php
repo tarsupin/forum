@@ -1,7 +1,7 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
 // Initialize and Test Active User's Behavior
-Me::$getColumns = "uni_id, role, clearance, handle, display_name, has_avatar, date_lastVisit";
+Me::$getColumns = "uni_id, role, clearance, handle, display_name, avatar_opt, date_lastVisit";
 
 Me::initialize();
 

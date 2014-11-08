@@ -2,7 +2,7 @@
 
 // UniFaction Dropdown Menu
 WidgetLoader::add("UniFactionMenu", 10, '
-<div class="menu-wrap">
+<div class="menu-wrap hide-600">
 	<ul class="menu"><li class="menu-slot"><a href="/">Home</a><ul><li class="menu-slot"><a href="/settings">Settings</a></li></ul></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::travel_unifaction_community() . Me::$slg . '">Travel Community</a></li><li class="menu-slot"><a href="' . URL::fitness_unifaction_community() . Me::$slg . '">Fitness Community</a></li><li class="menu-slot"><a href="' . URL::relationships_unifaction_community() . Me::$slg . '">Relationships Community</a></li></ul>
 </div>');
 
