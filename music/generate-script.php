@@ -19,6 +19,8 @@ Database::initRoot();
 
 
 // General Discussion
+$catID = AppForumAdmin::createCategory("General Discussion");
+
 $forumID = AppForumAdmin::createForum($catID, 0, "Music News", "The latest news and updates for the music community.", 0, 2, "MusicNews");
 $forumID = AppForumAdmin::createForum($catID, 0, "General Music", "Discuss anything related to music that doesn't belong elsewhere.", 0, 2, "Music");
 $forumID = AppForumAdmin::createForum($catID, 0, "Top 10+ Lists", "Post your top ten favorite songs of all time.", 0, 2, "MusicLists");

@@ -34,7 +34,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "NBA Draft", "Insights into thi
 
 
 // Conferences
-$catID = AppForumAdmin::createCategory("NCAAMConferences");
+$catID = AppForumAdmin::createCategory("NCAAM Conferences");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "AAC", "", 0, 2, "AACBasketball");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Cincinnati", "", 0, 2, "UCBearcatsBB");
@@ -109,8 +109,8 @@ $forumID = AppForumAdmin::createForum($catID, 0, "Big 12", "", 0, 2, "Big12Baske
 	$subID = AppForumAdmin::createForum(0, $forumID, "Iowa St", "", 0, 2, "IowaStBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Kansas", "", 0, 2, "KansasBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Kansas St", "", 0, 2, "KStateBB");
-	$subID = AppForumAdmin::createForum(0, $forumID, "Oklahoma", "", 0, 2, "SoonersBB";
-	$subID = AppForumAdmin::createForum(0, $forumID, "OK State", "", 0, 2, "OKStateBB";
+	$subID = AppForumAdmin::createForum(0, $forumID, "Oklahoma", "", 0, 2, "SoonersBB");
+	$subID = AppForumAdmin::createForum(0, $forumID, "OK State", "", 0, 2, "OKStateBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "TCU", "", 0, 2, "HornedFrogsBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Texas", "", 0, 2, "TexasBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Texas Tech", "", 0, 2, "TexasTechBB");
@@ -446,7 +446,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "WAC", "", 0, 2, "WACBasketball
 	$subID = AppForumAdmin::createForum(0, $forumID, "Cal State Bakersfield", "", 0, 2, "CSBRoadrunnersBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Chicago St", "", 0, 2, "ChicagoStBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Grand Canyon", "", 0, 2, "AntelopesBB");
-	$subID = AppForumAdmin::createForum(0, $forumID, "New Mexico St", "", 0, 2, "NMStAggiesBB");
+	$subID = AppForumAdmin::createForum(0, $forumID, "New Mexico Aggies", "", 0, 2, "NMStAggiesBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Seattle", "", 0, 2, "SeattleBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Texas-Pan American", "", 0, 2, "TexasPanAmBB");
 	$subID = AppForumAdmin::createForum(0, $forumID, "UMKC", "", 0, 2, "KangaroosBB");

@@ -24,11 +24,12 @@ $forumID = AppForumAdmin::createForum($catID, 0, "Programming News", "The latest
 $forumID = AppForumAdmin::createForum($catID, 0, "Beginner's Lounge", "New to programming? Get familiarized with the basics here.", 0, 2, "DevBeginner");
 $forumID = AppForumAdmin::createForum($catID, 0, "Engines and Libraries", "Learn about good engines and libraries to use for development.", 0, 2, "DevLibraries");
 $forumID = AppForumAdmin::createForum($catID, 0, "Tools and Resources", "Discuss your favorite resources, the advantages of certain tools, etc.", 0, 2, "DevResources");
-$forumID = AppForumAdmin::createForum($catID, 0, "Windows Development", "Discuss development for windows.", 0, 2, "WindowsDev");
-$forumID = AppForumAdmin::createForum($catID, 0, "Mac Development", "Discuss development for macs.", 0, 2, "MacDev");
-$forumID = AppForumAdmin::createForum($catID, 0, "Linux Development", "Discuss linux development.", 0, 2, "LinuxDev");
-$forumID = AppForumAdmin::createForum($catID, 0, "Console Development", "Discuss console development.", 0, 2, "ConsoleDev");
-$forumID = AppForumAdmin::createForum($catID, 0, "Mobile Development", "Discuss mobile development.", 0, 2, "MobileDev");
+$forumID = AppForumAdmin::createForum($catID, 0, "Environments", "Discuss development in specific environments", 0, 2, "DevEnvironments");
+	$subID = AppForumAdmin::createForum(0, $forumID, "Windows", "Discuss development for windows.", 0, 2, "WindowsDev");
+	$subID = AppForumAdmin::createForum(0, $forumID, "Mac", "Discuss development for macs.", 0, 2, "MacDev");
+	$subID = AppForumAdmin::createForum(0, $forumID, "Linux", "Discuss linux development.", 0, 2, "LinuxDev");
+	$subID = AppForumAdmin::createForum(0, $forumID, "Consoles", "Discuss console development.", 0, 2, "ConsoleDev");
+	$subID = AppForumAdmin::createForum(0, $forumID, "Mobile", "Discuss mobile development.", 0, 2, "MobileDev");
 
 // Advanced Concepts
 $catID = AppForumAdmin::createCategory("Advanced Concepts");

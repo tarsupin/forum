@@ -34,7 +34,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "Fantasy Hockey", "The web's be
 $forumID = AppForumAdmin::createForum($catID, 0, "NHL Gaming", "Tips and tricks for NHL15 gamers.", 0, 2, "NHLGaming");
 
 // Divisions
-$catID = AppForumAdmin::createCategory("NHLDivisions");
+$catID = AppForumAdmin::createCategory("NHL Divisions");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "Atlantic Division (East)", "", 0, 2, "NHLAtlantic");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Boston Bruins", "", 0, 2, "BOSBruins");

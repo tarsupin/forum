@@ -38,7 +38,7 @@ $config['database']['name'] = "forum_books";
 define("AVI_TYPE", "profile");		// "avatar", "profile"
 
 // Set a default active hashtag for this site
-$config['active-hashtag'] = "BookClub";
+$config['active-hashtag'] = "Books";
 
 
 /***********************************

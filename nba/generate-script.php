@@ -34,7 +34,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "Fantasy Basketball", "The web'
 $forumID = AppForumAdmin::createForum($catID, 0, "NBA Gaming", "Tips and tricks for NBA Live and NBA 2K gamers.", 0, 2, "NBAGaming");
 
 // Divisions
-$catID = AppForumAdmin::createCategory("NBADivisions");
+$catID = AppForumAdmin::createCategory("NBA Divisions");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "Atlantic", "", 0, 2, "NBAAtlantic");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Boston Celtics", "", 0, 2, "BOSCeltics");

@@ -34,7 +34,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "NFL Draft", "Insights into thi
 
 
 // Conferences
-$catID = AppForumAdmin::createCategory("NCAAFConferences");
+$catID = AppForumAdmin::createCategory("NCAAF Conferences");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "AAC", "", 0, 2, "AACFootball");
 	$subID = AppForumAdmin::createForum(0, $forumID, "Cincinnati", "", 0, 2, "UCBearcatsFB");
