@@ -15,7 +15,12 @@ if(!Me::$loggedIn)
 // If the avi type is "avatar", we need to make sure the user can post
 if(AVI_TYPE == "avatar")
 {
-	AppForumAvatar::confirmAvi(Me::$id);
+	if(!AppForumAvatar::confirmAvi(Me::$id))
+	{
+		Alert::saveError("No Avatar", "You must create and select an avatar to post on this forum.");
+		
+		header("Location: /settings"); exit;
+	}
 }
 
 // Recognize Integers

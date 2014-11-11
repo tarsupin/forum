@@ -38,6 +38,6 @@ abstract class AppForumAvatar {
 		}
 		
 		// Redirect to the avatar site to create a avatar
-		header("Location: " . URL::avatar_unifaction_com() . "/"); exit;
+		return false;
 	}
 }

@@ -38,7 +38,12 @@ if(isset($_GET['def']))
 }
 
 // Get the user's signature
-$settings = AppForum::getSettings(Me::$id, true);
+if(!$settings = AppForum::getSettings(Me::$id, true))
+{
+	AppForum::updateSignature(Me::$id, "");
+	
+	$settings = array("avatar_list" => json_encode(array()), "signature" => "");
+}
 
 // Prepare Values
 $avatarList = json_decode($settings['avatar_list'], true);
@@ -109,7 +114,7 @@ if($avatarList)
 }
 
 echo '
-	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_com() . '">Create an Avatar</a></div>
+	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_cool() . Me::$slg . '">Create an Avatar</a></div>
 	</div>
 </div>';
 
