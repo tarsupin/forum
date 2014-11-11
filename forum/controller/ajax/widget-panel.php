@@ -12,11 +12,20 @@ if($activeHashtag)
 }
 
 
-// Prepare the Featured Widget Data
-$categories = array("articles", "people", "communities");
-
-// Create a new featured content widget
-$featuredWidget = new FeaturedWidget($activeHashtag, $categories);
-
-// If you want to display the FeaturedWidget by itself:
-echo $featuredWidget->get();
+// Load the Featured Widget for the main page
+if(isset($_SERVER['HTTP_REFERER']))
+{
+	$parseURL = URL::parse($_SERVER['HTTP_REFERER']);
+	
+	if($parseURL['urlSegments'][0] == "")
+	{
+		// Prepare the Featured Widget Data
+		$categories = array("articles", "people", "communities");
+		
+		// Create a new featured content widget
+		$featuredWidget = new FeaturedWidget($activeHashtag, $categories);
+		
+		// If you want to display the FeaturedWidget by itself:
+		echo $featuredWidget->get();
+	}
+}
