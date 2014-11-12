@@ -170,7 +170,7 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 		
 		if($stick['posts'] > $postsPerPage)
 		{
-			$paginate = new Pagination($stick['posts'], $postsPerPage, 1, "division");
+			$paginate = new Pagination((int) $stick['posts'], $postsPerPage, 1, "division");
 			
 			foreach($paginate->pages as $page)
 			{
