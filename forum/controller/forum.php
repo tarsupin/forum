@@ -222,7 +222,7 @@ foreach($threads as $thread)
 	
 	if($thread['posts'] > $postsPerPage)
 	{
-		$paginate = new Pagination($thread['posts'], $postsPerPage, 1, "division");
+		$paginate = new Pagination((int) $thread['posts'], $postsPerPage, 1, "division");
 		
 		foreach($paginate->pages as $page)
 		{
