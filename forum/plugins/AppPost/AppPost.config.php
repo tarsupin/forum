@@ -50,6 +50,9 @@ class AppPost_config {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(post_id) PARTITIONS 5;
 		");
 		
+		// Add user post count
+		DatabaseAdmin::addColumn("users", "post_count", "mediumint(6) unsigned not null", 0);
+		
 		return $this->isInstalled();
 	}
 	

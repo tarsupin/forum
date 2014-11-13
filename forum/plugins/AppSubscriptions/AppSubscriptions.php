@@ -125,7 +125,7 @@ abstract class AppSubscriptions {
 		// Prepare Values
 		$threadName = Sanitize::text($threadName);
 		
-		list($sqlWhere, $sqlArray) = Database::sqlFilters(array("uni_id" => $subList, "forum_id" => $forumID, "thread_id" => $threadID, "new_posts" => 0));
+		list($sqlWhere, $sqlArray) = Database::sqlFilters(array("uni_id" => $subList, "forum_id" => array($forumID), "thread_id" => array($threadID), "new_posts" => array(0)));
 		
 		// Update the database
 		$success = Database::query("UPDATE thread_subs_by_user SET new_posts=1 WHERE " . $sqlWhere, $sqlArray);

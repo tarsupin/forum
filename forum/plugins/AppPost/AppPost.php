@@ -64,6 +64,9 @@ abstract class AppPost {
 						$parentID = (int) $nextForum['parent_id'];
 					}
 					
+					// Update the user post count
+					Database::query("UPDATE users SET post_count=post_count+1 WHERE uni_id=? LIMIT 1", array($uniID));
+					
 					Database::endTransaction();
 					
 					// Process the Comment (for hashtags, etc)

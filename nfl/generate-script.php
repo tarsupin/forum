@@ -30,7 +30,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "NFL Discussion", "Discussing a
 	$subID = AppForumAdmin::createForum(0, $forumID, "Predictions", "", 0, 2, "NFLPredictions");
 	
 $forumID = AppForumAdmin::createForum($catID, 0, "NFL Draft", "Insights into this year's NFL Draft", 0, 2, "NFLDraft");
-$forumID = AppForumAdmin::createForum($catID, 0, "Fantasy Basketball", "The web's best forum to help you win your NFL Fantasy league.", 0, 2, "NFLFantasy");
+$forumID = AppForumAdmin::createForum($catID, 0, "Fantasy Football", "The web's best forum to help you win your NFL Fantasy league.", 0, 2, "NFLFantasy");
 $forumID = AppForumAdmin::createForum($catID, 0, "NFL Gaming", "Tips and tricks for Madden gamers.", 0, 2, "NFLGaming");
 
 // Divisions

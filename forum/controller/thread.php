@@ -156,7 +156,7 @@ foreach($posts as $post)
 	
 	if(!isset($userList[$nextID]))
 	{
-		$userList[$nextID] = User::get($nextID, "handle, display_name");
+		$userList[$nextID] = User::get($nextID, "handle, display_name, post_count, date_joined");
 	}
 }
 
@@ -324,12 +324,13 @@ foreach($posts as $post)
 		<div class="post-left' . ($aviID ? "-avatar" : "") . '">
 			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
-				<div class="post-status-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
+				<div class="post-status-top">@<a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
 				<div class="post-status-bottom">
-					<a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>
-					<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
+					<div>Posted ' . Time::fuzzy((int) $post['date_post']) . '</div>
+					<div style="margin-top:6px;"><span class="icon-clock"></span> Joined ' . Time::fuzzy((int) $userList[$uniID]['date_joined']) . '</div>
 				</div>
 			</div>
+			<div class="post-count-row"><span class="icon-pencil"></span> Posts: ' . $userList[$uniID]['post_count'] . '</div>
 			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></a></div>
 		</div>
 		<div class="post-right' . ($aviID ? "-avatar" : "") . '">
