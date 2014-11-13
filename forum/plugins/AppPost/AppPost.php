@@ -92,4 +92,32 @@ abstract class AppPost {
 		return Database::query("UPDATE posts SET body=? WHERE thread_id=? AND id=?", array($body, $threadID, $postID));
 	}
 	
+	
+/****** Like a Post ******/
+	public static function like
+	(
+		$threadID		// <int> The ID of the thread the post is in.
+	,	$postID			// <int> The ID of the post you're liking.
+	,	$uniID			// <int> The UniID that is liking the post.
+	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+	
+	// AppPost::like($threadID, $postID, $uniID);
+	{
+		// Make sure that you haven't already liked the post
+		if($check = Database::selectValue("SELECT post_id FROM posts_likes WHERE post_id=? AND uni_id=? LIMIT 1", array($postID, $uniID)))
+		{
+			return false;
+		}
+		
+		// Add the like to the post
+		Database::startTransaction();
+		
+		if($pass = Database::query("UPDATE posts SET likes=likes+1 WHERE thread_id=? AND id=? LIMIT 1", array($threadID, $postID)))
+		{
+			$pass = Database::query("REPLACE INTO posts_likes (post_id, uni_id) VALUES (?, ?)", array($postID, $uniID));
+		}
+		
+		return Database::endTransaction($pass);
+	}
+	
 }

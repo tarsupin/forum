@@ -12,8 +12,8 @@ if(!isset($forum) or !isset($thread))
 }
 
 // Recognize Integers
-$thread['id'] = (int) $thread['id'];
-$thread['forum_id'] = (int) $thread['forum_id'];
+$threadID = (int) $thread['id'];
+$forumID = (int) $thread['forum_id'];
 $thread['posts'] = (int) $thread['posts'];
 $thread['perm_post'] = (int) $thread['perm_post'];
 
@@ -26,7 +26,7 @@ if((int) $forum['perm_read'] > Me::$clearance)
 }
 
 // View the Thread (increase view count)
-AppThread::view($forum, $thread['id']);
+AppThread::view($forum, $threadID);
 
 // Prepare Values
 $postsPerPage = 20;
@@ -41,11 +41,11 @@ $subData = array();
 if(Me::$loggedIn)
 {
 	// Check your Subscription
-	if($subData = AppSubscriptions::getData(Me::$id, $thread['forum_id'], $thread['id']))
+	if($subData = AppSubscriptions::getData(Me::$id, $forumID, $threadID))
 	{
 		if($subData['new_posts'] > 0)
 		{
-			AppSubscriptions::clear(Me::$id, $thread['forum_id'], $thread['id']);
+			AppSubscriptions::clear(Me::$id, $forumID, $threadID);
 		}
 	}
 	
@@ -55,7 +55,7 @@ if(Me::$loggedIn)
 		// Subscribe to the Thread
 		if($_GET['action'] == "subscribe")
 		{
-			if(AppSubscriptions::subscribe($thread['forum_id'], $thread['id'], Me::$id))
+			if(AppSubscriptions::subscribe($forumID, $threadID, Me::$id))
 			{
 				$subData = array('uni_id' => Me::$id, 'new_posts' => 0);
 				Alert::success("Subscribed", "You are now subscribed to \"" . $thread['title'] . "\"!");
@@ -65,7 +65,7 @@ if(Me::$loggedIn)
 		// Unsubscribe from the Thread
 		else if($_GET['action'] == "unsubscribe")
 		{
-			if(AppSubscriptions::unsubscribe($thread['forum_id'], $thread['id'], Me::$id))
+			if(AppSubscriptions::unsubscribe($forumID, $threadID, Me::$id))
 			{
 				$subData = array();
 				Alert::success("Unsubscribed", "You are now unsubscribed from \"" . $thread['title'] . "\"!");
@@ -80,7 +80,7 @@ if(Me::$loggedIn)
 			{
 				$thread['perm_post'] = 5;
 				
-				if(AppForumAdmin::lockThread($thread['forum_id'], $thread['id'], $thread['perm_post']))
+				if(AppForumAdmin::lockThread($forumID, $threadID, $thread['perm_post']))
 				{
 					Alert::success("Thread Locked", "You have locked this thread.");
 					Alert::info("Update Report", 'Would you like to <a href="/admin/reports/update-report?id=' . SiteReport::$lastReportID . '">update this report</a>?');
@@ -91,40 +91,40 @@ if(Me::$loggedIn)
 			else if($_GET['action'] == "unlock")
 			{
 				$thread['perm_post'] = 2;
-				AppForumAdmin::lockThread($thread['forum_id'], $thread['id'], $thread['perm_post']);
+				AppForumAdmin::lockThread($forumID, $threadID, $thread['perm_post']);
 			}
 			
 			// Sticky the Thread
 			else if($_GET['action'] == "sticky")
 			{
 				Alert::success("Sticky", "This post has been stickied.");
-				AppForumAdmin::alterSticky($thread['forum_id'], $thread['id'], 1);
+				AppForumAdmin::alterSticky($forumID, $threadID, 1);
 			}
 			
 			// Unsticky the Thread
 			else if($_GET['action'] == "unsticky")
 			{
 				Alert::success("Post Unstickied", "This post is unstickied.");
-				AppForumAdmin::alterSticky($thread['forum_id'], $thread['id'], 0);
+				AppForumAdmin::alterSticky($forumID, $threadID, 0);
 			}
 			
 			// Urgent-Sticky the Thread
 			else if($_GET['action'] == "stickyImportant")
 			{
 				Alert::success("Important Sticky", "This post has been marked as important.");
-				AppForumAdmin::alterSticky($thread['forum_id'], $thread['id'], 4);
+				AppForumAdmin::alterSticky($forumID, $threadID, 4);
 			}
 			
 			// Move the Thread
 			else if($_GET['action'] == "moveThread")
 			{
-				header("Location: /admin/threads/move?forum=" . $thread['forum_id'] . '&id=' . $thread['id']); exit;
+				header("Location: /admin/threads/move?forum=" . $forumID . '&id=' . $threadID); exit;
 			}
 			
 			// Delete a Post
 			else if($_GET['action'] == "deletePost" && isset($_GET['post']))
 			{
-				if(AppForumAdmin::deletePost($thread['forum_id'], $thread['id'], (int) $_GET['post']))
+				if(AppForumAdmin::deletePost($forumID, $threadID, (int) $_GET['post']))
 				{
 					Alert::success("Post Deleted", "You have deleted a post.");
 					Alert::info("Update Report", 'Would you like to <a href="/admin/reports/update-report?id=' . SiteReport::$lastReportID . '">update this report</a>?');
@@ -134,7 +134,7 @@ if(Me::$loggedIn)
 			// Delete a Thread
 			else if($_GET['action'] == "deleteThread")
 			{
-				if(AppForumAdmin::deleteThread($thread['forum_id'], $thread['id']))
+				if(AppForumAdmin::deleteThread($forumID, $threadID))
 				{
 					Alert::success("Thread Deleted", "You have deleted a post.");
 					Alert::info("Update Report", 'Would you like to <a href="/admin/reports/update-report?id=' . SiteReport::$lastReportID . '">update this report</a>?');
@@ -145,7 +145,7 @@ if(Me::$loggedIn)
 }
 
 // Get the posts
-$posts = AppThread::getPosts($thread['id'], $_GET['page'], $postsPerPage);
+$posts = AppThread::getPosts($threadID, $_GET['page'], $postsPerPage);
 
 // Get all users listed
 $userList = array();
@@ -174,7 +174,7 @@ if($paginate->highestPage > 1)
 	foreach($paginate->pages as $page)
 	{
 		$pageLine .= '
-		<a class="thread-page' . ($page == $_GET['page'] ? ' thread-page-active' : '') . '" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . $page . '">' . $page . '</a>';
+		<a class="thread-page' . ($page == $_GET['page'] ? ' thread-page-active' : '') . '" href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?page=' . $page . '">' . $page . '</a>';
 	}
 	
 	$pageLine .= '
@@ -185,7 +185,7 @@ if($paginate->highestPage > 1)
 $config['active-hashtag'] = $forum['active_hashtag'];
 
 /****** Page Configuration ******/
-$config['canonical'] = "/" . $thread['id'] . '-' . $thread['url_slug'];
+$config['canonical'] = "/" . $threadID . '-' . $thread['url_slug'];
 $config['pageTitle'] = $thread['title'];		// Up to 70 characters. Use keywords.
 Metadata::$index = true;
 Metadata::$follow = true;
@@ -194,7 +194,7 @@ Metadata::$follow = true;
 AppActivity::updateUser();
 
 // Update the last time viewing this forum
-$_SESSION[SITE_HANDLE]['posts-new'][$thread['id']] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
+$_SESSION[SITE_HANDLE]['posts-new'][$threadID] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -233,18 +233,18 @@ echo '
 if(Me::$loggedIn)
 {
 	echo '
-	<a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">Reply</a>';
+	<a href="/post?forum=' . $forumID . '&id=' . $threadID . '">Reply</a>';
 	
 	// Display Subscription Option
 	if($subData)
 	{
 		echo '
-		<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
+		<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
 	}
 	else
 	{
 		echo '
-		<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
+		<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
 	}
 	
 	// Display Moderator Options
@@ -287,7 +287,7 @@ if(Me::$loggedIn)
 					
 					if(modList.indexOf(modDrop.value) > -1)
 					{
-						window.location="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=" + modDrop.value;
+						window.location="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=" + modDrop.value;
 					}
 				}
 			}
@@ -330,6 +330,7 @@ foreach($posts as $post)
 					<div>' . Time::fuzzy((int) $post['date_post']) . '</div>
 				</div>
 			</div>
+			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></a></div>
 		</div>
 		<div class="post-right' . ($aviID ? "-avatar" : "") . '">
 			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
@@ -338,14 +339,14 @@ foreach($posts as $post)
 			if($isMod)
 			{
 				echo '
-				<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '"><img src="' . CDN . '/images/forum/delete.png" /></a>';
+				<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '"><img src="' . CDN . '/images/forum/delete.png" /></a>';
 			}
 			
 			// Edit Option
 			if(Me::$id == $uniID || $isMod)
 			{
 				echo '
-				<a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&edit=' . $post['id'] . '"><img src="' . CDN . '/images/forum/edit.png" /></a>';
+				<a href="/post?forum=' . $forumID . '&id=' . $threadID . '&edit=' . $post['id'] . '"><img src="' . CDN . '/images/forum/edit.png" /></a>';
 			}
 			
 			echo '
@@ -360,8 +361,71 @@ foreach($posts as $post)
 		echo '
 		</div>
 	</div>
-	<div style="clear:both;">';
+	<div style="clear:both;"></div>';
 }
+
+echo '
+<script>
+function likePost(threadID, postID)
+{
+	getAjax("", "like-post", "likeActivated", "threadID=" + threadID, "postID=" + postID);
+}
+
+function likeActivated(response)
+{
+	if(!response) { return; }
+	
+	var obj = JSON.parse(response);
+	
+	if(typeof(obj.postID) != undefined)
+	{
+		var l = document.getElementById("likeVal-" + obj.postID);
+		
+		var c = parseInt(l.innerHTML) + 1;
+		
+		l.innerHTML = c;
+	}
+}
+</script>';
+
+/*
+
+function editTitle(f, tid, title)
+{
+	var new_title = prompt("New Thread Title:", title);
+	if (new_title)
+		$.ajax({
+			url: "title.php",
+			data: ("f="+f+"&id="+tid+"&title="+new_title),
+			type: "POST",
+			success: function(html)
+			{
+				$("#threadtitle").html(html);
+				document.title = html + " - UniFaction 5 Forum";
+				$("#editthreadtitle").attr("href", "javascript:editTitle(\"" + f + "\", \"" + tid + "\", \"" + html + "\");");
+			}
+		});
+}
+
+function quote(created, quote)
+{	
+	$.ajax({
+		url: "getquote.php",
+		data: ("quote="+quote+"&created="+created),
+		type: "POST",
+		success: function(html)
+		{
+			var el = $("#bbcode");
+			if (el)
+			{
+				if (el.val().length > 0)
+					el.val(el.val() + "\n");
+				el.val(el.val() + html);
+			}
+		}
+	});
+}
+*/
 
 echo '
 <div class="thread-tline">';
@@ -376,7 +440,7 @@ foreach($breadcrumbs as $crumb)
 	$comma = ' &gt; ';
 }
 
-echo ' &gt; ' . $thread['title'] . ' &gt; <a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">Reply</a>
+echo ' &gt; ' . $thread['title'] . ' &gt; <a href="/post?forum=' . $forumID . '&id=' . $threadID . '">Reply</a>
 	' . $pageLine . '
 </div>';
 
@@ -390,7 +454,7 @@ if(Me::$loggedIn)
 		</div>
 		' . UniMarkup::buttonLine() . '
 		<div style="padding:6px;">
-			<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
+			<form class="uniform" action="/post?forum=' . $forumID . '&id=' . $threadID . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
 				<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;"></textarea>
 				<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>
 			</form>

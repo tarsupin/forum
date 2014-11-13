@@ -32,11 +32,22 @@ class AppPost_config {
 			`avi_id`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
 			`body`					text						NOT NULL	DEFAULT '',
+			`likes`					tinyint(3)		unsigned	NOT NULL	DEFAULT '0',
 			
 			`date_post`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
 			UNIQUE (`thread_id`, `id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(thread_id) PARTITIONS 23;
+		");
+		
+		Database::exec("
+		CREATE TABLE IF NOT EXISTS `posts_likes`
+		(
+			`post_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			
+			UNIQUE (`post_id`, `uni_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(post_id) PARTITIONS 5;
 		");
 		
 		return $this->isInstalled();
@@ -50,7 +61,10 @@ class AppPost_config {
 	// $plugin->isInstalled();
 	{
 		// Make sure the newly installed tables exist
-		return DatabaseAdmin::columnsExist("posts", array("id", "thread_id"));
+		$pass1 = DatabaseAdmin::columnsExist("posts", array("id", "thread_id"));
+		$pass2 = DatabaseAdmin::columnsExist("posts_likes", array("post_id", "uni_id"));
+		
+		return ($pass1 and $pass2);
 	}
 	
 }

@@ -53,7 +53,7 @@ abstract class AppThread {
 	{
 		$startLimit = max(0, ($page - 1) * $show);
 		
-		return Database::selectMultiple("SELECT p.id, p.uni_id, p.avi_id, p.body, p.date_post, s.signature FROM posts p LEFT JOIN forum_settings s ON p.uni_id=s.uni_id WHERE p.thread_id=? ORDER BY p.id ASC LIMIT " . ($startLimit + 0) . ', ' . max(1, $show), array($threadID));
+		return Database::selectMultiple("SELECT p.id, p.uni_id, p.avi_id, p.body, p.likes, p.date_post, s.signature FROM posts p LEFT JOIN forum_settings s ON p.uni_id=s.uni_id WHERE p.thread_id=? ORDER BY p.id ASC LIMIT " . ($startLimit + 0) . ', ' . max(1, $show), array($threadID));
 	}
 	
 	
