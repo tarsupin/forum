@@ -29,7 +29,7 @@ if((int) $forum['perm_read'] > Me::$clearance)
 AppThread::view($forum, $thread['id']);
 
 // Prepare Values
-$postsPerPage = 10;
+$postsPerPage = 20;
 $highestPage = ceil($thread['posts'] / $postsPerPage);
 $isMod = (Me::$clearance >= 6 ? true : false);
 
@@ -124,7 +124,7 @@ if(Me::$loggedIn)
 			// Delete a Post
 			else if($_GET['action'] == "deletePost" && isset($_GET['post']))
 			{
-				if(AppForumAdmin::deletePost($thread['forum_id'], $thread['id'], $_GET['post']))
+				if(AppForumAdmin::deletePost($thread['forum_id'], $thread['id'], (int) $_GET['post']))
 				{
 					Alert::success("Post Deleted", "You have deleted a post.");
 					Alert::info("Update Report", 'Would you like to <a href="/admin/reports/update-report?id=' . SiteReport::$lastReportID . '">update this report</a>?');
@@ -171,7 +171,7 @@ if($paginate->highestPage > 1)
 	$pageLine = '
 	<div style="float:right;">Page: ';
 	
-	foreach($pages as $page)
+	foreach($paginate->pages as $page)
 	{
 		$pageLine .= '
 		<a class="thread-page' . ($page == $_GET['page'] ? ' thread-page-active' : '') . '" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . $page . '">' . $page . '</a>';
@@ -306,11 +306,12 @@ foreach($posts as $post)
 {
 	// Prepare Values
 	$uniID = (int) $post['uni_id'];
+	$aviID = (int) $post['avi_id'];
 	
 	// Prepare the differences between AVATAR and PROFILE sites
-	if(AVI_TYPE == "avatar" and Avatar::hasAvatar())
+	if($aviID)
 	{
-		$img = str_replace(".com", ".cool", Avatar::image($uniID, (int) $post['avi_id']));
+		$img = str_replace(".com", ".cool", Avatar::image($uniID, $aviID));
 	}
 	else
 	{
@@ -320,8 +321,8 @@ foreach($posts as $post)
 	// Display the Post
 	echo '
 	<div class="thread-post">
-		<div class="post-left">
-			<div class="' . (AVI_TYPE == "avatar" ? "post-avatar-wrap" : "post-img-wrap") . '"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img src="' . $img . '" /></a></div>
+		<div class="post-left' . ($aviID ? "-avatar" : "") . '">
+			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
 				<div class="post-status-top"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
 				<div class="post-status-bottom">
@@ -330,21 +331,21 @@ foreach($posts as $post)
 				</div>
 			</div>
 		</div>
-		<div class="post-right">
+		<div class="post-right' . ($aviID ? "-avatar" : "") . '">
 			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
 			
 			// Delete Option
 			if($isMod)
 			{
 				echo '
-				<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '">Delete</a>';
+				<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '"><img src="' . CDN . '/images/forum/delete.png" /></a>';
 			}
 			
 			// Edit Option
 			if(Me::$id == $uniID || $isMod)
 			{
 				echo '
-				<a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&edit=' . $post['id'] . '">Edit</a>';
+				<a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '&edit=' . $post['id'] . '"><img src="' . CDN . '/images/forum/edit.png" /></a>';
 			}
 			
 			echo '
@@ -358,14 +359,44 @@ foreach($posts as $post)
 			
 		echo '
 		</div>
-	</div>';
+	</div>
+	<div style="clear:both;">';
 }
 
 echo '
-<div class="thread-tline">
+<div class="thread-tline">';
+
+// Draw the Breadcrumb Trail
+$comma = '';
+foreach($breadcrumbs as $crumb)
+{
+	echo $comma . '
+	<a href="' . $crumb[0] . '">' . $crumb[1] . '</a>';
+	
+	$comma = ' &gt; ';
+}
+
+echo ' &gt; ' . $thread['title'] . ' &gt; <a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">Reply</a>
 	' . $pageLine . '
-	<a href="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '">Reply</a>
 </div>';
+
+// Quick Reply Box
+if(Me::$loggedIn)
+{
+	echo '
+	<div class="overwrap-box">
+		<div class="overwrap-line" style="margin-bottom:10px;">
+			<div class="overwrap-name">Quick Reply</div>
+		</div>
+		' . UniMarkup::buttonLine() . '
+		<div style="padding:6px;">
+			<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
+				<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;"></textarea>
+				<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>
+			</form>
+		</div>
+	</div>';
+}
 
 echo '
 </div>';

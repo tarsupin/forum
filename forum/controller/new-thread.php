@@ -41,7 +41,7 @@ $_POST['body'] = (isset($_POST['body']) ? Security::purify($_POST['body']) : "")
 // Create the thread
 if(Form::submitted(SITE_HANDLE . '-forum-thrd'))
 {
-	FormValidate::text("Title", $_POST['title'], 1, 42);
+	FormValidate::text("Title", $_POST['title'], 1, 48);
 	
 	if(strlen($_POST['body']) < 1)
 	{
@@ -122,7 +122,7 @@ echo '
 	</div>
 	<div style="padding:6px;">
 		<form class="uniform" action="/new-thread?forum=' . $forum['id'] . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . '-forum-thrd') . '
-			<input type="text" name="title" value="' . $_POST['title'] . '" placeholder="Title . . ." style="width:100%;margin-bottom:10px;" autocomplete="off" />
+			<input type="text" name="title" value="' . $_POST['title'] . '" placeholder="Title . . ." style="width:100%;margin-bottom:10px;" autocomplete="off" maxlength="48" />
 			' . UniMarkup::buttonLine() . '
 			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical;width:100%;height:300px;">' . $_POST['body'] . '</textarea>
 			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post New Thread" /></div>

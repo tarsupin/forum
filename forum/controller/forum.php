@@ -29,7 +29,7 @@ AppForum::view($forum);
 $_GET['page'] = (isset($_GET['page']) ? (int) $_GET['page'] : 1);
 $pageList = "";
 $threadsToShow = 20;
-$postsPerPage = 10;
+$postsPerPage = 20;
 
 if($_GET['page'] > 1)
 {
@@ -175,7 +175,7 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 			foreach($paginate->pages as $page)
 			{
 				$drawDesc .= '
-					<a href="/thread?forum=' . $stick['forum_id'] . '&id=' . $stick['id'] . '&page=' . $page . '"><span>' . $page . '</span></a>';
+					<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '?page=' . $page . '"><span>' . $page . '</span></a>';
 			}
 		}
 		

@@ -60,7 +60,7 @@ abstract class AppActivity {
 	
 	// echo AppActivity::getActivityModule($duration, $refresh);
 	{
-		if(!$cache = CacheFile::load("onlineUserActivity", $refresh))
+		if(!$cache = CacheFile::load("usersOn-" . SITE_HANDLE, $refresh))
 		{
 			// Recover activity within the duration provided
 			$activeUsers = UserActivity::getUsersOnline($duration);
@@ -78,8 +78,8 @@ abstract class AppActivity {
 			// Prepend the Guest Count
 			$html = ($guestCount + 0) . " Guests, " . ($userCount + 0) . " Users: " . $html;
 			
-			CacheFile::save("onlineUserActivity", $html);
-			$cache = CacheFile::load("onlineUserActivity");
+			CacheFile::save("usersOn-" . SITE_HANDLE, $html);
+			$cache = CacheFile::load("usersOn-" . SITE_HANDLE);
 		}
 		
 		// Display the module, if loaded

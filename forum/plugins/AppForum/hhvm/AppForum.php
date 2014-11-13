@@ -114,7 +114,7 @@ abstract class AppForum {
 	{
 		$startLimit = max(0, ($page - 1) * $show);
 		
-		return Database::selectMultiple("SELECT t.id, t.forum_id, t.url_slug, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.author_id WHERE t.forum_id=? ORDER BY t.id DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
+		return Database::selectMultiple("SELECT t.id, t.forum_id, t.url_slug, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE t.forum_id=? ORDER BY t.date_last_post DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
 	}
 	
 	
@@ -127,7 +127,7 @@ abstract class AppForum {
 	
 	// $stickied = AppForum::getStickied($forumID);
 	{
-		return Database::selectMultiple("SELECT t.*, ts.sticky_level, u.handle, u.display_name FROM threads_stickied ts INNER JOIN threads t ON t.id=ts.thread_id INNER JOIN users u ON u.uni_id=t.author_id WHERE ts.forum_id=? ORDER BY ts.sticky_level DESC", array($forumID));
+		return Database::selectMultiple("SELECT t.*, ts.sticky_level, u.handle, u.display_name FROM threads_stickied ts INNER JOIN threads t ON t.id=ts.thread_id INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE ts.forum_id=? ORDER BY ts.sticky_level DESC", array($forumID));
 	}
 	
 	
@@ -204,8 +204,6 @@ abstract class AppForum {
 		Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forum['id']));
 		
 		// Update the forums above
-		Database::query("UPDATE forums SET views=views+1 WHERE id=? LIMIT 1", array($forum['id']));
-		
 		$parentID = (int) $forum['parent_id'];
 		
 		while($parentID)

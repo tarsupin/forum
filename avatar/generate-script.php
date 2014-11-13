@@ -54,3 +54,7 @@ $forumID = AppForumAdmin::createForum($catID, 0, "Roleplaying Discussion", "Ask 
 $forumID = AppForumAdmin::createForum($catID, 0, "Group Roleplaying", "Join up with your roleplaying group here.", 0, 2, "AvatarRoleplay");
 $forumID = AppForumAdmin::createForum($catID, 0, "1-on-1 Roleplaying", "This forum is for 1-on-1 roleplaying games only.", 0, 2, "AvatarRoleplay");
 
+// Avatar Games
+$catID = AppForumAdmin::createCategory("Avatar Games");
+
+$forumID = AppForumAdmin::createForum($catID, 0, "UniCreatures", "Updates, news, and community discussion on UniCreatures!", 0, 2, "UniCreatures");

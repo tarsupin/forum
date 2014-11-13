@@ -83,7 +83,7 @@ if(!$_POST['body'] and isset($post['body']))
 // Create the post
 if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 {
-	FormValidate::text("Message", $_POST['body'], 1, 3500);
+	FormValidate::text("Message", $_POST['body'], 1, 32000);
 	
 	if(FormValidate::pass())
 	{

@@ -9,7 +9,8 @@ if(!Me::$loggedIn)
 // Run the Form
 if(Form::submitted(SITE_HANDLE . "setting-form"))
 {
-	FormValidate::text("Signature", $_POST['signature'], 0, 20000);
+	FormValidate::text("Signature", $_POST['signature'], 0, 20000, "
+");
 	
 	if(FormValidate::pass())
 	{
@@ -33,7 +34,13 @@ if(isset($_GET['def']))
 		// If the avatar is valid, update your default avatar
 		Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array((int) $_GET['def'], Me::$id));
 		
+		Me::$vals['avatar_opt'] = (int) $_GET['def'];
+		
 		Alert::success("Avatar Updated", "You have chosen your default avatar.");
+	}
+	else
+	{
+		Alert::error("Avatar Error", "There was an error trying to load this avatar.");
 	}
 }
 
@@ -60,6 +67,11 @@ if($value = Link::clicked() and $value == "load-avatars")
 	{
 		// Update your avatar list
 		Database::query("UPDATE forum_settings SET avatar_list=? WHERE uni_id=? LIMIT 1", array(json_encode($avatarList), Me::$id));
+		
+		if(!Me::$vals['avatar_opt'])
+		{
+			Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array(1, Me::$id));
+		}
 	}
 }
 

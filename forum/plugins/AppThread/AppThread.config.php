@@ -42,7 +42,8 @@ class AppThread_config {
 			
 			`perm_post`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
-			INDEX (`forum_id`, `id`)
+			INDEX (`forum_id`, `id`),
+			INDEX (`forum_id`, `date_last_post`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(forum_id) PARTITIONS 13;
 		");
 		

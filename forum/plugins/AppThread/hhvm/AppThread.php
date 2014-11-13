@@ -46,7 +46,7 @@ abstract class AppThread {
 	(
 		int $threadID		// <int> The ID of the thread you're retrieving posts from.
 	,	int $page 			// <int> The thread page that you're viewing.
-	,	int $show = 10		// <int> The number of posts to show.
+	,	int $show = 20		// <int> The number of posts to show.
 	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> an array of posts.
 	
 	// $posts = AppThread::getPosts($forumID, $page, $show = 20);
