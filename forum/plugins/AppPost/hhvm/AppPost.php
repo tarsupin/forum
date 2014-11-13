@@ -67,6 +67,16 @@ abstract class AppPost {
 					// Update the user post count
 					Database::query("UPDATE users SET post_count=post_count+1 WHERE uni_id=? LIMIT 1", array($uniID));
 					
+					// Pull the user data
+					if($userData = User::get($uniID, "handle"))
+					{
+						// Get the thread data
+						$thread = AppThread::get((int) $forum['id'], $threadID);
+						
+						// Add this post to the recent post list
+						Database::query("INSERT INTO posts_recent (date_posted, thread_title, thread_posts, thread_views, post_link, post_id, poster_handle, uni_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array(time(), $thread['title'], $thread['posts'], ($thread['views'] + 1), "/" . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'], $postID, $userData['handle'], $uniID, substr(UniMarkup::strip($body), 0, 255)));
+					}
+					
 					Database::endTransaction();
 					
 					// Process the Comment (for hashtags, etc)
@@ -93,6 +103,25 @@ abstract class AppPost {
 	// AppPost::edit($threadID, $postID, "Hey everyone! Edit: Oh yeah, check out my blog!");
 	{
 		return Database::query("UPDATE posts SET body=? WHERE thread_id=? AND id=?", array($body, $threadID, $postID));
+	}
+	
+	
+/****** Pull data from the recent posts list ******/
+	public static function getRecentPosts (
+	): array <int, array<str, mixed>>					// RETURNS <int:[str:mixed]> a list of data pulled from recent posts, array() on failure.
+	
+	// $recentPosts = AppPost::getRecentPosts();
+	{
+		// Check if you should purge any recent posts from the list
+		if(mt_rand(0, 200) == 22 or true)
+		{
+			if($delDate = (int) Database::selectValue("SELECT date_posted FROM posts_recent ORDER BY date_posted DESC LIMIT 6, 1", array()))
+			{
+				Database::query("DELETE FROM posts_recent WHERE date_posted <= ?", array($delDate));
+			}
+		}
+		
+		return Database::selectMultiple("SELECT * FROM posts_recent ORDER BY date_posted DESC LIMIT 5", array());
 	}
 	
 	

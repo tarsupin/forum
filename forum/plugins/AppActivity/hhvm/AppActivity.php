@@ -85,7 +85,7 @@ abstract class AppActivity {
 		// Display the module, if loaded
 		if($cache)
 		{
-			echo '<div class="overwrap-box"><div style="font-weight:bold;">Users Online</div><div class="inner-box"><div style="padding:6px;">' . $cache . '</div></div></div>';
+			echo '<div class="overwrap-box overwrap-module"><div class="overwrap-line" style="font-size:1.0em;">Users Online</div><div class="inner-box"><div style="padding:6px;">' . $cache . '</div></div></div>';
 		}
 	}
 }
