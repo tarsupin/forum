@@ -34,7 +34,7 @@ $thread['id'] = (int) $thread['id'];
 $thread['forum_id'] = (int) $thread['forum_id'];
 
 // Get Forum Details
-$forum = Database::selectOne("SELECT id, parent_id, url_slug, title, active_hashtag, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
+$forum = Database::selectOne("SELECT id, parent_id, url_slug, title, active_hashtag, perm_read, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
 
 // Make sure you have permission to post
 if(Me::$clearance < (int) $forum['perm_post'])

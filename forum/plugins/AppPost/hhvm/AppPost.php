@@ -73,8 +73,11 @@ abstract class AppPost {
 						// Get the thread data
 						$thread = AppThread::get((int) $forum['id'], $threadID);
 						
-						// Add this post to the recent post list
-						Database::query("INSERT INTO posts_recent (date_posted, thread_title, thread_posts, thread_views, post_link, post_id, poster_handle, uni_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array(time(), $thread['title'], $thread['posts'], ($thread['views'] + 1), "/" . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'], $postID, $userData['handle'], $uniID, substr(UniMarkup::strip($body), 0, 255)));
+						// Add this post to the recent post list if it is in a public forum
+						if($forum['perm_read'] == 0)
+						{
+							Database::query("INSERT INTO posts_recent (date_posted, thread_title, thread_posts, thread_views, post_link, post_id, poster_handle, uni_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array(time(), $thread['title'], $thread['posts'], ($thread['views'] + 1), "/" . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'], $postID, $userData['handle'], $uniID, substr(UniMarkup::strip($body), 0, 255)));
+						}
 					}
 					
 					Database::endTransaction();
