@@ -1,5 +1,24 @@
 <?php if(!defined("CONF_PATH")) { die("No direct script access allowed."); }
 
+// If you're not logged in
+if(!Me::$loggedIn)
+{
+	header("Location: /"); exit;
+}
+
+// Unsubscribe Action
+if(isset($_GET['unsub']) and isset($_GET['f']) and isset($_GET['t']))
+{
+	if(AppSubscriptions::unsubscribe((int) $_GET['f'], (int) $_GET['t'], Me::$id))
+	{
+		Alert::success("Unsubscribed", "You have successfully unsubscribed from the thread!");
+	}
+	else
+	{
+		Alert::error("Unsubscibe Failed", "There was an error trying to unsubscribe from that thread.");
+	}
+}
+
 // Gather list of subscriptions
 $subscriptions = AppSubscriptions::get(Me::$id);
 
@@ -42,7 +61,7 @@ foreach($subscriptions as $sub)
 	<div class="inner-line">
 		<div class="inner-name">
 			<a href="/' . $sub['forum_slug'] . '/' . $sub['id'] . '-' . $sub['thread_slug'] . '?page=last">' . $sub['title'] . '</a>
-			<div class="inner-desc">' . ($sub['new_posts'] > 0 ? 'New Posts!' : '&nbsp;') . '</div>
+			<div class="inner-desc"><a href="/subscriptions?unsub=1&f=' . $sub['forum_id'] . '&t=' . $sub['id'] . '"><span class="icon-circle-close"></span> Unsubscribe</a></div>
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>
 		<div class="inner-views">' . $sub['views'] . '</div>
