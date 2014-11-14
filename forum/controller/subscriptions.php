@@ -39,17 +39,15 @@ if(count($subscriptions) == 0)
 foreach($subscriptions as $sub)
 {
 	echo '
-	<a href="/thread?forum=' . $sub['forum_id'] . '&id=' . $sub['id'] . '">
 	<div class="inner-line">
 		<div class="inner-name">
-			' . $sub['title'] . '
+			<a href="/' . $sub['forum_slug'] . '/' . $sub['id'] . '-' . $sub['thread_slug'] . '?page=last">' . $sub['title'] . '</a>
 			<div class="inner-desc">' . ($sub['new_posts'] > 0 ? 'New Posts!' : '&nbsp;') . '</div>
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>
 		<div class="inner-views">' . $sub['views'] . '</div>
-		<div class="inner-details"><strong>Last Post:</strong><br />' . Time::fuzzy((int) $sub['date_last_post']) . '</div>
-	</div>
-	</a>';
+		<div class="inner-details"><a href="' . URL::unifaction_social() . '/' . $sub['handle'] . '">@' . $sub['handle'] . '</a> - ' . Time::fuzzy((int) $sub['date_last_post']) . '</div>
+	</div>';
 }
 
 echo '

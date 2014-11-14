@@ -15,7 +15,7 @@ $subscriptions = AppSubscriptions::get($uniID);
 
 AppSubscriptions::subscribe($forumID, $threadID, $uniID);
 AppSubscriptions::unsubscribe($forumID, $threadID, $uniID);
-AppSubscriptions::update($forumID, $threadID, $posterID, $threadName);
+AppSubscriptions::update($forum, $thread, $posterID, $threadName);
 
 $getData = AppSubscriptions::getData($uniID, $forumID, $threadID);
 
@@ -34,7 +34,7 @@ abstract class AppSubscriptions {
 	
 	// $subscriptions = AppSubscriptions::get($uniID);
 	{
-		return Database::selectMultiple("SELECT t.forum_id, t.id, t.title, t.posts, t.views, t.last_poster_id, t.date_last_post, ts.new_posts FROM thread_subs_by_user ts INNER JOIN threads t ON t.forum_id=ts.forum_id AND t.id=ts.thread_id WHERE uni_id=?", array($uniID));
+		return Database::selectMultiple("SELECT f.url_slug as forum_slug, t.forum_id, t.id, t.url_slug as thread_slug, t.title, t.posts, t.views, t.last_poster_id, t.date_last_post, ts.new_posts, u.handle FROM thread_subs_by_user ts INNER JOIN forums f ON ts.forum_id=f.id INNER JOIN threads t ON t.forum_id=ts.forum_id AND t.id=ts.thread_id INNER JOIN users u ON ts.uni_id=u.uni_id WHERE ts.uni_id=?", array($uniID));
 	}
 	
 	
@@ -101,15 +101,14 @@ abstract class AppSubscriptions {
 /****** Update a thread's subscriptions ******/
 	public static function update
 	(
-		int $forumID		// <int> The ID of the forum that the thread is in.
-	,	int $threadID		// <int> The ID of the thread to update the subscriptions of.
-	,	int $posterID		// <int> The UniID of the poster.
-	,	string $threadName		// <str> The name of the thread.
+		array <str, mixed> $forum			// <str:mixed> The data of the forum that contains the thread subscribed to.
+	,	array <str, mixed> $thread			// <str:mixed> The data of the thread.
+	,	int $posterID		// <int> The UniID to update
 	): bool					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
-	// AppSubscriptions::update($forumID, $threadID, $posterID, $threadName);
+	// AppSubscriptions::update($forum, $thread, $posterID);
 	{
-		if(!$subscriptions = Database::selectMultiple("SELECT uni_id FROM thread_subs WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forumID, $threadID, $posterID)))
+		if(!$subscriptions = Database::selectMultiple("SELECT uni_id FROM thread_subs WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID)))
 		{
 			return false;
 		}
@@ -123,15 +122,15 @@ abstract class AppSubscriptions {
 		}
 		
 		// Prepare Values
-		$threadName = Sanitize::text($threadName);
+		$thread['title'] = Sanitize::text($thread['title']);
 		
-		list($sqlWhere, $sqlArray) = Database::sqlFilters(array("uni_id" => $subList, "forum_id" => array($forumID), "thread_id" => array($threadID), "new_posts" => array(0)));
+		list($sqlWhere, $sqlArray) = Database::sqlFilters(array("uni_id" => $subList, "forum_id" => array($forum['id']), "thread_id" => array($thread['id']), "new_posts" => array(0)));
 		
 		// Update the database
 		$success = Database::query("UPDATE thread_subs_by_user SET new_posts=1 WHERE " . $sqlWhere, $sqlArray);
 		
 		// Notify the users
-		Notifications::createMultiple($subList, SITE_URL . "/thread?forum=" . $forumID . "&id=" . $threadID . "&page=last", 'The thread "' . $threadName . '" was updated!');
+		Notifications::createMultiple($subList, SITE_URL . "/" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . "?page=last", 'The thread "' . $thread['title'] . '" was updated!');
 		
 		return $success;
 	}
