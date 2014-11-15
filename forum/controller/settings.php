@@ -9,7 +9,7 @@ if(!Me::$loggedIn)
 // Run the Form
 if(Form::submitted(SITE_HANDLE . "setting-form"))
 {
-	FormValidate::text("Signature", $_POST['signature'], 0, 20000, "
+	FormValidate::text("Signature", $_POST['signature'], 0, 20000, chr(13) . "
 ");
 	
 	if(FormValidate::pass())
