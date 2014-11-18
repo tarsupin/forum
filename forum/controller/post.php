@@ -159,7 +159,7 @@ echo '
 	' . UniMarkup::buttonLine() . '
 	<div style="padding:6px;">
 		<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . ($editMode ? "&edit=" . $_GET['edit'] : "") . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
-			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;">' . $_POST['body'] . '</textarea>
+			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;" tabindex="10" autofocus>' . $_POST['body'] . '</textarea>
 			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>
 		</form>
 	</div>

@@ -121,12 +121,12 @@ if($avatarList)
 	foreach($avatarList as $aviID => $aviName)
 	{
 		echo '
-		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . str_replace(".com", ".cool", Avatar::image(Me::$id, (int) $aviID)) . '" /><br /><a class="button" href="/settings?def=' . $aviID . '">Set as Default</a></div>';
+		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . Avatar::image(Me::$id, (int) $aviID) . '" /><br /><a class="button" href="/settings?def=' . $aviID . '">Set as Default</a></div>';
 	}
 }
 
 echo '
-	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_cool() . Me::$slg . '">Create an Avatar</a></div>
+	<div style="padding:8px;"><a class="button" href="/settings?loadAvis=1&' . Link::prepare("load-avatars") . '">Load My Avatars</a> <a class="button" href="' . URL::avatar_unifaction_com() . Me::$slg . '">Create an Avatar</a></div>
 	</div>
 </div>';
 

@@ -300,7 +300,6 @@ echo '
 
 // Prepare Values
 $social = URL::unifaction_social();
-$fastchat = URL::fastchat_social();
 
 foreach($posts as $post)
 {
@@ -311,7 +310,7 @@ foreach($posts as $post)
 	// Prepare the differences between AVATAR and PROFILE sites
 	if($aviID)
 	{
-		$img = str_replace(".com", ".cool", Avatar::image($uniID, $aviID));
+		$img = Avatar::image($uniID, $aviID);
 	}
 	else
 	{
@@ -334,7 +333,7 @@ foreach($posts as $post)
 			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></a></div>
 		</div>
 		<div class="post-right' . ($aviID ? "-avatar" : "") . '">
-			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $fastchat . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
+			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
 			
 			// Delete Option
 			if($isMod)
