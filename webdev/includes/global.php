@@ -3,7 +3,7 @@
 // UniFaction Dropdown Menu
 WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap hide-600">
-	<ul class="menu"><li class="menu-slot"><a href="/">Home</a><ul><li class="dropdown-slot"><a href="/settings">Settings</a></li></ul></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::gamedev_unifaction_community() . Me::$slg . '">Game Development</a></li><li class="dropdown-slot"><a href="' . URL::programming_unifaction_community() . Me::$slg . '">Programming Community</a></li><li class="dropdown-slot"><a href="' . URL::tech_unifaction_community() . Me::$slg . '">Tech Community</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
+	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/settings">Settings</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::gamedev_unifaction_community() . Me::$slg . '">Game Development</a></li><li class="dropdown-slot"><a href="' . URL::programming_unifaction_community() . Me::$slg . '">Programming Community</a></li><li class="dropdown-slot"><a href="' . URL::tech_unifaction_community() . Me::$slg . '">Tech Community</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
 </div>');
 
 // Main Navigation

@@ -11,6 +11,10 @@ if($activeHashtag)
 	echo $chatWidget->get();
 }
 
+// Dynamic Content Loader
+echo '
+<!-- Content gets dynamically shifted to this section -->
+<div id="dynamic-content-loader"></div>';
 
 // Load the Featured Widget for the main page
 if(isset($_SERVER['HTTP_REFERER']))

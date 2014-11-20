@@ -3,7 +3,7 @@
 // UniFaction Dropdown Menu
 WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap hide-600">
-	<ul class="menu"><li class="menu-slot"><a href="/">Home</a><ul><li class="dropdown-slot"><a href="/settings">Settings</a></li></ul></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::diyauto_unifaction_community() . Me::$slg . '">DIY: Auto</a></li><li class="dropdown-slot"><a href="' . URL::diycrafts_unifaction_community() . Me::$slg . '">DIY: Crafts</a></li><li class="dropdown-slot"><a href="' . URL::intdesign_unifaction_community() . Me::$slg . '">Interior Design</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
+	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/settings">Settings</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::diyauto_unifaction_community() . Me::$slg . '">DIY: Auto</a></li><li class="dropdown-slot"><a href="' . URL::diycrafts_unifaction_community() . Me::$slg . '">DIY: Crafts</a></li><li class="dropdown-slot"><a href="' . URL::intdesign_unifaction_community() . Me::$slg . '">Interior Design</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
 </div>');
 
 // Main Navigation

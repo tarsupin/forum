@@ -3,7 +3,7 @@
 // UniFaction Dropdown Menu
 WidgetLoader::add("UniFactionMenu", 10, '
 <div class="menu-wrap hide-600">
-	<ul class="menu"><li class="menu-slot"><a href="/">Home</a><ul><li class="dropdown-slot"><a href="/settings">Settings</a></li></ul></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::art_unifaction_community() . Me::$slg . '">Art Community</a></li><li class="dropdown-slot"><a href="' . URL::music_unifaction_community() . Me::$slg . '">Music Community</a></li><li class="dropdown-slot"><a href="' . URL::pet_unifaction_community() . Me::$slg . '">Pet Community</a></li><li class="dropdown-slot"><a href="' . URL::writers_unifaction_community() . Me::$slg . '">Writer\'s Community</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
+	<ul class="menu"><li class="menu-slot"><a href="/">Home</a></li><li class="menu-slot"><a href="/settings">Settings</a></li><li class="menu-slot"><a href="/subscriptions">Subscriptions</a></li><li class="menu-slot"><a href="' . URL::unifaction_com() . '/communities">Communities</a><ul><li class="dropdown-slot"><a href="' . URL::art_unifaction_community() . Me::$slg . '">Art Community</a></li><li class="dropdown-slot"><a href="' . URL::music_unifaction_community() . Me::$slg . '">Music Community</a></li><li class="dropdown-slot"><a href="' . URL::pets_unifaction_community() . Me::$slg . '">Pet Community</a></li><li class="dropdown-slot"><a href="' . URL::writers_unifaction_community() . Me::$slg . '">Writer\'s Community</a></li><li class="dropdown-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">... more</a></li></ul></li></ul>
 </div>');
 
 // Main Navigation
@@ -16,7 +16,7 @@ WidgetLoader::add("SidePanel", 50, '
 		<li class="nav-slot"><a href="' . URL::unifaction_com() . '/communities' . Me::$slg . '">All Communities<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot"><a href="' . URL::art_unifaction_community() . Me::$slg . '">Art Community<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot"><a href="' . URL::music_unifaction_community() . Me::$slg . '">Music Community<span class="icon-circle-right nav-arrow"></span></a></li>
-		<li class="nav-slot"><a href="' . URL::pet_unifaction_community() . Me::$slg . '">Pet Community<span class="icon-circle-right nav-arrow"></span></a></li>
+		<li class="nav-slot"><a href="' . URL::pets_unifaction_community() . Me::$slg . '">Pet Community<span class="icon-circle-right nav-arrow"></span></a></li>
 		<li class="nav-slot"><a href="' . URL::writers_unifaction_community() . Me::$slg . '">Writer\'s Community<span class="icon-circle-right nav-arrow"></span></a></li>
 	</ul>
 </div>');
