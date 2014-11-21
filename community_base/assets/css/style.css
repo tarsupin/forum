@@ -1,0 +1,48 @@
+
+/************************
+****** Page Layout ******
+************************/
+
+@media screen and (min-width:1401px) {
+	#content { background-color:white; padding:14px; }
+}
+
+@media screen and (min-width:921px) and (max-width:1400px) {
+	#content { background-color:white; padding:12px; }
+}
+
+@media screen and (min-width:501px) and (max-width:920px) {
+	#content { background-color:white; padding:10px; }
+}
+
+@media screen and (max-width:500px) {
+	#content { background-color:white; padding:8px; }
+}
+
+
+/******************************
+****** Main Page Options ******
+******************************/
+
+.icon-block
+{
+	display:inline-block;
+	width:120px;
+	margin:15px 0 15px 0;
+	text-align:center;
+}
+
+.main-hr
+{
+	margin:42px 0 32px 0;
+	height:1px;
+	background-color:#d7d7d7;
+}
+
+
+/***********************
+****** Left Panel ******
+***********************/
+
+
+
