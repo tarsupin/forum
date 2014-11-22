@@ -167,13 +167,28 @@ echo '
 	<div style="padding:6px;">
 		<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . ($editMode ? "&edit=" . $_GET['edit'] : "") . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
 			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;" tabindex="10" autofocus>' . $_POST['body'] . '</textarea>
-			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>
+			<div style="margin-top:10px;"><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit" value="Post to Thread" /></div>
+			<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
 		</form>
 	</div>
 </div>';
 
 echo '
-</div>';
+</div>
+<script>
+function previewPost()
+{
+	var text = encodeURIComponent(document.getElementById("core_text_box").value);
+	getAjax("", "preview-post", "parse", "body=" + text);
+}
+function parse(response)
+{
+	if(!response) { response = ""; }
+	
+	document.getElementById("preview").style.display = "block";
+	document.getElementById("preview").innerHTML = response;
+}
+</script>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

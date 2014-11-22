@@ -379,10 +379,17 @@ foreach($posts as $post)
 			}
 			
 			// Edit Option
-			if(Me::$id == $uniID || $isMod)
+			if(Me::$clearance >= $thread['perm_post'] && (Me::$id == $uniID || $isMod))
 			{
 				echo '
 				<a href="/post?forum=' . $forumID . '&id=' . $threadID . '&edit=' . $post['id'] . '"><img src="' . CDN . '/images/forum/edit.png" /></a>';
+			}
+			
+			// Quote Option
+			if(Me::$clearance >= $thread['perm_post'])
+			{
+				echo '
+				<a href="javascript:quotePost(' . $forumID . ', ' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/quote.png" /></a>';
 			}
 			
 			echo '
@@ -442,25 +449,6 @@ function editTitle(f, tid, title)
 			}
 		});
 }
-
-function quote(created, quote)
-{	
-	$.ajax({
-		url: "getquote.php",
-		data: ("quote="+quote+"&created="+created),
-		type: "POST",
-		success: function(html)
-		{
-			var el = $("#bbcode");
-			if (el)
-			{
-				if (el.val().length > 0)
-					el.val(el.val() + "\n");
-				el.val(el.val() + html);
-			}
-		}
-	});
-}
 */
 
 echo '
@@ -492,14 +480,39 @@ if(Me::$loggedIn && $thread['perm_post'] <= Me::$clearance && $has_avatar)
 		<div style="padding:6px;">
 			<form class="uniform" action="/post?forum=' . $forumID . '&id=' . $threadID . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
 				<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;"></textarea>
-				<div style="margin-top:10px;"><input type="submit" name="submit" value="Post to Thread" /></div>
+				<div style="margin-top:10px;"><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit" value="Post to Thread" /></div>
+				<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
 			</form>
 		</div>
 	</div>';
 }
 
 echo '
-</div>';
+</div>
+<script>
+function previewPost()
+{
+	var text = encodeURIComponent(document.getElementById("core_text_box").value);
+	getAjax("", "preview-post", "parse", "body=" + text);
+}
+function parse(response)
+{
+	if(!response) { response = ""; }
+	
+	document.getElementById("preview").style.display = "block";
+	document.getElementById("preview").innerHTML = response;
+}
+function quotePost(forum, thread, post)
+{
+	getAjax("", "quote-post", "parseadd", "forumID=" + forum, "threadID=" + thread, "postID=" + post);
+}
+function parseadd(response)
+{
+	if(!response) { response = ""; }
+	
+	document.getElementById("core_text_box").value += response + "\n\n";
+}
+</script>';
 
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");

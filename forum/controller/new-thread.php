@@ -127,13 +127,27 @@ echo '
 			<input type="text" name="title" value="' . $_POST['title'] . '" placeholder="Title . . ." style="width:100%;margin-bottom:10px;" autocomplete="off" maxlength="48" tabindex="10" autofocus />
 			' . UniMarkup::buttonLine() . '
 			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical;width:100%;height:300px;" tabindex="20">' . $_POST['body'] . '</textarea>
-			<div style="margin-top:10px;"><input type="submit" name="submit" value="Post New Thread" /></div>
+			<div style="margin-top:10px;"><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit" value="Post New Thread" /></div>
+			<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
 		</form>
 	</div>
 </div>';
 
 echo '
-</div>';
-
+</div>
+<script>
+function previewPost()
+{
+	var text = encodeURIComponent(document.getElementById("core_text_box").value);
+	getAjax("", "preview-post", "parse", "body=" + text);
+}
+function parse(response)
+{
+	if(!response) { response = ""; }
+	
+	document.getElementById("preview").style.display = "block";
+	document.getElementById("preview").innerHTML = response;
+}
+</script>';
 // Display the Footer
 require(SYS_PATH . "/controller/includes/footer.php");
