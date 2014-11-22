@@ -2,7 +2,7 @@
 
 /*
 // Main Navigation
-WidgetLoader::add("SidePanel", 10, '
+WidgetLoader::add("MobilePanel", 10, '
 <div class="panel-box">
 	<ul class="panel-slots">
 		<li class="nav-slot"><a href="/">Home<span class="icon-circle-right nav-arrow"></span></a></li>

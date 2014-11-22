@@ -7,7 +7,7 @@ WidgetLoader::add("UniFactionMenu", 10, '
 </div>');
 
 // Main Navigation
-WidgetLoader::add("SidePanel", 50, '
+WidgetLoader::add("MobilePanel", 50, '
 <div class="panel-box">
 	<ul class="panel-slots">
 		<li class="nav-slot' . ($url[0] == "" ? " nav-active" : "") . '"><a href="/">Main Forum<span class="icon-circle-right nav-arrow"></span></a></li>
