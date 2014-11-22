@@ -25,6 +25,8 @@ $subscriptions = AppSubscriptions::get(Me::$id);
 // Update User Activity
 UserActivity::update();
 
+$config['pageTitle'] = $config['site-name'] . " > Subscriptions";
+
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
 
@@ -60,7 +62,7 @@ foreach($subscriptions as $sub)
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			<a href="/' . $sub['forum_slug'] . '/' . $sub['id'] . '-' . $sub['thread_slug'] . '?page=last">' . $sub['title'] . '</a>
+			' . ($sub['new_posts'] ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . '<a href="/' . $sub['forum_slug'] . '/' . $sub['id'] . '-' . $sub['thread_slug'] . '?page=last">' . $sub['title'] . '</a>
 			<div class="inner-desc"><a href="/subscriptions?unsub=1&f=' . $sub['forum_id'] . '&t=' . $sub['id'] . '"><span class="icon-circle-close"></span> Unsubscribe</a></div>
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>

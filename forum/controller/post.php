@@ -106,6 +106,7 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body'], (int) Me::$vals['avatar_opt']))
 		{
 			// Update subscriptions for this thread
+			$thread['posts'] ++;
 			AppSubscriptions::update($forum, $thread, Me::$id, $postID);
 			
 			Alert::saveSuccess("Post Successful", 'You have successfully posted to the thread.');
@@ -126,6 +127,8 @@ UserActivity::update();
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
+
+$config['pageTitle'] = $config['site-name'] . " > " . $forum['title'] . " > " . $thread['title'] . " > Reply";
 
 // Display the Header
 require(SYS_PATH . "/controller/includes/metaheader.php");

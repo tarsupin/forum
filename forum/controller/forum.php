@@ -33,7 +33,7 @@ $postsPerPage = 20;
 
 if($_GET['page'] > 1)
 {
-	$pageList .= '<a href="/' . $forum['url_slug'] . '?page=' . ($_GET['page'] - 1) . '">Previous Page</a>';
+	$pageList .= '<a href="/' . $forum['url_slug'] . '?page=' . ($_GET['page'] - 1) . '"><span class="icon-arrow-left"></span> Previous Page</a>';
 }
 
 $socialURL = URL::social_unifaction_com();
@@ -56,7 +56,7 @@ if(count($threads) > $threadsToShow)
 	{
 		$pageList .= ' ';
 	}
-	$pageList .= '<a href="/' . $forum['url_slug'] . '?page=' . ($_GET['page'] + 1) . '">Next Page</a>';
+	$pageList .= '<a href="/' . $forum['url_slug'] . '?page=' . ($_GET['page'] + 1) . '">Next Page <span class="icon-arrow-right"></span></a>';
 	array_pop($threads);
 }
 
@@ -72,6 +72,8 @@ AppActivity::updateUser();
 
 // Update the last time viewing this forum
 $_SESSION[SITE_HANDLE]['forums-new'][$forum['id']] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
+
+$config['pageTitle'] = $config['site-name'] . " > " . $forum['title'];
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -202,12 +204,12 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 		echo '
 		<div class="inner-line sticky-thread">
 			<div class="inner-name">
-				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $stick['title'] . '</a>
-				<div class="inner-paginate">' . $drawDesc . ' <a title="last post" href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '?page=last"><span>&gt;</span></a></div>
+				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $stick['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
+				<div class="inner-paginate">' . $drawDesc . '</div>
 			</div>
 			<div class="inner-posts">' . $stick['posts'] . '</div>
 			<div class="inner-views">' . $stick['views'] . '</div>
-			<div class="inner-details">' . ($stick['display_name'] != $stick['handle'] ? $stick['display_name'] . ' ' : '') . '<a ' . ($stick['role'] != '' ? 'class="role-' . $stick['role'] . '" ' : '') . 'href="' . $socialURL . '/' . $stick['handle'] . '">@' . $stick['handle'] . '</a><br />' . Time::fuzzy((int) $stick['date_last_post']) . '</div>
+			<div class="inner-details"><a ' . ($stick['role'] != '' ? 'class="role-' . $stick['role'] . '" ' : '') . 'href="' . $socialURL . '/' . $stick['handle'] . '">@' . $stick['handle'] . '</a><br />' . Time::fuzzy((int) $stick['date_last_post']) . '</div>
 		</div>';
 	}
 }
@@ -254,8 +256,8 @@ foreach($threads as $thread)
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $thread['title'] . '</a>
-			<div class="inner-paginate">' . $drawDesc . ' <a title="last post" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last"><span>&gt;</span></a></div>
+			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $thread['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
+			<div class="inner-paginate">' . $drawDesc . '</div>
 		</div>
 		<div class="inner-posts">' . $thread['posts'] . '</div>
 		<div class="inner-views">' . $thread['views'] . '</div>

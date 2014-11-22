@@ -29,7 +29,16 @@ if(isset($_GET['def']))
 	,	"avi_id"	=> (int) $_GET['def']		// The ID of the avatar to test for
 	);
 	
-	if($avatarExists = Connect::to("avatar", "AvatarExists", $packet))
+	if((int) $_GET['def'] == 0 && AVI_TYPE != "avatar")
+	{
+		$avatarExists = true;
+	}
+	else
+	{
+		$avatarExists = Connect::to("avatar", "AvatarExists", $packet);
+	}
+	
+	if($avatarExists)
 	{
 		// If the avatar is valid, update your default avatar
 		Database::query("UPDATE users SET avatar_opt=? WHERE uni_id=? LIMIT 1", array((int) $_GET['def'], Me::$id));
@@ -78,6 +87,8 @@ if($value = Link::clicked() and $value == "load-avatars")
 // Update Activity
 UserActivity::update();
 
+$config['pageTitle'] = $config['site-name'] . " > Settings";
+
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
 
@@ -115,7 +126,11 @@ echo '
 		<div class="overwrap-name">My Avatars</div>
 	</div>
 	<div class="inner-box">';
-	
+if(AVI_TYPE != "avatar")
+{
+	echo '
+		<div style="display:inline-block; padding:6px; text-align:center;"><img src="' . ProfilePic::image(Me::$id, "large") . '" /><br /><a class="button" href="/settings?def=0">Set as Default</a></div>';
+}	
 if($avatarList)
 {
 	foreach($avatarList as $aviID => $aviName)

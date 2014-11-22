@@ -218,7 +218,6 @@ $config['active-hashtag'] = $forum['active_hashtag'];
 
 /****** Page Configuration ******/
 $config['canonical'] = "/" . $threadID . '-' . $thread['url_slug'];
-$config['pageTitle'] = $thread['title'];		// Up to 70 characters. Use keywords.
 Metadata::$index = true;
 Metadata::$follow = true;
 
@@ -227,6 +226,8 @@ AppActivity::updateUser();
 
 // Update the last time viewing this forum
 $_SESSION[SITE_HANDLE]['posts-new'][$threadID] = time() - $_SESSION[SITE_HANDLE]['new-tracker'];
+
+$config['pageTitle'] = $config['site-name'] . " > " . $forum['title'] . " > " . $thread['title'];
 
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
@@ -356,8 +357,8 @@ foreach($posts as $post)
 	// Display the Post
 	echo '
 	<div class="thread-post">
-		<div class="post-left' . ($aviID ? "-avatar" : "") . '">
-			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
+		<div class="post-left' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '">
+			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
 				<div class="post-status-top">' . ($userList[$uniID]['display_name'] != $userList[$uniID]['handle'] ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID], array('', $userList[$uniID]['display_name'])) ? ' (' . $avatarName[$uniID] . ')' : '') . '</div><div class="post-status-bottom">
 					<div><a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?page=' . $_GET['page'] . '#p' . $post['id'] . '"><span class="icon-link"></span></a> <span title="' . date("M j, Y g:ia", $post['date_post']) . ' UniTime">Posted ' . Time::fuzzy((int) $post['date_post']) . '</span></div>
@@ -386,7 +387,7 @@ foreach($posts as $post)
 			
 			echo '
 			</div>
-			' . nl2br(UniMarkup::parse($post['body']));
+			' . html_entity_decode(nl2br(UniMarkup::parse($post['body'])));
 			
 			if($post['signature'])
 			{

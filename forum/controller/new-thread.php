@@ -85,6 +85,8 @@ $config['active-hashtag'] = $forum['active_hashtag'];
 // Update User Activity
 UserActivity::update();
 
+$config['pageTitle'] = $config['site-name'] . " > " . $forum['title'] . " > New Thread";
+
 // Run Global Script
 require(CONF_PATH . "/includes/global.php");
 
