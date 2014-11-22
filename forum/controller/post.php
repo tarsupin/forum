@@ -37,7 +37,7 @@ $thread['forum_id'] = (int) $thread['forum_id'];
 $forum = Database::selectOne("SELECT id, parent_id, url_slug, title, active_hashtag, perm_read, perm_post FROM forums WHERE id=? LIMIT 1", array($thread['forum_id']));
 
 // Make sure you have permission to post
-if(Me::$clearance < (int) $forum['perm_post'])
+if(Me::$clearance < (int) $thread['perm_post'])
 {
 	Alert::saveError("Low Permissions", "You must have higher permissions to post here.");
 	
@@ -94,7 +94,11 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 			{
 				Alert::saveSuccess("Post Edited", 'The post has been successfully modified.');
 				
-				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
+				// Find Page
+				$before = Database::selectOne("SELECT COUNT(id) AS count FROM posts WHERE thread_id=? AND id<?", array($thread['id'], $post['id']));
+				$page = floor($before['count'] / 20) + 1;
+				
+				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . $page . '#p' . $post['id']); exit;
 			}
 		}
 		
@@ -102,11 +106,11 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body'], (int) Me::$vals['avatar_opt']))
 		{
 			// Update subscriptions for this thread
-			AppSubscriptions::update($forum, $thread, Me::$id);
+			AppSubscriptions::update($forum, $thread, Me::$id, $postID);
 			
 			Alert::saveSuccess("Post Successful", 'You have successfully posted to the thread.');
 			
-			header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last'); exit;
+			header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last#p' . $postID); exit;
 		}
 	}
 }

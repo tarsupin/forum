@@ -112,7 +112,7 @@ abstract class AppThread {
 		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
 		
 		// Create the thread
-		if(Database::query("INSERT INTO `threads` (id, forum_id, url_slug, title, author_id, last_poster_id, date_created, date_last_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forum['id'], $urlSlug, $title, $uniID, $uniID, $timestamp, $timestamp)))
+		if(Database::query("INSERT INTO `threads` (id, forum_id, url_slug, title, author_id, last_poster_id, date_created, date_last_post, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array($threadID, $forum['id'], $urlSlug, $title, $uniID, $uniID, $timestamp, $timestamp, 2)))
 		{
 			// Add the sticky functionality (if applicable)
 			if($sticky > 0)

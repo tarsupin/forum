@@ -72,7 +72,7 @@ abstract class AppActivity {
 			
 			foreach($activeUsers as $user)
 			{
-				$html .= ($html == "" ? "" : ", ") . '<a' . ($user['role'] != "" ? ' class="user-role-' . $user['role'] . '"' : '') . ' href="' . $socialURL . '/' . $user['handle'] . '">' . $user['handle'] . '</a>';
+				$html .= ($html == "" ? "" : ", ") . '<a' . ($user['role'] != "" ? ' class="role-' . $user['role'] . '"' : '') . ' href="' . $socialURL . '/' . $user['handle'] . '">' . $user['handle'] . '</a>';
 			}
 			
 			// Prepend the Guest Count

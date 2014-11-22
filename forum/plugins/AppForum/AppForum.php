@@ -61,7 +61,7 @@ abstract class AppForum {
 	{
 		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
 		
-		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array($categoryID, 0));
+		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.role, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array($categoryID, 0));
 		
 		// Cycle through the list of forums, and remove any that you don't have permission to read
 		foreach($results as $key => $val)
@@ -86,7 +86,7 @@ abstract class AppForum {
 	{
 		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
 		
-		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array(0, $parentID));
+		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.role, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array(0, $parentID));
 		
 		// Cycle through the list of forums, and remove any that you don't have permission to read
 		foreach($results as $key => $val)
@@ -114,7 +114,7 @@ abstract class AppForum {
 	{
 		$startLimit = max(0, ($page - 1) * $show);
 		
-		return Database::selectMultiple("SELECT t.id, t.forum_id, t.url_slug, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE t.forum_id=? ORDER BY t.date_last_post DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
+		return Database::selectMultiple("SELECT t.id, t.forum_id, t.url_slug, t.title, t.posts, t.views, t.author_id, t.last_poster_id, t.date_last_post, t.perm_post, u.role, u.handle, u.display_name FROM threads t INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE t.forum_id=? ORDER BY t.date_last_post DESC LIMIT " . ($startLimit + 0) . ', ' . (max(1, $show) + 1), array($forumID));
 	}
 	
 	
@@ -127,7 +127,7 @@ abstract class AppForum {
 	
 	// $stickied = AppForum::getStickied($forumID);
 	{
-		return Database::selectMultiple("SELECT t.*, ts.sticky_level, u.handle, u.display_name FROM threads_stickied ts INNER JOIN threads t ON t.id=ts.thread_id INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE ts.forum_id=? ORDER BY ts.sticky_level DESC", array($forumID));
+		return Database::selectMultiple("SELECT t.*, ts.sticky_level, u.role, u.handle, u.display_name FROM threads_stickied ts INNER JOIN threads t ON t.id=ts.thread_id INNER JOIN users u ON u.uni_id=t.last_poster_id WHERE ts.forum_id=? ORDER BY ts.sticky_level DESC", array($forumID));
 	}
 	
 	
@@ -175,6 +175,37 @@ abstract class AppForum {
 	// $signature = AppForum::getSettings($uniID, [$orig]);
 	{
 		return Database::selectOne("SELECT signature" . ($orig ? "_orig" : "") . " as signature, avatar_list FROM forum_settings WHERE uni_id=? LIMIT 1", array($uniID));
+	}
+	
+
+/****** Get a user's avatar name ******/
+	public static function getName
+	(
+		$uniID			// <int> The UniID of the user to retrieve the signature of.
+	,	$aviID			// <int> The ID of the avatar to get the name of.
+	)					// RETURNS <str> The name for the avatar.
+	
+	// $aviname = AppForum::getName($uniID, $aviID);
+	{
+		if($aviID == 0)
+		{
+			return "";
+		}
+		
+		$name = Database::selectOne("SELECT avatar_list FROM forum_settings WHERE uni_id=? LIMIT 1", array($uniID));
+		if($name['avatar_list'] != "")
+		{
+			$name = json_decode($name['avatar_list'], true);
+			if(isset($name[$aviID]))
+			{
+				if($name[$aviID] != "")
+				{
+					return $name[$aviID];
+				}
+			}
+		}
+		
+		return "";
 	}
 	
 	
@@ -308,7 +339,7 @@ abstract class AppForum {
 			</div>
 			<div class="inner-posts">' . $forum['posts'] . '</div>
 			<div class="inner-views">' . $forum['views'] . '</div>
-			<div class="inner-details">' . ($forum['handle'] ? '<a href="' . URL::unifaction_social() . '/' . $forum['handle'] . '">' . $forum['display_name'] . '</a><br />' . Time::fuzzy((int) $forum['date_lastPost']) : "") . '</div>
+			<div class="inner-details">' . ($forum['handle'] ?  '<a ' . ($forum['role'] != '' ? 'class="role-' . $forum['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $forum['handle'] . '">@' . $forum['handle'] . '</a><br />' . Time::fuzzy((int) $forum['date_lastPost']) : "") . '</div>
 		</div>';
 	}
 	

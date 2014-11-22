@@ -2,7 +2,7 @@
 
 /*
 	$forum		// `id, active_hashtag, title, perm_read`
-	$thread		// `id, forum_id, posts, perm_post)
+	$thread		// `id, forum_id, posts, perm_post`
 */
 
 // Make sure that the appropriate information was sent
@@ -33,6 +33,17 @@ $postsPerPage = 20;
 $highestPage = ceil($thread['posts'] / $postsPerPage);
 $isMod = (Me::$clearance >= 6 ? true : false);
 
+$script = '';
+if(isset($_GET['page']) && $_GET['page'] == 'last')
+{
+	$script = '
+	if (window.location.href.indexOf("page=last") >= 0)
+	{
+		var posts = document.getElementsByClassName("post-anchor");
+		var target = posts[posts.length-1];
+		target.scrollIntoView(true);
+	}';
+}
 $_GET['page'] = (isset($_GET['page']) ? ($_GET['page'] == 'last' ? (int) $highestPage : (int) $_GET['page']) : 1);
 $pageLine = '';
 $subData = array();
@@ -40,6 +51,17 @@ $subData = array();
 // Check for functionality that requires you to be logged in
 if(Me::$loggedIn)
 {
+	// If the avi type is "avatar", we need to make sure the user can post
+	$has_avatar = true;
+	if(AVI_TYPE == "avatar")
+	{
+		if(!AppForumAvatar::confirmAvi(Me::$id))
+		{
+			$has_avatar = false;
+			Alert::error("No Avatar", "You must create and select an avatar to post on this forum.");
+		}
+	}
+
 	// Check your Subscription
 	if($subData = AppSubscriptions::getData(Me::$id, $forumID, $threadID))
 	{
@@ -149,14 +171,24 @@ $posts = AppThread::getPosts($threadID, $_GET['page'], $postsPerPage);
 
 // Get all users listed
 $userList = array();
+$avatarName = array();
 
 foreach($posts as $post)
 {
-	$nextID = (int) $post['uni_id'];
+	$uniID = (int) $post['uni_id'];
+	$aviID = (int) $post['avi_id'];
 	
-	if(!isset($userList[$nextID]))
+	if(!isset($userList[$uniID]))
 	{
-		$userList[$nextID] = User::get($nextID, "handle, display_name, post_count, date_joined");
+		$userList[$uniID] = User::get($uniID, "role, handle, display_name, post_count, date_joined");
+	}
+	if(!isset($avatarName[$uniID]))
+	{
+		$avatarName[$uniID] = "";
+	}
+	if($aviID > 0)
+	{
+		$avatarName[$uniID] = AppForum::getName($uniID, $aviID);
 	}
 }
 
@@ -317,20 +349,23 @@ foreach($posts as $post)
 		$img = ProfilePic::image($uniID, "large");
 	}
 	
+	// Anchor needs to be offset by the height of the fixed header
+	echo '
+	<span class="post-anchor" id="p' . $post['id'] . '" style="display:block; position:relative; top:-60px; height:0px;"></span>';
+
 	// Display the Post
 	echo '
 	<div class="thread-post">
 		<div class="post-left' . ($aviID ? "-avatar" : "") . '">
 			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
-				<div class="post-status-top">@<a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a></div>
-				<div class="post-status-bottom">
-					<div>Posted ' . Time::fuzzy((int) $post['date_post']) . '</div>
+				<div class="post-status-top">' . ($userList[$uniID]['display_name'] != $userList[$uniID]['handle'] ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID], array('', $userList[$uniID]['display_name'])) ? ' (' . $avatarName[$uniID] . ')' : '') . '</div><div class="post-status-bottom">
+					<div><a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?page=' . $_GET['page'] . '#p' . $post['id'] . '"><span class="icon-link"></span></a> <span title="' . date("M j, Y g:ia", $post['date_post']) . ' UniTime">Posted ' . Time::fuzzy((int) $post['date_post']) . '</span></div>
 					<div style="margin-top:6px;"><span class="icon-clock"></span> Joined ' . Time::fuzzy((int) $userList[$uniID]['date_joined']) . '</div>
 				</div>
 			</div>
+			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></div>
 			<div class="post-count-row"><span class="icon-pencil"></span> Posts: ' . $userList[$uniID]['post_count'] . '</div>
-			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></a></div>
 		</div>
 		<div class="post-right' . ($aviID ? "-avatar" : "") . '">
 			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
@@ -385,7 +420,7 @@ function likeActivated(response)
 		
 		l.innerHTML = c;
 	}
-}
+}' . $script . '
 </script>';
 
 /*
@@ -445,7 +480,7 @@ echo ' &gt; ' . $thread['title'] . ' &gt; <a href="/post?forum=' . $forumID . '&
 </div>';
 
 // Quick Reply Box
-if(Me::$loggedIn)
+if(Me::$loggedIn && $thread['perm_post'] <= Me::$clearance && $has_avatar)
 {
 	echo '
 	<div class="overwrap-box">

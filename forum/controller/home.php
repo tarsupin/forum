@@ -88,9 +88,12 @@ if($recentPosts = AppPost::getRecentPosts())
 			$post['body'] .= '...';
 		}
 		
+		$onpage = 1;
+		
 		// Prepare Pagination
 		if($post['thread_posts'] > 20)
 		{
+			$onpage = floor(($post['thread_posts']-1) / 20) + 1;
 			$paginate = new Pagination((int) $post['thread_posts'], 20, 1, "division");
 			
 			foreach($paginate->pages as $page)
@@ -104,7 +107,7 @@ if($recentPosts = AppPost::getRecentPosts())
 		echo '
 			<div class="inner-line">
 				<div class="inner-name">
-					<a href="' . $post['post_link'] . '">' . $post['thread_title'] . '</a>
+					<a href="' . $post['post_link'] . '?page=' . $onpage . '#p' . $post['post_id'] . '">' . $post['thread_title'] . '</a>
 					<div class="inner-desc">' . $post['body'] . '</div>
 					<div class="inner-paginate">' . $drawDesc . '</div>
 				</div>

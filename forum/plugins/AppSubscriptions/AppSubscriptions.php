@@ -104,11 +104,13 @@ abstract class AppSubscriptions {
 		$forum			// <str:mixed> The data of the forum that contains the thread subscribed to.
 	,	$thread			// <str:mixed> The data of the thread.
 	,	$posterID		// <int> The UniID to update
+	,	$postID			// <int> The ID of the post causing the notification.
 	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppSubscriptions::update($forum, $thread, $posterID);
 	{
-		if(!$subscriptions = Database::selectMultiple("SELECT uni_id FROM thread_subs WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID)))
+		$subscriptions = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID));
+		if($subscriptions == array())
 		{
 			return false;
 		}
@@ -118,7 +120,12 @@ abstract class AppSubscriptions {
 		
 		foreach($subscriptions as $sub)
 		{
-			$subList[] = (int) $sub['uni_id'];
+			if((int) $sub['new_posts'] == 0)	{ $subList[] = (int) $sub['uni_id']; }			
+		}
+		
+		if($subList == array())
+		{
+			return false;
 		}
 		
 		// Prepare Values
@@ -130,7 +137,7 @@ abstract class AppSubscriptions {
 		$success = Database::query("UPDATE thread_subs_by_user SET new_posts=1 WHERE " . $sqlWhere, $sqlArray);
 		
 		// Notify the users
-		Notifications::createMultiple($subList, SITE_URL . "/" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . "?page=last", 'The thread "' . $thread['title'] . '" was updated!');
+		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . (floor($thread['posts'] / 20) + 1) . '#p' . $postID, 'The thread "' . $thread['title'] . '" was updated!');
 		
 		return $success;
 	}
