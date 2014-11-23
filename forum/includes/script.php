@@ -4,7 +4,18 @@
 
 Database::initRoot();
 
-DatabaseAdmin::setPartitions("forum_subs", "key", "forum_id", 17);
+//DatabaseAdmin::setPartitions("forum_subs", "key", "forum_id", 17);
+
+/*
+DatabaseAdmin::dropIndex("thread_subs", "forum_id");
+DatabaseAdmin::addIndex("thread_subs", "forum_id, thread_id, uni_id", "UNIQUE");
+
+DatabaseAdmin::dropIndex("thread_subs_by_user", "uni_id");
+DatabaseAdmin::addIndex("thread_subs_by_user", "uni_id, forum_id, thread_id", "UNIQUE");
+
+DatabaseAdmin::dropIndex("forum_subs", "forum_id_uni_id");
+DatabaseAdmin::addIndex("forum_subs", "forum_id, uni_id", "UNIQUE");
+*/
 
 /*
 DatabaseAdmin::addColumn("posts", "likes", "tinyint(1) unsigned not null", 0);
