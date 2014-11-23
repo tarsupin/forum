@@ -4,6 +4,8 @@
 
 Database::initRoot();
 
+DatabaseAdmin::setPartitions("forum_subs", "key", "forum_id", 17);
+
 /*
 DatabaseAdmin::addColumn("posts", "likes", "tinyint(1) unsigned not null", 0);
 
@@ -18,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `posts_likes`
 ");
 
 */
-
+/*
 Database::exec("
 CREATE TABLE IF NOT EXISTS `posts_recent`
 (
@@ -39,5 +41,6 @@ CREATE TABLE IF NOT EXISTS `posts_recent`
 	INDEX (`date_posted`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ");
+*/
 
 echo SITE_HANDLE . " updated";
