@@ -5,7 +5,6 @@
 Database::initRoot();
 
 //DatabaseAdmin::setPartitions("forum_subs", "key", "forum_id", 17);
-
 /*
 DatabaseAdmin::dropIndex("thread_subs", "forum_id");
 DatabaseAdmin::addIndex("thread_subs", "forum_id, thread_id, uni_id", "UNIQUE");
