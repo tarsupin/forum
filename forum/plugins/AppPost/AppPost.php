@@ -101,11 +101,12 @@ abstract class AppPost {
 		$threadID		// <int> The ID of the thread the post is in.
 	,	$postID			// <int> The ID of the post you're editing.
 	,	$body			// <str> The new (edited) post message.
+	,	$aviID			// <int> The ID of the avatar to post with.
 	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppPost::edit($threadID, $postID, "Hey everyone! Edit: Oh yeah, check out my blog!");
 	{
-		return Database::query("UPDATE posts SET body=? WHERE thread_id=? AND id=?", array($body, $threadID, $postID));
+		return Database::query("UPDATE posts SET body=?, avi_id=? WHERE thread_id=? AND id=?", array($body, $aviID, $threadID, $postID));
 	}
 	
 	

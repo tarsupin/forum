@@ -90,7 +90,29 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 		// If we're editing this post, run the edit script
 		if($editMode)
 		{
-			if(AppPost::edit($thread['id'], $post['id'], $_POST['body']))
+			$avatarExists = false;
+			if(isset($_POST['use_avi']))
+			{
+				if((int) $_POST['use_avi'] == 0 && AVI_TYPE != "avatar")
+				{
+					$avatarExists = true;
+				}
+				else
+				{
+					// Check if that avatar is valid
+					$packet = array(
+						"uni_id"	=> $post['uni_id']
+					,	"avi_id"	=> (int) $_POST['use_avi']		// The ID of the avatar to test for
+					);
+					$avatarExists = Connect::to("avatar", "AvatarExists", $packet);
+				}
+			}
+			if($avatarExists)
+			{
+				$post['avi_id'] = (int) $_POST['use_avi'];
+			}
+		
+			if(AppPost::edit($thread['id'], $post['id'], $_POST['body'], $post['avi_id']))
 			{
 				Alert::saveSuccess("Post Edited", 'The post has been successfully modified.');
 				
@@ -161,11 +183,40 @@ echo '
 <div class="overwrap-box">
 	<div class="overwrap-line" style="margin-bottom:10px;">
 		<div class="overwrap-name">' . ($editMode ? 'Edit Post by ' . $post['display_name'] . ' (@' . $post['handle'] . ')' : 'Reply To Thread') . '</div>
-	</div>
+	</div>';
+
+$choose = '';
+if($editMode)
+{
+	$choose = '
+	<p>';
+	if(AVI_TYPE != "avatar")
+	{
+		$choose .= '
+			<input type="radio" name="use_avi" value="0"' . ($post['avi_id'] == 0 ? ' checked' : '') . '/> Profile Picture';
+	}
+	// Get the user's signature
+	if($settings = AppForum::getSettings($post['uni_id']))
+	{
+		$avatarList = json_decode($settings['avatar_list'], true);
+		if($avatarList)
+		{
+			foreach($avatarList as $aviID => $aviName)
+			{
+				$choose .= '
+				<input type="radio" name="use_avi" value="' . $aviID . '"' . ($post['avi_id'] == $aviID ? ' checked' : '') . '/> ' . ($aviName != '' ? $aviName : '<span style="font-style:italic;">unnamed avatar</span>');
+			}
+		}
+	}
+	$choose .= '
+	</p>';
+}
+echo '
 	' . UniMarkup::buttonLine() . '
 	<div style="padding:6px;">
 		<form class="uniform" action="/post?forum=' . $thread['forum_id'] . '&id=' . $thread['id'] . ($editMode ? "&edit=" . $_GET['edit'] : "") . '" method="post" style="padding-right:20px;">' . Form::prepare(SITE_HANDLE . 'post-thrd') . '
 			<textarea id="core_text_box" name="body" placeholder="Enter your message here . . ." style="resize:vertical; width:100%; height:300px;" tabindex="10" autofocus>' . $_POST['body'] . '</textarea>
+			' . $choose . '
 			<div style="margin-top:10px;"><input type="button" value="Preview" onclick="previewPost();"/> <input type="submit" name="submit" value="Post to Thread" /></div>
 			<div id="preview" class="thread-post" style="display:none; padding:4px; margin-top:10px;"></div>
 		</form>

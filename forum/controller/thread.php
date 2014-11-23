@@ -182,13 +182,13 @@ foreach($posts as $post)
 	{
 		$userList[$uniID] = User::get($uniID, "role, handle, display_name, post_count, date_joined");
 	}
-	if(!isset($avatarName[$uniID]))
+	if(!isset($avatarName[$uniID][$aviID]))
 	{
-		$avatarName[$uniID] = "";
+		$avatarName[$uniID][$aviID] = "";
 	}
 	if($aviID > 0)
 	{
-		$avatarName[$uniID] = AppForum::getName($uniID, $aviID);
+		$avatarName[$uniID][$aviID] = AppForum::getName($uniID, $aviID);
 	}
 }
 
@@ -360,9 +360,10 @@ foreach($posts as $post)
 		<div class="post-left' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '">
 			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
-				<div class="post-status-top">' . (lcfirst($userList[$uniID]['display_name']) != lcfirst($userList[$uniID]['handle']) ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID], array('', $userList[$uniID]['display_name'], lcfirst($userList[$uniID]['display_name']))) ? ' (' . $avatarName[$uniID] . ')' : '') . '</div><div class="post-status-bottom">
+				<div class="post-status-top">' . (lcfirst($userList[$uniID]['display_name']) != lcfirst($userList[$uniID]['handle']) ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID][$aviID], array('', $userList[$uniID]['display_name'], lcfirst($userList[$uniID]['display_name']))) ? ' (' . $avatarName[$uniID][$aviID] . ')' : '') . '</div><div class="post-status-bottom">
 					<div><a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?page=' . $_GET['page'] . '#p' . $post['id'] . '"><span class="icon-link"></span></a> <span title="' . date("M j, Y g:ia", $post['date_post']) . ' UniTime">Posted ' . Time::fuzzy((int) $post['date_post']) . '</span></div>
 					<div style="margin-top:6px;"><span class="icon-clock"></span> Joined ' . Time::fuzzy((int) $userList[$uniID]['date_joined']) . '</div>
+					<div style="margin-top:6px;"><a href="' . URL::inbox_unifaction_com() . '/to/' . $userList[$uniID]['handle'] . Me::$slg . '"><span class="icon-envelope"></span> Send Private Message</a></div>
 				</div>
 			</div>
 			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></div>
