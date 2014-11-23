@@ -22,7 +22,7 @@ if(!$thread = AppThread::get((int) $_POST['forumID'], (int) $_POST['threadID']))
 $forum = Database::selectOne("SELECT perm_read, perm_post FROM forums WHERE id=? LIMIT 1", array((int) $thread['forum_id']));
 
 // Make sure you have permission to post
-if(Me::$clearance < (int) $forum['perm_post'] || Me::$clearance < (int) $forum['perm_read'])
+if(Me::$clearance < (int) $thread['perm_post'] || Me::$clearance < (int) $forum['perm_read'])
 {
 	exit;
 }

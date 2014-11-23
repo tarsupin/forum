@@ -12,12 +12,18 @@ This plugin provides handling for subscriptions to threads.
 -------------------------------
 
 $subscriptions = AppSubscriptions::get($uniID);
+$subscriptions = AppSubscriptions::getForum($uniID);
 
 AppSubscriptions::subscribe($forumID, $threadID, $uniID);
 AppSubscriptions::unsubscribe($forumID, $threadID, $uniID);
-AppSubscriptions::update($forum, $thread, $posterID, $threadName);
+AppSubscriptions::update($forum, $thread, $posterID, $postID);
+
+AppSubscriptions::subscribeForum($forumID, $uniID);
+AppSubscriptions::unsubscribeForum($forumID, $uniID);
+AppSubscriptions::updateForum($forum, $threadID, $posterID, $postID);
 
 $getData = AppSubscriptions::getData($uniID, $forumID, $threadID);
+$getData = AppSubscriptions::getDataForum($uniID, $forumID);
 
 AppSubscriptions::clear($uniID, $forumID, $threadID);
 
@@ -34,7 +40,19 @@ abstract class AppSubscriptions {
 	
 	// $subscriptions = AppSubscriptions::get($uniID);
 	{
-		return Database::selectMultiple("SELECT f.url_slug as forum_slug, t.forum_id, t.id, t.url_slug as thread_slug, t.title, t.posts, t.views, t.last_poster_id, t.date_last_post, ts.new_posts, u.handle FROM thread_subs_by_user ts INNER JOIN forums f ON ts.forum_id=f.id INNER JOIN threads t ON t.forum_id=ts.forum_id AND t.id=ts.thread_id INNER JOIN users u ON ts.uni_id=u.uni_id WHERE ts.uni_id=?", array($uniID));
+		return Database::selectMultiple("SELECT f.url_slug as forum_slug, t.forum_id, t.id, t.url_slug as thread_slug, t.title, t.posts, t.views, t.last_poster_id, t.date_last_post, ts.new_posts, u.role, u.handle FROM thread_subs_by_user ts INNER JOIN forums f ON ts.forum_id=f.id INNER JOIN threads t ON t.forum_id=ts.forum_id AND t.id=ts.thread_id INNER JOIN users u ON t.last_poster_id=u.uni_id WHERE ts.uni_id=?", array($uniID));
+	}
+	
+	
+/****** Retrieve a list of your subscriptions ******/
+	public static function getForum
+	(
+		$uniID			// <int> The UniID that you're checking the subscriptions of.
+	)					// RETURNS <int:[str:mixed]> list of subscriptions, or FALSE on failure.
+	
+	// $subscriptions = AppSubscriptions::getForum($uniID);
+	{
+		return Database::selectMultiple("SELECT f.url_slug as forum_slug, f.id, f.title, f.posts, f.views, f.last_poster, f.date_lastPost, u.role, u.handle FROM forum_subs fs INNER JOIN forums f ON fs.forum_id=f.id INNER JOIN users u ON f.last_poster=u.uni_id WHERE fs.uni_id=?", array($uniID));
 	}
 	
 	
@@ -105,9 +123,10 @@ abstract class AppSubscriptions {
 	,	$thread			// <str:mixed> The data of the thread.
 	,	$posterID		// <int> The UniID to update
 	,	$postID			// <int> The ID of the post causing the notification.
+	,	$poster = ""	// <str> The handle of the poster.
 	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
-	// AppSubscriptions::update($forum, $thread, $posterID);
+	// AppSubscriptions::update($forum, $thread, $posterID, $postID);
 	{
 		$subscriptions = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID));
 		if($subscriptions == array())
@@ -131,13 +150,119 @@ abstract class AppSubscriptions {
 		// Prepare Values
 		$thread['title'] = Sanitize::text($thread['title']);
 		
+		if($poster == "")
+		{
+			$poster = User::get($posterID, "handle");
+			$poster = $poster['handle'];
+		}
+		
 		list($sqlWhere, $sqlArray) = Database::sqlFilters(array("uni_id" => $subList, "forum_id" => array($forum['id']), "thread_id" => array($thread['id']), "new_posts" => array(0)));
 		
 		// Update the database
 		$success = Database::query("UPDATE thread_subs_by_user SET new_posts=1 WHERE " . $sqlWhere, $sqlArray);
 		
 		// Notify the users
-		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . (floor($thread['posts'] / 20) + 1) . '#p' . $postID, 'The thread "' . $thread['title'] . '" was updated!');
+		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=' . (floor($thread['posts'] / 20) + 1) . '#p' . $postID, '"' . $thread['title'] . '" was updated by @' . $poster . '!');
+		
+		return $success;
+	}
+	
+
+/****** Subscribe to a Forum ******/
+	public static function subscribeForum
+	(
+		$forumID		// <int> The ID of the forum to subscribe to.
+	,	$uniID			// <int> The UniID that is subscribing to the forum.
+	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+	
+	// AppSubscriptions::subscribeForum($forumID, $uniID);
+	{
+		if($check = (int) Database::selectValue("SELECT uni_id FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID)))
+		{
+			return false;
+		}
+		
+		// Add the subscription
+		Database::startTransaction();
+		
+		if(Database::query("INSERT INTO `forum_subs` (forum_id, uni_id) VALUES (?, ?)", array($forumID, $uniID)))
+		{
+			return Database::endTransaction();
+		}
+		
+		return Database::endTransaction(false);
+	}
+	
+	
+/****** Unsubscribe from a Forum ******/
+	public static function unsubscribeForum
+	(
+		$forumID		// <int> The ID of the forum to unsubscribe from.
+	,	$uniID			// <int> The UniID that is unsubscribing.
+	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+	
+	// AppSubscriptions::unsubscribeForum($forumID, $uniID);
+	{
+		if(!Database::selectValue("SELECT uni_id FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID)))
+		{
+			return false;
+		}
+		
+		// Remove the subscription
+		Database::startTransaction();
+		
+		if(Database::query("DELETE FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID)))
+		{
+			return Database::endTransaction();
+		}
+		
+		return Database::endTransaction(false);
+	}
+	
+	
+/****** Update a forum's subscriptions ******/
+	public static function updateForum
+	(
+		$forum			// <str:mixed> The data of the forum that contains the thread subscribed to.
+	,	$thread			// <str:mixed> The data of the thread.
+	,	$posterID		// <int> The UniID to update
+	,	$postID			// <int> The ID of the post causing the notification.
+	,	$poster = ""	// <str> The handle of the poster.
+	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
+	
+	// AppSubscriptions::updateForum($forum, $thread, $posterID, $postID);
+	{
+		$subscriptions = Database::selectMultiple("SELECT uni_id FROM forum_subs WHERE forum_id=? AND uni_id != ?", array($forum['id'], $posterID));
+		if($subscriptions == array())
+		{
+			return false;
+		}
+		
+		// Update the subscriptions
+		$subList = array();
+		
+		foreach($subscriptions as $sub)
+		{
+			$subList[] = (int) $sub['uni_id'];
+		}
+		
+		if($subList == array())
+		{
+			return false;
+		}
+		
+		// Prepare Values
+		$thread['title'] = Sanitize::text($thread['title']);
+		$forum['title'] = Sanitize::text($forum['title']);
+		
+		if($poster == "")
+		{
+			$poster = User::get($posterID, "handle");
+			$poster = $poster['handle'];
+		}
+		
+		// Notify the users
+		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=1#p' . $postID, '"' . $thread['title'] . '" was created by @' . $poster . ' in ' . $forum['title'] . '!');
 		
 		return $success;
 	}
@@ -154,6 +279,19 @@ abstract class AppSubscriptions {
 	// $getData = AppSubscriptions::getData($uniID, $forumID, $threadID);
 	{
 		return Database::selectOne("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE uni_id=? AND forum_id=? AND thread_id=? LIMIT 1", array($uniID, $forumID, $threadID));
+	}
+	
+	
+/****** Return subscription data for a thread, if available ******/
+	public static function getDataForum
+	(
+		$uniID			// <int> The UniID that you're checking the subscriptions of.
+	,	$forumID		// <int> The ID of the forum.
+	)					// RETURNS <str:mixed> subscription data, or empty array if nothing.
+	
+	// $getData = AppSubscriptions::getDataForum($uniID, $forumID);
+	{
+		return Database::selectOne("SELECT uni_id FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID));
 	}
 	
 	

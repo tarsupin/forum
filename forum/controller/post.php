@@ -106,8 +106,7 @@ if(Form::submitted(SITE_HANDLE . 'post-thrd'))
 		else if($postID = AppPost::create($forum, $thread['id'], Me::$id, $_POST['body'], (int) Me::$vals['avatar_opt']))
 		{
 			// Update subscriptions for this thread
-			$thread['posts'] ++;
-			AppSubscriptions::update($forum, $thread, Me::$id, $postID);
+			AppSubscriptions::update($forum, $thread, Me::$id, $postID, Me::$vals['handle']);
 			
 			Alert::saveSuccess("Post Successful", 'You have successfully posted to the thread.');
 			

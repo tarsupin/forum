@@ -7,20 +7,35 @@ if(!Me::$loggedIn)
 }
 
 // Unsubscribe Action
-if(isset($_GET['unsub']) and isset($_GET['f']) and isset($_GET['t']))
+if(isset($_GET['unsub']) and isset($_GET['f']))
 {
-	if(AppSubscriptions::unsubscribe((int) $_GET['f'], (int) $_GET['t'], Me::$id))
+	if(isset($_GET['t']))
 	{
-		Alert::success("Unsubscribed", "You have successfully unsubscribed from the thread!");
+		if(AppSubscriptions::unsubscribe((int) $_GET['f'], (int) $_GET['t'], Me::$id))
+		{
+			Alert::success("Unsubscribed", "You have successfully unsubscribed from the thread!");
+		}
+		else
+		{
+			Alert::error("Unsubscribe Failed", "There was an error trying to unsubscribe from that thread.");
+		}
 	}
 	else
 	{
-		Alert::error("Unsubscibe Failed", "There was an error trying to unsubscribe from that thread.");
+		if(AppSubscriptions::unsubscribeForum((int) $_GET['f'], Me::$id))
+		{
+			Alert::success("Unsubscribed", "You have successfully unsubscribed from the forum!");
+		}
+		else
+		{
+			Alert::error("Unsubscribe Failed", "There was an error trying to unsubscribe from that forum.");
+		}
 	}
 }
 
 // Gather list of subscriptions
 $subscriptions = AppSubscriptions::get(Me::$id);
+$subscriptionsForum = AppSubscriptions::getForum(Me::$id);
 
 // Update User Activity
 UserActivity::update();
@@ -44,7 +59,7 @@ echo '
 echo '
 <div class="overwrap-box">
 	<div class="overwrap-line">
-		<div class="overwrap-name">My Subscriptions</div>
+		<div class="overwrap-name">My Thread Subscriptions</div>
 		<div class="overwrap-posts">Posts</div>
 		<div class="overwrap-views">Views</div>
 		<div class="overwrap-details">Details</div>
@@ -54,7 +69,7 @@ echo '
 if(count($subscriptions) == 0)
 {
 	echo '
-	<div class="inner-line">You do not have any subscriptions.</div>';
+	<div class="inner-line">You do not have any thread subscriptions.</div>';
 }
 
 foreach($subscriptions as $sub)
@@ -67,7 +82,49 @@ foreach($subscriptions as $sub)
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>
 		<div class="inner-views">' . $sub['views'] . '</div>
-		<div class="inner-details"><a href="' . URL::unifaction_social() . '/' . $sub['handle'] . '">@' . $sub['handle'] . '</a> - ' . Time::fuzzy((int) $sub['date_last_post']) . '</div>
+		<div class="inner-details"><a '. ($sub['role'] != '' ? 'class="role-' . $sub['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $sub['handle'] . '">@' . $sub['handle'] . '</a> - ' . Time::fuzzy((int) $sub['date_last_post']) . '</div>
+	</div>';
+}
+
+echo '
+	</div>
+</div>';
+
+echo '
+<div class="overwrap-box">
+	<div class="overwrap-line">
+		<div class="overwrap-name">My Forum Subscriptions</div>
+		<div class="overwrap-posts">Posts</div>
+		<div class="overwrap-views">Views</div>
+		<div class="overwrap-details">Details</div>
+	</div>
+	<div class="inner-box">';
+
+if(count($subscriptionsForum) == 0)
+{
+	echo '
+	<div class="inner-line">You do not have any forum subscriptions.</div>';
+}
+
+foreach($subscriptionsForum as $sub)
+{
+	if($newIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+	{
+		if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
+		{
+			$newIcon = (($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false);
+		}
+	}
+
+	echo '
+	<div class="inner-line">
+		<div class="inner-name">
+			' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . '<a href="/' . $sub['forum_slug'] . '">' . $sub['title'] . '</a>
+			<div class="inner-desc"><a href="/subscriptions?unsub=1&f=' . $sub['id'] . '"><span class="icon-circle-close"></span> Unsubscribe</a></div>
+		</div>
+		<div class="inner-posts">' . $sub['posts'] . '</div>
+		<div class="inner-views">' . $sub['views'] . '</div>
+		<div class="inner-details"><a '. ($sub['role'] != '' ? 'class="role-' . $sub['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $sub['handle'] . '">@' . $sub['handle'] . '</a> - ' . Time::fuzzy((int) $sub['date_lastPost']) . '</div>
 	</div>';
 }
 

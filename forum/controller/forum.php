@@ -30,6 +30,37 @@ $_GET['page'] = (isset($_GET['page']) ? (int) $_GET['page'] : 1);
 $pageList = "";
 $threadsToShow = 20;
 $postsPerPage = 20;
+$subData = array();
+
+// Check your Subscription
+if(Me::$loggedIn)
+{
+	$subData = AppSubscriptions::getDataForum(Me::$id, $forum['id']);
+	
+	// Run Actions
+	if(isset($_GET['action']))
+	{
+		// Subscribe to the Forum
+		if($_GET['action'] == "subscribe")
+		{
+			if(AppSubscriptions::subscribeForum($forum['id'], Me::$id))
+			{
+				$subData = array('uni_id' => Me::$id);
+				Alert::success("Subscribed", "You are now subscribed to \"" . $forum['title'] . "\"!");
+			}
+		}
+		
+		// Unsubscribe from the Forum
+		else if($_GET['action'] == "unsubscribe")
+		{
+			if(AppSubscriptions::unsubscribeForum($forum['id'], Me::$id))
+			{
+				$subData = array();
+				Alert::success("Unsubscribed", "You are now unsubscribed from \"" . $forum['title'] . "\"!");
+			}
+		}
+	}
+}
 
 if($_GET['page'] > 1)
 {
@@ -151,8 +182,23 @@ if($forum['has_children'])
 }
 
 echo '
-<div class="thread-tline">
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
+<div class="thread-tline">';
+if(Me::$loggedIn)
+{
+	echo '
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	if($subData)
+	{
+		echo '
+	<a href="/' . $forum['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
+	}
+	else
+	{
+		echo '
+	<a href="/' . $forum['url_slug'] . '?action=subscribe">Subscribe</a>';
+	}
+}
+echo '
 	' . ($pageList ? '<div style="float:right;">' . $pageList . '</div>' : "") .'
 </div>';
 
@@ -204,7 +250,7 @@ if($_GET['page'] == 1 && count($stickied) > 0)
 		echo '
 		<div class="inner-line sticky-thread">
 			<div class="inner-name">
-				<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $stick['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
+				' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . '<span class="icon-star"></span> ' . ($stick['perm_post'] > 2 ? '<span class="icon-lock"></span> ' : '') . '<a href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '">' . $stick['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $stick['id'] . '-' . $stick['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
 				<div class="inner-paginate">' . $drawDesc . '</div>
 			</div>
 			<div class="inner-posts">' . $stick['posts'] . '</div>
@@ -256,7 +302,7 @@ foreach($threads as $thread)
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . $thread['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
+			' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . ($thread['perm_post'] > 2 ? '<span class="icon-lock"></span> ' : '') . '<a href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '">' . $thread['title'] . '</a> <a title="last post" href="/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=last"><span class="icon-arrow-right"></span></a>
 			<div class="inner-paginate">' . $drawDesc . '</div>
 		</div>
 		<div class="inner-posts">' . $thread['posts'] . '</div>
@@ -270,8 +316,23 @@ echo '
 </div>';
 
 echo '
-<div class="thread-tline">
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
+<div class="thread-tline">';
+if(Me::$loggedIn)
+{
+	echo '
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	if($subData)
+	{
+		echo '
+	<a href="/' . $forum['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
+	}
+	else
+	{
+		echo '
+	<a href="/' . $forum['url_slug'] . '?action=subscribe">Subscribe</a>';
+	}
+}
+echo '
 	' . ($pageList ? '<div style="float:right;">' . $pageList . '</div>' : "") .'
 </div>';
 

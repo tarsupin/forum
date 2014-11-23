@@ -62,6 +62,8 @@ if(Form::submitted(SITE_HANDLE . '-forum-thrd'))
 				// Get the Thread Data
 				$thread = AppThread::get($forum['id'], $threadID);
 				
+				AppSubscriptions::updateForum($forum, $thread, Me::$id, $postID, Me::$vals['handle']);
+				
 				// Go to the thread
 				header("Location: /" . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug']); exit;
 			}
