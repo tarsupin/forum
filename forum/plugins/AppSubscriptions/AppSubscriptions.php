@@ -136,7 +136,8 @@ abstract class AppSubscriptions {
 			$users[] = (int) $sub['uni_id'];
 		}
 		$users = implode(",", $users);
-		$status = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE uni_id IN (?) AND forum_id=? AND thread_id=?", array($users, $forum['id'], $thread['id']));
+
+		$status = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE uni_id IN (" . $users . ") AND forum_id=? AND thread_id=?", array($forum['id'], $thread['id']));
 		
 		// Update the subscriptions
 		$subList = array();
@@ -150,7 +151,7 @@ abstract class AppSubscriptions {
 		{
 			return false;
 		}
-		
+
 		// Prepare Values
 		$thread['title'] = Sanitize::text($thread['title']);
 		
