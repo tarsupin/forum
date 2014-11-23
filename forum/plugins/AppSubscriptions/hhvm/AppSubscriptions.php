@@ -264,7 +264,7 @@ abstract class AppSubscriptions {
 		// Notify the users
 		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=1#p' . $postID, '"' . $thread['title'] . '" was created by @' . $poster . ' in ' . $forum['title'] . '!');
 		
-		return $success;
+		return true;
 	}
 	
 	

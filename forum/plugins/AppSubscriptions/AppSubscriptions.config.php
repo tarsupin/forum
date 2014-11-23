@@ -48,6 +48,16 @@ class AppSubscriptions_config {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 23;
 		");
 		
+		Database::exec("
+		CREATE TABLE `forum_subs` (
+			`forum_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			`uni_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+			INDEX `forum_id_uni_id` (`forum_id`, `uni_id`)
+		)
+		COLLATE='latin1_swedish_ci'
+		ENGINE=InnoDB;
+		");
+		
 		return $this->isInstalled();
 	}
 	
