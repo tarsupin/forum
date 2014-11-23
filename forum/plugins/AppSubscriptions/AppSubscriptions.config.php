@@ -29,8 +29,7 @@ class AppSubscriptions_config {
 			`thread_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
 			
-			INDEX (`forum_id`, `thread_id`, `uni_id`)
-			
+			UNIQUE (`forum_id`, `thread_id`, `uni_id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(forum_id, thread_id) PARTITIONS 23;
 		");
 		
@@ -43,19 +42,18 @@ class AppSubscriptions_config {
 			
 			`new_posts`				tinyint(1)		unsigned	NOT NULL	DEFAULT '0',
 			
-			INDEX (`uni_id`, `forum_id`, `thread_id`)
-			
+			UNIQUE (`uni_id`, `forum_id`, `thread_id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 23;
 		");
 		
 		Database::exec("
-		CREATE TABLE `forum_subs` (
-			`forum_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-			`uni_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-			INDEX `forum_id_uni_id` (`forum_id`, `uni_id`)
-		)
-		COLLATE='latin1_swedish_ci'
-		ENGINE=InnoDB;
+		CREATE TABLE IF NOT EXISTS `forum_subs`
+		(
+			`forum_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			
+			UNIQUE (`forum_id`, `uni_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(forum_id) PARTITIONS 17;
 		");
 		
 		return $this->isInstalled();
@@ -71,8 +69,9 @@ class AppSubscriptions_config {
 		// Make sure the newly installed tables exist
 		$pass1 = DatabaseAdmin::columnsExist("thread_subs", array("forum_id", "thread_id"));
 		$pass2 = DatabaseAdmin::columnsExist("thread_subs_by_user", array("uni_id", "forum_id"));
+		$pass3 = DatabaseAdmin::columnsExist("forum_subs", array("forum_id", "uni_id"));
 		
-		return ($pass1 and $pass2);
+		return ($pass1 and $pass2 and $pass3);
 	}
 	
 }
