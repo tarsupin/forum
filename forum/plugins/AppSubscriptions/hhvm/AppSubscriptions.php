@@ -184,7 +184,7 @@ abstract class AppSubscriptions {
 		// Add the subscription
 		Database::startTransaction();
 		
-		if(Database::query("REPLACE INTO `forum_subs` (forum_id, uni_id) VALUES (?, ?, ?)", array($forumID, $uniID)))
+		if(Database::query("REPLACE INTO `forum_subs` (forum_id, uni_id) VALUES (?, ?)", array($forumID, $uniID)))
 		{
 			if(Database::query("REPLACE INTO `forum_subs_by_user` (uni_id, forum_id) VALUES (?, ?)", array($uniID, $forumID)))
 			{
