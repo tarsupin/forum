@@ -52,7 +52,7 @@ abstract class AppSubscriptions {
 	
 	// $subscriptions = AppSubscriptions::getForum($uniID);
 	{
-		return Database::selectMultiple("SELECT f.url_slug as forum_slug, f.id, f.title, f.posts, f.views, f.last_poster, f.date_lastPost, u.role, u.handle FROM forum_subs fs INNER JOIN forums f ON fs.forum_id=f.id INNER JOIN users u ON f.last_poster=u.uni_id WHERE fs.uni_id=?", array($uniID));
+		return Database::selectMultiple("SELECT f.url_slug as forum_slug, f.id, f.title, f.posts, f.views, f.last_poster, f.date_lastPost, u.role, u.handle FROM forum_subs_by_user fs INNER JOIN forums f ON fs.forum_id=f.id INNER JOIN users u ON f.last_poster=u.uni_id WHERE fs.uni_id=?", array($uniID));
 	}
 	
 	
@@ -66,17 +66,12 @@ abstract class AppSubscriptions {
 	
 	// AppSubscriptions::subscribe($forumID, $threadID, $uniID);
 	{
-		if($check = (int) Database::selectValue("SELECT uni_id FROM thread_subs WHERE forum_id=? AND thread_id=? AND uni_id=? LIMIT 1", array($forumID, $threadID, $uniID)))
-		{
-			return false;
-		}
-		
 		// Add the subscription
 		Database::startTransaction();
 		
-		if(Database::query("INSERT INTO `thread_subs` (forum_id, thread_id, uni_id) VALUES (?, ?, ?)", array($forumID, $threadID, $uniID)))
+		if(Database::query("REPLACE INTO `thread_subs` (forum_id, thread_id, uni_id) VALUES (?, ?, ?)", array($forumID, $threadID, $uniID)))
 		{
-			if(Database::query("INSERT INTO `thread_subs_by_user` (uni_id, forum_id, thread_id) VALUES (?, ?, ?)", array($uniID, $forumID, $threadID)))
+			if(Database::query("REPLACE INTO `thread_subs_by_user` (uni_id, forum_id, thread_id) VALUES (?, ?, ?)", array($uniID, $forumID, $threadID)))
 			{
 				return Database::endTransaction();
 			}
@@ -128,16 +123,25 @@ abstract class AppSubscriptions {
 	
 	// AppSubscriptions::update($forum, $thread, $posterID, $postID);
 	{
-		$subscriptions = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID));
+		$subscriptions = Database::selectMultiple("SELECT uni_id FROM thread_subs WHERE forum_id=? AND thread_id=? AND uni_id != ?", array($forum['id'], $thread['id'], $posterID));
 		if($subscriptions == array())
 		{
 			return false;
 		}
 		
+		// Get new status
+		$users = array();
+		foreach($subscriptions as $sub)
+		{
+			$users[] = (int) $sub['uni_id'];
+		}
+		$users = implode(",", $users);
+		$status = Database::selectMultiple("SELECT uni_id, new_posts FROM thread_subs_by_user WHERE uni_id IN (?) AND forum_id=? AND thread_id=?", array($users, $forum['id'], $thread['id']));
+		
 		// Update the subscriptions
 		$subList = array();
 		
-		foreach($subscriptions as $sub)
+		foreach($status as $sub)
 		{
 			if((int) $sub['new_posts'] == 0)	{ $subList[] = (int) $sub['uni_id']; }			
 		}
@@ -177,17 +181,15 @@ abstract class AppSubscriptions {
 	
 	// AppSubscriptions::subscribeForum($forumID, $uniID);
 	{
-		if($check = (int) Database::selectValue("SELECT uni_id FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID)))
-		{
-			return false;
-		}
-		
 		// Add the subscription
 		Database::startTransaction();
 		
-		if(Database::query("INSERT INTO `forum_subs` (forum_id, uni_id) VALUES (?, ?)", array($forumID, $uniID)))
+		if(Database::query("REPLACE INTO `forum_subs` (forum_id, uni_id) VALUES (?, ?, ?)", array($forumID, $uniID)))
 		{
-			return Database::endTransaction();
+			if(Database::query("REPLACE INTO `forum_subs_by_user` (uni_id, forum_id) VALUES (?, ?)", array($uniID, $forumID)))
+			{
+				return Database::endTransaction();
+			}
 		}
 		
 		return Database::endTransaction(false);
@@ -213,7 +215,10 @@ abstract class AppSubscriptions {
 		
 		if(Database::query("DELETE FROM forum_subs WHERE forum_id=? AND uni_id=? LIMIT 1", array($forumID, $uniID)))
 		{
-			return Database::endTransaction();
+			if(Database::query("DELETE FROM forum_subs_by_user WHERE uni_id=? AND forum_id=? LIMIT 1", array($uniID, $forumID)))
+			{
+				return Database::endTransaction();
+			}
 		}
 		
 		return Database::endTransaction(false);

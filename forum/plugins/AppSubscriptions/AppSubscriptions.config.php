@@ -56,6 +56,16 @@ class AppSubscriptions_config {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(forum_id) PARTITIONS 17;
 		");
 		
+		Database::exec("
+		CREATE TABLE IF NOT EXISTS `forum_subs_by_user`
+		(
+			`uni_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			`forum_id`				int(10)			unsigned	NOT NULL	DEFAULT '0',
+			
+			UNIQUE (`uni_id`, `forum_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 PARTITION BY KEY(uni_id) PARTITIONS 17;
+		");
+		
 		return $this->isInstalled();
 	}
 	
@@ -70,8 +80,9 @@ class AppSubscriptions_config {
 		$pass1 = DatabaseAdmin::columnsExist("thread_subs", array("forum_id", "thread_id"));
 		$pass2 = DatabaseAdmin::columnsExist("thread_subs_by_user", array("uni_id", "forum_id"));
 		$pass3 = DatabaseAdmin::columnsExist("forum_subs", array("forum_id", "uni_id"));
+		$pass4 = DatabaseAdmin::columnsExist("forum_subs_by_user", array("uni_id", "forum_id"));
 		
-		return ($pass1 and $pass2 and $pass3);
+		return ($pass1 and $pass2 and $pass3 and $pass4);
 	}
 	
 }
