@@ -52,7 +52,7 @@ $community = array(
 foreach($community as $key => $val)
 {
 	echo '
-	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
+	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community' . Me::$slg . '"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community' . Me::$slg . '">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
 }
 
 echo '
@@ -69,7 +69,7 @@ $community = array(
 foreach($community as $key => $val)
 {
 	echo '
-	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
+	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community' . Me::$slg . '"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community' . Me::$slg . '">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
 }
 
 echo '
@@ -88,7 +88,7 @@ $community = array(
 foreach($community as $key => $val)
 {
 	echo '
-	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
+	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community' . Me::$slg . '"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community' . Me::$slg . '">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
 }
 
 
@@ -106,7 +106,7 @@ $community = array(
 foreach($community as $key => $val)
 {
 	echo '
-	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
+	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community' . Me::$slg . '"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community' . Me::$slg . '">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
 }
 
 echo '
@@ -122,7 +122,7 @@ $community = array(
 foreach($community as $key => $val)
 {
 	echo '
-	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
+	<div class="entry-row"><div class="entry-left"><a href="http://' . $key . '.unifaction.community' . Me::$slg . '"><img src="' . $val[2] . '"></a></div><div class="entry-right"><strong><a href="http://' . $key . '.unifaction.community' . Me::$slg . '">' . $val[0] . '</a></strong><br />' . $val[1] . '</div></div>';
 }
 
 echo '

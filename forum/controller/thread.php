@@ -347,7 +347,7 @@ foreach($posts as $post)
 	}
 	else
 	{
-		$img = ProfilePic::image($uniID, "large");
+		$img = ProfilePic::image($uniID, "huge");
 	}
 	
 	// Anchor needs to be offset by the height of the fixed header
