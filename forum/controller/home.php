@@ -108,7 +108,7 @@ if($recentPosts = AppPost::getRecentPosts())
 			<div class="inner-line">
 				<div class="inner-name">
 					<a href="' . $post['post_link'] . '?page=' . $onpage . '#p' . $post['post_id'] . '">' . $post['thread_title'] . '</a>
-					<div class="inner-desc">' . $post['body'] . '</div>
+					<div class="inner-desc">' . html_entity_decode($post['body']) . '</div>
 					<div class="inner-paginate">' . $drawDesc . '</div>
 				</div>
 				<div class="inner-details"><a href="' . URL::unifaction_social() . '/' . $post['poster_handle'] . '">@' . $post['poster_handle'] . '</a>' . (($post['date_posted'] > $hourAgo) ? ' - ' . Time::fuzzy((int) $post['date_posted']) : '') . '<div style="margin-top:6px;">' . $post['thread_posts'] . ' Posts, ' . $post['thread_views'] . ' Views</div></div>

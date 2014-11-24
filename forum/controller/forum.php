@@ -35,28 +35,27 @@ $subData = array();
 // Check your Subscription
 if(Me::$loggedIn)
 {
-	$subData = AppSubscriptions::getDataForum(Me::$id, $forum['id']);
-	
 	// Run Actions
-	if(isset($_GET['action']))
+	if($link = Link::clicked())
 	{
-		// Subscribe to the Forum
-		if($_GET['action'] == "subscribe")
+		if($link == "sub-" . $forum['id'])
 		{
-			if(AppSubscriptions::subscribeForum($forum['id'], Me::$id))
+			$subData = AppSubscriptions::getDataForum(Me::$id, $forum['id']);
+			// Subscribe to the Forum
+			if($subData == array())
 			{
-				$subData = array('uni_id' => Me::$id);
-				Alert::success("Subscribed", "You are now subscribed to \"" . $forum['title'] . "\"!");
+				if(AppSubscriptions::subscribeForum($forum['id'], Me::$id))
+				{
+					Alert::success("Subscribed", "You are now subscribed to \"" . $forum['title'] . "\"!");
+				}
 			}
-		}
-		
-		// Unsubscribe from the Forum
-		else if($_GET['action'] == "unsubscribe")
-		{
-			if(AppSubscriptions::unsubscribeForum($forum['id'], Me::$id))
+			// Unsubscribe from the Forum
+			else
 			{
-				$subData = array();
-				Alert::success("Unsubscribed", "You are now unsubscribed from \"" . $forum['title'] . "\"!");
+				if(AppSubscriptions::unsubscribeForum($forum['id'], Me::$id))
+				{
+					Alert::success("Unsubscribed", "You are now unsubscribed from \"" . $forum['title'] . "\"!");
+				}
 			}
 		}
 	}
@@ -186,17 +185,8 @@ echo '
 if(Me::$loggedIn)
 {
 	echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
-	if($subData)
-	{
-		echo '
-	<a href="/' . $forum['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
-	}
-	else
-	{
-		echo '
-	<a href="/' . $forum['url_slug'] . '?action=subscribe">Subscribe</a>';
-	}
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
+	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
 }
 echo '
 	' . ($pageList ? '<div style="float:right;">' . $pageList . '</div>' : "") .'
@@ -320,17 +310,8 @@ echo '
 if(Me::$loggedIn)
 {
 	echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
-	if($subData)
-	{
-		echo '
-	<a href="/' . $forum['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
-	}
-	else
-	{
-		echo '
-	<a href="/' . $forum['url_slug'] . '?action=subscribe">Subscribe</a>';
-	}
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
+	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
 }
 echo '
 	' . ($pageList ? '<div style="float:right;">' . $pageList . '</div>' : "") .'
