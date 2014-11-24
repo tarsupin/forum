@@ -55,6 +55,6 @@ $catID = AppForumAdmin::createCategory("The Lounge");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "General Discussion", "Discuss off-topic things here.", 0, 2, "ArtLounge");
 $forumID = AppForumAdmin::createForum($catID, 0, "Introductions", "Introduce yourself to the art community.", 0, 2, "ArtIntro");
-$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Questions and comments about the NFL or the forums.", 0, 2, "NFLInquiry");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Help, questions, and comments about art or the forums.", 0, 2, "NFLInquiry");
 $forumID = AppForumAdmin::createForum($catID, 0, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
 

@@ -42,6 +42,6 @@ $catID = AppForumAdmin::createCategory("The Lounge");
 
 $forumID = AppForumAdmin::createForum($catID, 0, "General Discussion", "Discuss off-topic things here.", 0, 2, "BookClubLounge");
 $forumID = AppForumAdmin::createForum($catID, 0, "Introductions", "Introduce yourself to the book club community.", 0, 2, "BookClubIntro");
-$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Questions and comments about the NFL or the forums.", 0, 2, "BookInquiry");
+$forumID = AppForumAdmin::createForum($catID, 0, "Comments and Questions", "Help, questions, and comments about books or the forums.", 0, 2, "BookInquiry");
 $forumID = AppForumAdmin::createForum($catID, 0, "Staff Forum", "A place for the staff and moderators to post.", 6, 6);
 
