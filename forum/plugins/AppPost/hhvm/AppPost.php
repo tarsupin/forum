@@ -36,9 +36,10 @@ abstract class AppPost {
 	
 	// $postID = AppPost::create($forum, $threadID, $uniID, $body, [$aviID]);
 	{
+		$postID = (int) UniqueID::get("post");
+		
 		Database::startTransaction();
 		
-		$postID = (int) UniqueID::get("post");
 		$timestamp = time();
 		
 		// Insert the Post
