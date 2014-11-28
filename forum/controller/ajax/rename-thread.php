@@ -26,4 +26,7 @@ if(Me::$clearance < 6 && $thread['author_id'] != Me::$id)
 
 $_POST['title'] = Sanitize::safeword($_POST['title'], "'/\"!?@#$%^&*()[]+={}");
 
-if(
+if(AppThread::edit($_POST['forumID'], $_POST['threadID'], $_POST['title']))
+{
+	echo $_POST['title'];
+}
