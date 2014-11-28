@@ -280,6 +280,13 @@ if(Me::$loggedIn)
 		<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
 	}
 	
+	// Display Renaming Option
+	if($isMod || $thread['author_id'] == Me::$id)
+	{
+		echo '
+			<a href="javascript:changeTitle(' . $forum['id'] . ', ' . $thread['id'] . ');">Change Title</a>';
+	}
+	
 	// Display Moderator Options
 	if($isMod)
 	{
@@ -414,7 +421,6 @@ function likePost(threadID, postID)
 {
 	getAjax("", "like-post", "likeActivated", "threadID=" + threadID, "postID=" + postID);
 }
-
 function likeActivated(response)
 {
 	if(!response) { return; }
@@ -429,28 +435,25 @@ function likeActivated(response)
 		
 		l.innerHTML = c;
 	}
-}' . $script . '
-</script>';
-
-/*
-
-function editTitle(f, tid, title)
-{
-	var new_title = prompt("New Thread Title:", title);
-	if (new_title)
-		$.ajax({
-			url: "title.php",
-			data: ("f="+f+"&id="+tid+"&title="+new_title),
-			type: "POST",
-			success: function(html)
-			{
-				$("#threadtitle").html(html);
-				document.title = html + " - UniFaction 5 Forum";
-				$("#editthreadtitle").attr("href", "javascript:editTitle(\"" + f + "\", \"" + tid + "\", \"" + html + "\");");
-			}
-		});
 }
-*/
+
+function changeTitle(forum, thread)
+{
+	var new_title = prompt("New Thread Title:", "' . $thread['title'] . '");
+	if(new_title)
+	{
+		getAjax("", "rename-thread", "renameActivated", "forumID=" + forum, "threadID=" + thread, "title=" + new_title);
+	}
+}
+function renameActivated(response)
+{
+	if(!response) { return; }
+	if(response == "") { return; }
+	
+	alert("Thread title has been changed to:\n" + response);
+}
+' . $script . '
+</script>';
 
 echo '
 <div class="thread-tline">';

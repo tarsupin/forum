@@ -11,7 +11,7 @@ This plugin provides the ability to administer the forum, forum categories, thre
 ------ Methods Available ------
 -------------------------------
 
-$catID		= AppForumAdmin::createCategory($forumID, $title);
+$catID		= AppForumAdmin::createCategory($title);
 $forumID	= AppForumAdmin::createForum($categoryID, $title, $desc, $readPerm, $postPerm);
 
 AppForumAdmin::editForum($forumID, $categoryID, $parentID, $title, $desc, $readPerm, $postPerm);
@@ -84,7 +84,7 @@ abstract class AppForumAdmin {
 		}
 		
 		// Run the query
-		if(!Database::query("INSERT INTO `forums` (category_id, parent_id, forum_order, active_hashtag, url_slug, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array($categoryID, $parentID, $slotOrder, $activeHashtag, $urlSlug, $title, $description, $readPerm, $postPerm)))
+		if(!Database::query("INSERT INTO `forums` (category_id, parent_id, forum_order, active_hashtag, url_slug, title, description, perm_read, perm_post) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array(($parentID == 0 ? $categoryID : 0), $parentID, $slotOrder, $activeHashtag, $urlSlug, $title, $description, $readPerm, $postPerm)))
 		{
 			return 0;
 		}
@@ -113,10 +113,19 @@ abstract class AppForumAdmin {
 	// AppForumAdmin::editForum($forumID, $categoryID, $parentID, "Forum Title", "The forum caption / description", $readPerm, $postPerm);
 	{
 		// Move to a new category if applicable
-		AppForumAdmin::moveForum($forumID, $categoryID, 0);
+		AppForumAdmin::moveForum($forumID, 0, $categoryID);
+		
+		// Create the URL Slug for this post
+		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
+		
+		// Update has_children status
+		if($parentID > 0)
+		{
+			Database::query("UPDATE forums SET has_children=? WHERE id=? LIMIT 1", array(1, $parentID));
+		}
 		
 		// Update the forum
-		return Database::query("UPDATE forums SET category_id=?, parent_id=?, title=?, description=?, perm_read=?, perm_post=? WHERE id=? LIMIT 1", array($categoryID, $parentID, $title, $description, $readPerm, $postPerm, $forumID));
+		return Database::query("UPDATE forums SET category_id=?, parent_id=?, url_slug=?, title=?, description=?, perm_read=?, perm_post=? WHERE id=? LIMIT 1", array(($parentID == 0 ? $categoryID : 0), $parentID, $urlSlug, $title, $description, $readPerm, $postPerm, $forumID));
 	}
 	
 	
@@ -131,13 +140,14 @@ abstract class AppForumAdmin {
 	// AppForumAdmin::moveForum($forumID, $moveVal = 0, $categoryID = 0);	// $moveVal of -1 is up, 1 is down
 	{
 		// Make sure the forum exists
-		if(!$forumData = Database::selectOne("SELECT category_id, forum_order FROM forums WHERE id=? LIMIT 1", array($forumID)))
+		if(!$forumData = Database::selectOne("SELECT category_id, parent_id, forum_order FROM forums WHERE id=? LIMIT 1", array($forumID)))
 		{
 			return false;
 		}
 		
 		// Recognize Integers
 		$forumData['category_id'] = (int) $forumData['category_id'];
+		$forumData['parent_id'] = (int) $forumData['parent_id'];
 		$forumData['forum_order'] = (int) $forumData['forum_order'];
 		
 		// Check if the new category is different from the old category (since this affects ordering)
@@ -158,6 +168,10 @@ abstract class AppForumAdmin {
 			
 			// Update the forum's order within the new category
 			Database::query("UPDATE forums SET forum_order=? WHERE id=? LIMIT 1", array($lastPos + 1, $forumID));
+			
+			// Update children status
+			$subforums = AppForum::getSubforums($forumData['parent_id']);
+			Database::query("UPDATE forums SET has_children=? WHERE id=? LIMIT 1", array(($subforums == array() ? 0 : 1), $forumData['parent_id']));
 		}
 		
 		// If you're not moving the forum order, return
@@ -201,6 +215,18 @@ abstract class AppForumAdmin {
 		}
 		
 		$pass = Database::query("UPDATE threads SET forum_id=? WHERE forum_id=? AND id=? LIMIT 1", array($newForumID, $curForumID, $threadID)) ? $pass : false;
+		
+		if($pass)
+		{
+			// Adjust thread subscriptions
+			Database::query("UPDATE thread_subs SET forum_id=? WHERE forum_id=? AND thread_id=?", array($newForumID, $curForumID, $threadID));
+			Database::query("UPDATE thread_subs_by_user SET forum_id=? WHERE forum_id=? AND thread_id=?", array($newForumID, $curForumID, $threadID));
+			
+			// Notify forum subscriptions
+			$forum = Database::selectOne("SELECT id, url_slug, title FROM forums WHERE id=? LIMIT 1", array($newForumID));
+			$thread = Database::selectOne("SELECT id, url_slug, title FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($newForumID, $threadID));
+			AppSubscriptions::updateForum($forum, $thread, Me::$id, 0, "", "m");
+		}
 		
 		return Database::endTransaction($pass);
 	}

@@ -18,8 +18,11 @@ if(Me::$clearance < 6)
 	header("Location: /"); exit;
 }
 
+$_POST['forum'] = (int) $_GET['forum'];
+$_POST['id'] = (int) $_GET['id'];
+
 // Get Thread and Forum List
-if(!$thread = Database::selectOne("SELECT id, forum_id, title FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($_POST['forum'], $_POST['id'])))
+if(!$thread = Database::selectOne("SELECT id, forum_id, url_slug, title FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($_POST['forum'], $_POST['id'])))
 {
 	header("Location: /"); exit;
 }
@@ -31,7 +34,7 @@ $thread['forum_id'] = (int) $thread['forum_id'];
 // Submit Form
 if(Form::submitted("move-thread"))
 {
-	if(!$forumData = Database::selectOne("SELECT id, title FROM forums WHERE id=? AND perm_read <= ? LIMIT 1", array($_POST['toForum'], Me::$clearance)))
+	if(!$forumData = Database::selectOne("SELECT id, url_slug, title FROM forums WHERE id=? AND perm_read <= ? LIMIT 1", array((int) $_POST['toForum'], Me::$clearance)))
 	{
 		Alert::error("Forum Inexistent", "That forum does not exist, or an error has occurred.");
 	}
@@ -51,14 +54,13 @@ if(Form::submitted("move-thread"))
 		if(AppForumAdmin::moveThread($thread['forum_id'], $thread['id'], $forumData['id']))
 		{
 			Alert::saveSuccess("Thread Moved", 'You have successfully moved the thread to "' . $forumData['title'] . '"!');
-			
-			header("Location: /thread?forum=" . $forumData['id'] . '&id=' . $thread['id']); exit;
+			header("Location: /" . $forumData['url_slug'] . "/" . $thread['id'] . "-" . $thread['url_slug']); exit;
 		}
 	}
 }
 
 // Get the Forum List
-if(!$forums = Database::selectMultiple("SELECT f.id, f.title, c.title as catTitle FROM forums f INNER JOIN forum_categories c ON c.id=f.category_id WHERE f.perm_read <= ? ORDER BY c.title, f.title ASC", array(Me::$clearance)))
+if(!$forums = Database::selectMultiple("SELECT f.id, f.has_children, f.title, c.title as catTitle FROM forums f INNER JOIN forum_categories c ON c.id=f.category_id WHERE f.perm_read <= ? ORDER BY c.title, f.title ASC", array(Me::$clearance)))
 {
 	header("Location: /"); exit;
 }
@@ -68,7 +70,7 @@ $forumList = array();
 
 foreach($forums as $forum)
 {
-	$forumList[$forum['catTitle']][] = array("id" => (int) $forum['id'], "title" => $forum['title']);
+	$forumList[$forum['catTitle']][] = array("id" => (int) $forum['id'], "title" => $forum['title'], "has_children" => $forum['has_children']);
 }
 
 echo '
@@ -88,6 +90,15 @@ foreach($forumList as $category => $forums)
 	{
 		echo '
 		<option value="' . $forum['id'] . '"' . ($thread['forum_id'] == $forum['id'] ? ' selected' : '') . '> &bull; ' . $forum['title'] . '</option>';
+		if($forum['has_children'] == 1)
+		{
+			$subforums = AppForum::getSubforums($forum['id']);
+			foreach($subforums as $sub)
+			{
+				echo '
+			<option value="' . $sub['id'] . '"' . ($thread['forum_id'] == $sub['id'] ? ' selected' : '') . '> -&gt; ' . $sub['title'] . '</option>';
+			}
+		}
 	}
 }
 

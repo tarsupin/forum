@@ -234,6 +234,7 @@ abstract class AppSubscriptions {
 	,	$posterID		// <int> The UniID to update
 	,	$postID			// <int> The ID of the post causing the notification.
 	,	$poster = ""	// <str> The handle of the poster.
+	,	$action = "c"	// c for created, m for moved
 	)					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
 	// AppSubscriptions::updateForum($forum, $thread, $posterID, $postID);
@@ -268,7 +269,7 @@ abstract class AppSubscriptions {
 		}
 		
 		// Notify the users
-		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . '?page=1#p' . $postID, '"' . $thread['title'] . '" was created by @' . $poster . ' in ' . $forum['title'] . '!');
+		Notifications::createMultiple($subList, SITE_URL . '/' . $forum['url_slug'] . '/' . $thread['id'] . '-' . $thread['url_slug'] . ($action == "c" ? '?page=1#p' . $postID : ''), '"' . $thread['title'] . '" was ' . ($action == "c" ? 'created by @' . $poster . ' in ' : 'moved to ') . $forum['title'] . '!');
 		
 		return true;
 	}

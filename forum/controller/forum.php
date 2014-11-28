@@ -66,7 +66,7 @@ if($_GET['page'] > 1)
 	$pageList .= '<a href="/' . $forum['url_slug'] . '?page=' . ($_GET['page'] - 1) . '"><span class="icon-arrow-left"></span> Previous Page</a>';
 }
 
-$socialURL = URL::social_unifaction_com();
+$socialURL = URL::unifaction_social();
 
 // Get Stickied Thread
 $sThreads = array();

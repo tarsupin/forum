@@ -19,7 +19,7 @@ $posts = AppThread::getPosts($threadID, $page, $show = 10);	// Returns the posts
 
 AppThread::view($forum, $threadID);
 
-AppThread::edit($forumID, $threadID, $title, $sticky);
+AppThread::edit($forumID, $threadID, $title);
 
 $threadID = AppThread::create($forum, $uniID, $title, $sticky);
 
@@ -139,10 +139,9 @@ abstract class AppThread {
 		int $forumID		// <int> The forum ID that contains the thread you're editing.
 	,	int $threadID		// <int> The ID of the thread you're editing.
 	,	string $title			// <str> The title of the thread.
-	,	int $sticky = 0		// <int> The level of sticky importance (0 to 9).
 	): bool					// RETURNS <bool> TRUE on success, or FALSE on failure.
 	
-	// AppThread::edit($forumID, $threadID, $title, $sticky);
+	// AppThread::edit($forumID, $threadID, $title);
 	{
 		// Get the Thread Data (to confirm it exists)
 		if(!Database::selectValue("SELECT id FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
@@ -150,17 +149,11 @@ abstract class AppThread {
 			return false;
 		}
 		
-		// Sticky Check & Modifications
-		if($stickyLevel = (int) Database::selectValue("SELECT sticky_level FROM threads_stickied WHERE forum_id=? AND thread_id=? LIMIT 1", array($forumID, $threadID)))
-		{
-			if($stickyLevel != $sticky)
-			{
-				AppThread::alterSticky($forumID, $threadID, $sticky);
-			}
-		}
+		// Create the URL Slug for this post
+		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
 		
 		// Update Title
-		return Database::query("UPDATE `threads` SET title=? WHERE forum_id=? AND id=? LIMIT 1", array($title, $forumID, $threadID));
+		return Database::query("UPDATE `threads` SET url_slug=?, title=? WHERE forum_id=? AND id=? LIMIT 1", array($urlSlug, $title, $forumID, $threadID));
 	}
 	
 }

@@ -59,7 +59,7 @@ abstract class AppForum {
 	
 	// $forums = AppForum::getForums($categoryID);
 	{
-		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
+		$clearance = (isset(Me::$clearance) ? Me::$clearance : 0);
 		
 		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.role, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array($categoryID, 0));
 		
@@ -84,7 +84,7 @@ abstract class AppForum {
 	
 	// $subforums = AppForum::getSubforums($parentID);
 	{
-		$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
+		$clearance = (isset(Me::$clearance) ? Me::$clearance : 0);
 		
 		$results = Database::selectMultiple("SELECT f.id, f.has_children, f.url_slug, f.title, f.description, f.posts, f.views, f.last_poster, f.date_lastPost, f.perm_read, f.perm_post, u.role, u.handle, u.display_name FROM forums f LEFT JOIN users u ON u.uni_id=f.last_poster WHERE f.category_id=? AND parent_id=? ORDER BY f.forum_order ASC", array(0, $parentID));
 		
