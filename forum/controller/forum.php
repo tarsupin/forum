@@ -15,7 +15,7 @@ $forum['id'] = (int) $forum['id'];
 $forum['perm_read'] = (int) $forum['perm_read'];
 
 // Ensure if you have proper permissions to access this forum
-$clearance = (isset(Me::$vals['clearance']) ? Me::$vals['clearance'] : 0);
+$clearance = (isset(Me::$clearance) ? Me::$clearance : 0);
 
 if($forum['perm_read'] > $clearance)
 {
@@ -184,8 +184,12 @@ echo '
 <div class="thread-tline">';
 if(Me::$loggedIn)
 {
+	if($forum['perm_post'] <= Me::$clearance)
+	{
+		echo '
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	}
 	echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
 	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
 }
 echo '
@@ -309,8 +313,12 @@ echo '
 <div class="thread-tline">';
 if(Me::$loggedIn)
 {
+	if($forum['perm_post'] <= Me::$clearance)
+	{
+		echo '
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	}
 	echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>
 	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
 }
 echo '

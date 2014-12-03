@@ -265,26 +265,31 @@ echo '
 
 if(Me::$loggedIn)
 {
-	echo '
+	$comma = "";
+	if($thread['perm_post'] <= Me::$clearance && $has_avatar)
+	{
+		echo '
 	<a href="/post?forum=' . $forumID . '&id=' . $threadID . '">Reply</a>';
+		$comma = " | ";
+	}
 	
 	// Display Subscription Option
 	if($subData)
 	{
 		echo '
-		<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
+		' . $comma . '<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=unsubscribe">Unsubscribe</a>';
 	}
 	else
 	{
 		echo '
-		<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
+		' . $comma . '<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=subscribe">Subscribe</a>';
 	}
 	
 	// Display Renaming Option
 	if($isMod || $thread['author_id'] == Me::$id)
 	{
 		echo '
-			<a href="javascript:changeTitle(' . $forum['id'] . ', ' . $thread['id'] . ');">Change Title</a>';
+			| <a href="javascript:changeTitle(' . $forum['id'] . ', ' . $thread['id'] . ');">Change Title</a>';
 	}
 	
 	// Display Moderator Options
@@ -292,7 +297,7 @@ if(Me::$loggedIn)
 	{
 		// Mod Toolset Dropdown
 		echo '
-		<select id="mod-tool-dropdown" name="mod-dropdown">
+		| <select id="mod-tool-dropdown" name="mod-dropdown">
 			<option value="">-- Mod Tools --</option>
 			<option value="stickyImportant">Set Level: Important Sticky</option>
 			<option value="sticky">Set Level: Sticky</option>
@@ -471,8 +476,7 @@ foreach($breadcrumbs as $crumb)
 	$comma = ' &gt; ';
 }
 
-echo ' &gt; ' . $thread['title'] . ' &gt; <a href="/post?forum=' . $forumID . '&id=' . $threadID . '">Reply</a>
-	' . $pageLine . '
+echo ' &gt; ' . $thread['title'] . $pageLine . '
 </div>';
 
 // Quick Reply Box
