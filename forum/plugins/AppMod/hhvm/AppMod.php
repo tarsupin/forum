@@ -31,11 +31,13 @@ abstract class AppMod {
 	
 	// AppMod::sendReport_lockThread($forumID, $threadID);
 	{
-		$url = "/thread?forum=" . $forumID . "&id=" . $threadID;
-		
-		if($authorID = (int) Database::selectValue("SELECT author_id FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
+		if($thread = Database::selectOne("SELECT url_slug, author_id FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
 		{
-			return SiteReport::create("Locked Thread", $url, Me::$id, 0, "");
+			if($forum = Database::selectOne("SELECT url_slug FROM forums WHERE id=? LIMIT 1", array($forumID)))
+			{
+				$url = '/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'];
+				return SiteReport::create("Locked Thread", $url, Me::$id, (int) $thread['author_id'], "");
+			}
 		}
 		
 		return false;
@@ -51,16 +53,21 @@ abstract class AppMod {
 	
 	// AppMod::sendReport_deleteThread($forumID, $threadID);
 	{
-		if(!$threadData = Database::selectOne("SELECT forum_id, posts, views, title, author_id, date_created, date_last_post FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
+		if(!$threadData = Database::selectOne("SELECT forum_id, url_slug, posts, views, title, author_id, date_created, date_last_post FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
 		{
 			return false;
 		}
 		
-		$details = print_r($threadData, true);
+		if($forum = Database::selectOne("SELECT url_slug FROM forums WHERE id=? LIMIT 1", array($forumID)))
+		{
+			$url = '/' . $forum['url_slug'] . '/' . $threadID . '-' . $threadData['url_slug'];
+			unset($threadData['url_slug']);
+			$details = print_r($threadData, true);
+			
+			return SiteReport::create("Deleted Thread", $url, Me::$id, (int) $threadData['author_id'], $details);
+		}
 		
-		$url = "/"; // (Thread Archive??) "/thread?forum=" . $forumID . "&id=" . $threadID;
-		
-		return SiteReport::create("Deleted Thread", $url, Me::$id, 0, $details);
+		return false;
 	}
 	
 	
@@ -81,9 +88,16 @@ abstract class AppMod {
 		
 		$details = print_r($postData, true);
 		
-		$url = "/thread?forum=" . $forumID . "&id=" . $threadID;
+		if($thread = Database::selectOne("SELECT url_slug FROM threads WHERE forum_id=? AND id=? LIMIT 1", array($forumID, $threadID)))
+		{
+			if($forum = Database::selectOne("SELECT url_slug FROM forums WHERE id=? LIMIT 1", array($forumID)))
+			{
+				$url = '/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'];
+				return SiteReport::create("Deleted Post", $url, Me::$id, (int) $postData['uni_id'], $details);
+			}
+		}
 		
-		return SiteReport::create("Deleted Post", $url, Me::$id, (int) $postData['uni_id'], $details);
+		return false;
 	}
 	
 }

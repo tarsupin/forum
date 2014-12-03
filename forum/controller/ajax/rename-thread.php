@@ -28,5 +28,5 @@ $_POST['title'] = Sanitize::safeword($_POST['title'], "'/\"!?@#$%^&*()[]+={}");
 
 if(AppThread::edit($_POST['forumID'], $_POST['threadID'], $_POST['title']))
 {
-	echo $_POST['title'];
+	echo Sanitize::variable(str_replace(" ", "-", strtolower($_POST['title'])), "-");
 }

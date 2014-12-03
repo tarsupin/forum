@@ -367,7 +367,8 @@ foreach($posts as $post)
 		<div class="post-left' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '">
 			<div><a href="' . $social . '/' . $userList[$uniID]['handle'] . '"><img class="post-img' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '" src="' . $img . '" /></a></div>
 			<div class="post-status">
-				<div class="post-status-top">' . (lcfirst($userList[$uniID]['display_name']) != lcfirst($userList[$uniID]['handle']) ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID][$aviID], array('', $userList[$uniID]['display_name'], lcfirst($userList[$uniID]['display_name']))) ? ' (' . $avatarName[$uniID][$aviID] . ')' : '') . '</div><div class="post-status-bottom">
+				<div class="post-status-top">' . (lcfirst($userList[$uniID]['display_name']) != lcfirst($userList[$uniID]['handle']) ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID][$aviID], array('', $userList[$uniID]['display_name'], lcfirst($userList[$uniID]['display_name']))) ? ' (' . $avatarName[$uniID][$aviID] . ')' : '') . '</div>
+				<div class="post-status-bottom">
 					<div><a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?page=' . $_GET['page'] . '#p' . $post['id'] . '"><span class="icon-link"></span></a> <span title="' . date("M j, Y g:ia", $post['date_post']) . ' UniTime">Posted ' . Time::fuzzy((int) $post['date_post']) . '</span></div>
 					<div style="margin-top:6px;"><span class="icon-clock"></span> Joined ' . Time::fuzzy((int) $userList[$uniID]['date_joined']) . '</div>
 					<div style="margin-top:6px;"><a href="' . URL::inbox_unifaction_com() . '/to/' . $userList[$uniID]['handle'] . Me::$slg . '"><span class="icon-envelope"></span> Send Private Message</a></div>
@@ -377,7 +378,7 @@ foreach($posts as $post)
 			<div class="post-count-row"><span class="icon-pencil"></span> Posts: ' . $userList[$uniID]['post_count'] . '</div>
 		</div>
 		<div class="post-right' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '">
-			<div class="post-options"><div class="show-800"><a href="' . $social . '/' . $userList[$uniID]['handle'] . '">' . $userList[$uniID]['handle'] . '</a> <a href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a></div>';
+			<div class="post-options">';
 			
 			// Delete Option
 			if($isMod)
@@ -402,7 +403,7 @@ foreach($posts as $post)
 			
 			echo '
 			</div>
-			' . html_entity_decode(nl2br(UniMarkup::parse($post['body'])));
+			' . nl2br(UniMarkup::parse($post['body']));
 			
 			if($post['signature'])
 			{
@@ -410,6 +411,8 @@ foreach($posts as $post)
 			}
 			
 		echo '
+			<div class="post-status-mobile">' . (lcfirst($userList[$uniID]['display_name']) != lcfirst($userList[$uniID]['handle']) ? $userList[$uniID]['display_name'] . ' ' : '') . '<a ' . ($userList[$uniID]['role'] != '' ? 'class="role-' . $userList[$uniID]['role'] . '" ' : '') . 'href="' . $social . '/' . $userList[$uniID]['handle'] . '">@' . $userList[$uniID]['handle'] . '</a>' . (!in_array($avatarName[$uniID][$aviID], array('', $userList[$uniID]['display_name'], lcfirst($userList[$uniID]['display_name']))) ? ' (' . $avatarName[$uniID][$aviID] . ')' : '') . '</a>
+			<br/>' . Time::fuzzy((int) $post['date_post']) . ' (' . date("M j, Y g:ia", $post['date_post']) . ')</div>
 		</div>
 	</div>
 	<div style="clear:both;"></div>';
@@ -450,7 +453,7 @@ function renameActivated(response)
 	if(!response) { return; }
 	if(response == "") { return; }
 	
-	alert("Thread title has been changed to:\n" + response);
+	window.location="/' . $forum['url_slug'] . '/' . $threadID . '-" + response;
 }
 ' . $script . '
 </script>';
