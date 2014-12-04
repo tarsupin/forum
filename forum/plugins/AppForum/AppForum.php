@@ -226,7 +226,7 @@ abstract class AppForum {
 	
 	// AppForum::updateSignature($uniID, $signature);
 	{
-		return Database::query("REPLACE INTO forum_settings (uni_id, signature, signature_orig) VALUES (?, ?, ?)", array($uniID, UniMarkup::parse($signature), $signature));
+		return Database::query("INSERT INTO forum_settings (uni_id, signature, signature_orig) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE uni_id=?, signature=?, signature_orig=?", array($uniID, UniMarkup::parse($signature), $signature, $uniID, UniMarkup::parse($signature), $signature));
 	}
 	
 	
