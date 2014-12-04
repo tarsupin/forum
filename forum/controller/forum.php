@@ -187,7 +187,7 @@ if(Me::$loggedIn)
 	if($forum['perm_post'] <= Me::$clearance)
 	{
 		echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a> | ';
 	}
 	echo '
 	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
@@ -316,7 +316,7 @@ if(Me::$loggedIn)
 	if($forum['perm_post'] <= Me::$clearance)
 	{
 		echo '
-	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a>';
+	<a href="/new-thread?forum=' . $forum['id'] . '">New Thread</a> | ';
 	}
 	echo '
 	<a href="/' . $forum['url_slug'] . '?action=sub&' . Link::prepare("sub-" . $forum['id']) . '">Subscribe/Unsubscribe</a>';
