@@ -389,7 +389,7 @@ foreach($posts as $post)
 			if($isMod)
 			{
 				echo '
-				<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '"><img src="' . CDN . '/images/forum/delete.png" /></a>';
+				<a href="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '?action=deletePost&post=' . $post['id'] . '" onclick="return confirm(\'Are you sure you want to delete this post?\');"><img src="' . CDN . '/images/forum/delete.png" /></a>';
 			}
 			
 			// Edit Option
@@ -408,7 +408,7 @@ foreach($posts as $post)
 			
 			echo '
 			</div>
-			' . nl2br(UniMarkup::parse($post['body']));
+			' . html_entity_decode(nl2br(UniMarkup::parse($post['body'])));
 			
 			if($post['signature'])
 			{

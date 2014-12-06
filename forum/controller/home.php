@@ -81,7 +81,7 @@ if($recentPosts = AppPost::getRecentPosts())
 	foreach($recentPosts as $post)
 	{
 		// Prepare Values
-		$drawDesc = "";
+		//$drawDesc = "";
 		
 		if(strlen($post['body']) >= 255)
 		{
@@ -94,13 +94,13 @@ if($recentPosts = AppPost::getRecentPosts())
 		if($post['thread_posts'] > 20)
 		{
 			$onpage = floor(($post['thread_posts']-1) / 20) + 1;
-			$paginate = new Pagination((int) $post['thread_posts'], 20, 1, "division");
+			/*$paginate = new Pagination((int) $post['thread_posts'], 20, 1, "division");
 			
 			foreach($paginate->pages as $page)
 			{
 				$drawDesc .= '
 					<a href="' . $post['post_link'] . '?page=' . $page . '"><span>' . $page . '</span></a>';
-			}
+			}*/
 		}
 		
 		// Draw a recent post line
@@ -108,8 +108,10 @@ if($recentPosts = AppPost::getRecentPosts())
 			<div class="inner-line">
 				<div class="inner-name">
 					<a href="' . $post['post_link'] . '?page=' . $onpage . '#p' . $post['post_id'] . '">' . $post['thread_title'] . '</a>
-					<div class="inner-desc">' . html_entity_decode($post['body']) . '</div>
-					<div class="inner-paginate">' . $drawDesc . '</div>
+					<div class="inner-desc">' . html_entity_decode($post['body']) . '</div>';
+		/*echo '
+					<div class="inner-paginate">' . $drawDesc . '</div>';*/
+		echo '
 				</div>
 				<div class="inner-details"><a href="' . URL::unifaction_social() . '/' . $post['poster_handle'] . '">@' . $post['poster_handle'] . '</a>' . (($post['date_posted'] > $hourAgo) ? ' - ' . Time::fuzzy((int) $post['date_posted']) : '') . '<div style="margin-top:6px;">' . $post['thread_posts'] . ' Posts, ' . $post['thread_views'] . ' Views</div></div>
 			</div>';
