@@ -149,11 +149,8 @@ abstract class AppThread {
 			return false;
 		}
 		
-		// Create the URL Slug for this post
-		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");
-		
 		// Update Title
-		return Database::query("UPDATE `threads` SET url_slug=?, title=? WHERE forum_id=? AND id=? LIMIT 1", array($urlSlug, $title, $forumID, $threadID));
+		return Database::query("UPDATE `threads` SET title=? WHERE forum_id=? AND id=? LIMIT 1", array($title, $forumID, $threadID));
 	}
 	
 }
