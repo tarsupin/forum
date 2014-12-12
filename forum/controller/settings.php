@@ -65,7 +65,7 @@ if(!$settings = AppForum::getSettings(Me::$id, true))
 $avatarList = json_decode($settings['avatar_list'], true);
 
 // If you're loading your avatars
-if($value = Link::clicked() and $value == "load-avatars")
+if(($value = Link::clicked() and $value == "load-avatars") || Alert::getError("No Avatar") != array())
 {
 	// Prepare a list of plugins and their current versions
 	$packet = array(
