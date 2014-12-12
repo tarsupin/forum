@@ -108,18 +108,10 @@ if(count($subscriptionsForum) == 0)
 
 foreach($subscriptionsForum as $sub)
 {
-	if($newIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
-	{
-		if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
-		{
-			$newIcon = (($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false);
-		}
-	}
-
 	echo '
 	<div class="inner-line">
 		<div class="inner-name">
-			' . ($newIcon ? '<img src="' . CDN . '/images/new.png" /> ' :  '') . '<a href="/' . $sub['forum_slug'] . '">' . $sub['title'] . '</a>
+			<a href="/' . $sub['forum_slug'] . '">' . $sub['title'] . '</a>
 			<div class="inner-desc"><a href="/subscriptions?unsub=1&f=' . $sub['id'] . '"><span class="icon-circle-close"></span> Unsubscribe</a></div>
 		</div>
 		<div class="inner-posts">' . $sub['posts'] . '</div>

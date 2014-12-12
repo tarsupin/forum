@@ -35,6 +35,7 @@ else
 {
 	$_POST['title'] = '';
 	$_POST['parent_id'] = 0;
+	$_POST['category_id'] = 0;
 	$_POST['description'] = '';
 	$_POST['perm_read'] = 0;
 	$_POST['perm_post'] = 2;
