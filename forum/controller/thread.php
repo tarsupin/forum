@@ -457,8 +457,7 @@ function renameActivated(response)
 {
 	if(!response) { return; }
 	if(response == "") { return; }
-	
-	window.location="/' . $forum['url_slug'] . '/' . $threadID . '-" + response;
+	window.location="/' . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'] . '";
 }
 ' . $script . '
 </script>';
