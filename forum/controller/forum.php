@@ -139,45 +139,43 @@ echo ' &gt; ' . $forum['title'] . '
 if($forum['has_children'])
 {
 	// Gather all sub-forums
-	$subforums = AppForum::getSubforums($forum['id']);
-	
-	// Skip this category if there are no forums you can view
-	if(count($subforums) < 1) { continue; }
-	
-	// Display the category
-	echo '
-	<div class="overwrap-box">
-		<div class="overwrap-line">
-			<div class="overwrap-name">' . $forum['title'] . '</div>
-			<div class="overwrap-posts">Posts</div>
-			<div class="overwrap-views">Views</div>
-			<div class="overwrap-details">Details</div>
-		</div>
-		<div class="inner-box">';
-	
-	foreach($subforums as $sub)
-	{
-		$sub['id'] = (int) $sub['id'];
+	if($subforums = AppForum::getSubforums($forum['id']))
+	{	
+		// Display the category
+		echo '
+		<div class="overwrap-box">
+			<div class="overwrap-line">
+				<div class="overwrap-name">' . $forum['title'] . '</div>
+				<div class="overwrap-posts">Posts</div>
+				<div class="overwrap-views">Views</div>
+				<div class="overwrap-details">Details</div>
+			</div>
+			<div class="inner-box">';
 		
-		// Check for the New Icon
-		if($newIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+		foreach($subforums as $sub)
 		{
-			if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
+			$sub['id'] = (int) $sub['id'];
+			
+			// Check for the New Icon
+			if($newIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
 			{
-				if($newIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+				if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
 				{
-					unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+					if($newIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+					{
+						unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+					}
 				}
 			}
+			
+			// Display the sub-forum Line
+			AppForum::displayLine($sub, $newIcon);
 		}
 		
-		// Display the sub-forum Line
-		AppForum::displayLine($sub, $newIcon);
+		echo '
+			</div>
+		</div>';
 	}
-	
-	echo '
-		</div>
-	</div>';
 }
 
 echo '
