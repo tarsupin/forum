@@ -309,34 +309,32 @@ abstract class AppForum {
 		// If the forum has children, run an additional test
 		if($forum['has_children'])
 		{
-			if(!$subForums = AppForum::getSubforums($forum['id']))
+			if($subForums = AppForum::getSubforums($forum['id']))
 			{
-				continue;
-			}
+				$desc .= '<div class="sub-forum-list">';
 			
-			$desc .= '<div class="sub-forum-list">';
-			
-			foreach($subForums as $sub)
-			{
-				$sub['id'] = (int) $sub['id'];
-				
-				// Check for the New Icon
-				if($subIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
+				foreach($subForums as $sub)
 				{
-					if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
+					$sub['id'] = (int) $sub['id'];
+					
+					// Check for the New Icon
+					if($subIcon = ($sub['date_lastPost'] > $_SESSION[SITE_HANDLE]['new-tracker']) ? true : false)
 					{
-						if($subIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+						if(isset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]))
 						{
-							unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+							if($subIcon = ($sub['date_lastPost'] > ($_SESSION[SITE_HANDLE]['new-tracker'] + $_SESSION[SITE_HANDLE]['forums-new'][$sub['id']])) ? true : false)
+							{
+								unset($_SESSION[SITE_HANDLE]['forums-new'][$sub['id']]);
+							}
 						}
 					}
+					
+					// Display the Forum Line
+					$desc .= '<a href="/' . $sub['url_slug'] . '"><span class="icon-folder ' . ($subIcon ? 'new-sub' :  '') . '"></span> ' . $sub['title'] . "</a> ";
 				}
 				
-				// Display the Forum Line
-				$desc .= '<a href="/' . $sub['url_slug'] . '"><span class="icon-folder ' . ($subIcon ? 'new-sub' :  '') . '"></span> ' . $sub['title'] . "</a> ";
+				$desc .= '</div>';
 			}
-			
-			$desc .= '</div>';
 		}
 		
 		echo '
