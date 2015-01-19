@@ -113,7 +113,7 @@ if($recentPosts = AppPost::getRecentPosts())
 					<div class="inner-paginate">' . $drawDesc . '</div>';*/
 		echo '
 				</div>
-				<div class="inner-details"><a href="' . URL::unifaction_social() . '/' . $post['poster_handle'] . '">@' . $post['poster_handle'] . '</a>' . (($post['date_posted'] > $hourAgo) ? ' - ' . Time::fuzzy((int) $post['date_posted']) : '') . '<div style="margin-top:6px;">' . $post['thread_posts'] . ' Posts, ' . $post['thread_views'] . ' Views</div></div>
+				<div class="inner-details"><a ' . ($post['role'] != '' ? 'class="role-' . $post['role'] . '" ' : '') . 'href="' . URL::unifaction_social() . '/' . $post['poster_handle'] . '">@' . $post['poster_handle'] . '</a>' . (($post['date_posted'] > $hourAgo) ? ' - ' . Time::fuzzy((int) $post['date_posted']) : '') . '<div style="margin-top:6px;">' . $post['thread_posts'] . ' Posts, ' . $post['thread_views'] . ' Views</div></div>
 			</div>';
 	}
 	

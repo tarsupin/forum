@@ -105,8 +105,8 @@ abstract class AppThread {
 		Database::startTransaction();
 		
 		// Prepare Values
-		$threadID = UniqueID::get("post");
-		$timestamp = time();
+		$threadID = UniqueID::get("thread");
+		$timestamp = time();	
 		
 		// Create the URL Slug for this post
 		$urlSlug = Sanitize::variable(str_replace(" ", "-", strtolower($title)), "-");

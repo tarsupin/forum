@@ -69,7 +69,7 @@ abstract class AppPost {
 					Database::query("UPDATE users SET post_count=post_count+1 WHERE uni_id=? LIMIT 1", array($uniID));
 					
 					// Pull the user data
-					if($userData = User::get($uniID, "handle"))
+					if($userData = User::get($uniID, "handle, role"))
 					{
 						// Get the thread data
 						$thread = AppThread::get((int) $forum['id'], $threadID);
@@ -77,7 +77,7 @@ abstract class AppPost {
 						// Add this post to the recent post list if it is in a public forum
 						if($forum['perm_read'] == 0)
 						{
-							Database::query("INSERT INTO posts_recent (date_posted, thread_title, thread_posts, thread_views, post_link, post_id, poster_handle, uni_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", array(time(), $thread['title'], $thread['posts'], ($thread['views'] + 1), "/" . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'], $postID, $userData['handle'], $uniID, substr(UniMarkup::strip($body), 0, 255)));
+							Database::query("INSERT INTO posts_recent (date_posted, thread_title, thread_posts, thread_views, post_link, post_id, poster_handle, role, uni_id, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array(time(), $thread['title'], $thread['posts'], ($thread['views'] + 1), "/" . $forum['url_slug'] . '/' . $threadID . '-' . $thread['url_slug'], $postID, $userData['handle'], $userData['role'], $uniID, substr(UniMarkup::strip($body), 0, 255)));
 						}
 					}
 					
