@@ -9,8 +9,11 @@ if(!Me::$loggedIn)
 // Run the Form
 if(Form::submitted(SITE_HANDLE . "setting-form"))
 {
-	FormValidate::text("Signature", $_POST['signature'], 0, 20000, chr(13) . "
-");
+	$_POST['signature'] = isset($_POST['signature']) ? Security::purify($_POST['signature']) : '';
+	if(strlen($_POST['signature']) > 20000)
+	{
+		Alert::error("Signature Length", "Your signature length may not exceed 20000 characters.");
+	}
 	
 	if(FormValidate::pass())
 	{
