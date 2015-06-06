@@ -380,7 +380,7 @@ foreach($posts as $post)
 				</div>
 			</div>
 			<div class="post-like-row"><a href="javascript:likePost(' . $threadID . ', ' . $post['id'] . ');"><img src="' . CDN . '/images/forum/thumb_up.png" /></a> Likes: <span id="likeVal-' . $post['id'] . '">' . $post['likes'] . '</span></div>
-			<div class="post-count-row"><span class="icon-pencil"></span> Posts: ' . $userList[$uniID]['post_count'] . '</div>
+			<div class="post-count-row"><span class="icon-pencil"></span> <span onclick="this.nextSibling.style.display=\'block\'; uni6Posts(' . $uniID . ', ' . $userList[$uniID]['post_count'] . ');">Posts: ' . $userList[$uniID]['post_count'] . '</span><span class="detailed-post-count" data-user="' . $uniID . '" style="display:none;"></span></div>
 		</div>
 		<div class="post-right' . ($aviID && AVI_TYPE == "avatar" ? "-avatar" : "") . '">
 			<div class="post-options">';
@@ -521,6 +521,32 @@ function parseadd(response)
 	if(!response) { response = ""; }
 	
 	document.getElementById("core_text_box").value += response + "\n\n";
+}
+function uni6Posts(uni_id, uni6_count)
+{
+	getAjax("", "uni6-post-count", "uni6postsadd", "uni_id=" + uni_id, "uni6_count=" + uni6_count);
+}
+function uni6postsadd(response)
+{
+	if(!response)
+		output = "This user has not transferred.";
+	else
+	{
+		response = JSON.parse(response);
+		if(typeof response.uni5 === "undefined")
+			output = "This user has not transferred.";
+		else				
+			output = "Uni5: " + response.uni5 + "<br/>Uni6: " + response.uni6;
+	}
+	
+	var spans = document.getElementsByClassName("detailed-post-count");
+	for(i in spans)
+	{
+		var el = spans[i];
+		if(typeof el.dataset.user !== "undefined")
+		if(el.dataset.user == response.uni_id)
+			el.innerHTML = output;
+	}
 }
 </script>';
 
