@@ -17,7 +17,7 @@ echo '
 <div id="dynamic-content-loader"></div>';
 
 // Load the Featured Widget for the main page
-if(isset($_SERVER['HTTP_REFERER']))
+/*if(isset($_SERVER['HTTP_REFERER']))
 {
 	$parseURL = URL::parse($_SERVER['HTTP_REFERER']);
 	
@@ -32,4 +32,4 @@ if(isset($_SERVER['HTTP_REFERER']))
 		// If you want to display the FeaturedWidget by itself:
 		echo $featuredWidget->get();
 	}
-}
+}*/
